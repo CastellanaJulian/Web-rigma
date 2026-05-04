@@ -1,7 +1,7 @@
 # CLAUDE.md — Rigma Web
 
 > Archivo de contexto para colaboración con IA. Toda decisión tomada en el proyecto debe reflejarse acá para mantener coherencia entre sesiones y entre colaboradores.
-> Última actualización: mayo 2026
+> Última actualización: 3 de mayo 2026
 
 ---
 
@@ -17,7 +17,7 @@
 
 ## Equipo y colaboración
 
-- Dos desarrolladores trabajando en conjunto con IA (Claude Code)
+- Dos desarrolladores trabajando en conjunto con IA (Claude Code / Claude Design)
 - Flujo: cada colaborador trabaja en su entorno local, usa este archivo como contexto compartido
 - **Regla:** toda decisión de diseño, arquitectura o contenido que se tome debe actualizarse en este archivo antes de hacer commit
 
@@ -33,7 +33,7 @@
 | 4 | Salida a producción    | ⏳ Pendiente | Deploy Vercel, entrega al cliente |
 
 **Sub-etapas actuales (Etapa 2):**
-- [ ] Wireframes (validar con cliente)
+- [x] Wireframes — generados el 3/5/2026, pendiente validación con cliente
 - [ ] Diseño en alta fidelidad
 - [ ] Prototipo estático con placeholders
 
@@ -65,7 +65,7 @@
 - Paleta monocromática — no hay colores de acento definidos aún
 
 ### Tipografía
-- No definida — se decide en la etapa de diseño en alta fidelidad
+- ⚠️ **No definida** — se decide en la etapa de diseño en alta fidelidad (bloquea avance)
 - Referencia de estilo: elegante, seria, con personalidad de marca premium/institucional
 
 ### Logo
@@ -229,7 +229,7 @@
 - Footer
 
 ### Componentes globales
-- `Navbar` — presente en todas las páginas
+- `Navbar` — presente en todas las páginas. Se exploraron 3 variantes: transparente sobre hero, sólida siempre visible, minimal solo logo + hamburger
 - `Footer` — presente en todas las páginas. Incluye: logo, dirección, teléfono, email, links de navegación
 - `ContactCTA` — sección reutilizable al final de casi todas las páginas
 
@@ -272,6 +272,31 @@ type Project = {
 
 ---
 
+## Decisiones de diseño tomadas
+
+### Wireframes (sesión 3/5/2026)
+- **Formato:** tablet (768px) — punto de partida para el diseño
+- **Estilo:** wireframes de media fidelidad — formas claras con tipografía real, sin color
+- **Variantes generadas:** 2 por página (10 artboards en total)
+- **Herramienta:** HTML interactivo con design canvas pan/zoom — archivo en `design/wireframes/`
+
+#### Decisiones por página
+
+| Página | Var A | Var B | Estado |
+|--------|-------|-------|--------|
+| Inicio | Hero full-bleed + nav transparente | Hero split texto/imagen + nav sólida | ⏳ Pendiente validación cliente |
+| Proyectos | Grilla 2×2 con header oscuro | Lista full-width con filtros inline | ⏳ Pendiente validación cliente |
+| Ficha proyecto | Hero imagen + info en fila + galería | Galería arriba + layout editorial 2-cols | ⏳ Pendiente validación cliente |
+| Nosotros | 2 columnas clásica | Hero foto + tipografía grande | ⏳ Pendiente validación cliente |
+| Contacto | Formulario centrado | Split form izq + datos derecha | ⏳ Pendiente validación cliente |
+
+#### Navbar — 3 variantes exploradas
+- **Transparente sobre hero** — usada en Inicio Var A y Ficha Var A
+- **Sólida siempre visible** — usada en Inicio Var B, Proyectos Var A, Nosotros Var A, Contacto Var A
+- **Minimal logo + hamburger** — usada en Proyectos Var B, Ficha Var B, Nosotros Var B, Contacto Var B
+
+---
+
 ## Referencias de diseño
 
 | Sitio | Por qué gustó |
@@ -282,13 +307,22 @@ type Project = {
 
 ---
 
+## Archivos del proyecto
+
+| Archivo | Descripción | Ubicación |
+|---------|-------------|-----------|
+| `Wireframes Rigma standalone.html` | Wireframes interactivos — 5 páginas × 2 variantes | `design/wireframes/` |
+
+---
+
 ## Pendientes críticos (bloquean avance)
 
+- [ ] Validar wireframes con el cliente y elegir variante preferida por página
 - [ ] Subir logo al repo (`/public/logo.svg` o formato disponible)
 - [ ] Confirmar estado y datos faltantes de Proyecto 3 (Av. Larrazábal 1255)
 - [ ] Cargar información de Proyecto 4 (y proyectos 5 y 6 si existen)
 - [ ] Confirmar barrio de Zelada 6171
-- [ ] Definir tipografía en etapa de alta fidelidad
+- [ ] **Definir tipografía** — bloquea inicio de alta fidelidad
 - [ ] Confirmar si la sección Equipo lleva fotos y quiénes aparecen
 
 ## Pendientes no críticos
@@ -314,3 +348,4 @@ type Project = {
 ## Referencias internas
 
 - Proyecto de referencia en este repo: `landing-gustavo/` — landing page similar con Next.js + Tailwind, útil para ver patrones de componentes ya usados
+- Wireframes interactivos: `design/wireframes/Wireframes Rigma standalone.html`
