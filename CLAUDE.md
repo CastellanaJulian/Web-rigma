@@ -1,7 +1,7 @@
 # CLAUDE.md — Rigma Web
 
 > Archivo de contexto para colaboración con IA. Toda decisión tomada en el proyecto debe reflejarse acá para mantener coherencia entre sesiones y entre colaboradores.
-> Última actualización: 3 de mayo 2026
+> Última actualización: 4 de mayo 2026
 
 ---
 
@@ -48,11 +48,32 @@
 | Tailwind CSS | Estilos                   | |
 | ESLint       | Linting                   | |
 | Sanity       | CMS headless              | Plan gratuito — se integra en Etapa 3 |
-| Vercel       | Hosting                   | Plan gratuito |
+| Vercel       | Hosting                   | Plan gratuito — ya deployado con dominio rigma.com.ar |
+| Vercel Analytics | Analytics de tráfico  | Ya integrado en la landing |
 
 **Import alias:** `@/*` → `src/*`
 
 > ⚠️ Durante la Etapa 2 se trabaja con datos mock estáticos. Sanity se integra en la Etapa 3.
+
+---
+
+## Infraestructura actual (en producción)
+
+### Repositorio
+- **GitHub:** [CastellanaJulian/Web-rigma](https://github.com/CastellanaJulian/Web-rigma)
+- **Rama principal:** `main`
+- **Flujo:** push a `main` → Vercel deploya automáticamente
+
+### Landing "en construcción"
+- **Ruta en repo:** `landing-en-construccion/v0/`
+- **Generada con:** v0 (Vercel)
+- **Stack:** Next.js + Tailwind + shadcn/ui
+- **Deploy root directory en Vercel:** `landing-en-construccion/v0`
+- **URL:** rigma.com.ar
+- **Título en navegador:** Rigma Group
+- **Favicon:** `/public/logo-rigma.png`
+- **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
+- **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local en `/Users/julian/web-rigma/rigma-qr.png` (no subido al repo)
 
 ---
 
