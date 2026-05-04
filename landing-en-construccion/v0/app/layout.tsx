@@ -6,7 +6,7 @@ import './globals.css'
 const roboto = Roboto({ subsets: ["latin"], weight: ["300", "400", "500", "700"], variable: "--font-roboto" });
 
 export const metadata: Metadata = {
-  title: 'Rigma Grupo',
+  title: 'Rigma Group',
   description: 'Desarrollo inmobiliario. Próximamente.',
   icons: {
     icon: '/logo-rigma.png',
