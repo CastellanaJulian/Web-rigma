@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="es" className={roboto.variable}>
       <body className="font-sans antialiased bg-[rgb(20,20,20)] text-white">
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Analytics />
       </body>
     </html>
   )
