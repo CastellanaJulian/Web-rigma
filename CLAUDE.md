@@ -205,53 +205,60 @@
 
 ## Arquitectura del sitio
 
+> Fuente de verdad: `sitemap/Rigma-group-sitemap.csv`
+
 ### Páginas (5)
 
 #### 1. Inicio `/`
-- Hero (tagline + CTA)
-- Proyectos destacados
-- Snippet de Nosotros
-- Por qué elegirnos
-- Testimonios *(contenido pendiente — usar placeholders)*
-- CTA de Contacto
-- Footer
+- **Nav bar**
+- **Hero** — imagen o video grande con logo/slogan. Puede ser carrusel de proyectos. CTA para ir a ver proyectos
+- **Proyectos destacados** — preview de proyectos con CTA a `/proyectos`
+- **Nosotros** — 2 o 3 párrafos sobre quiénes son, 3/4 datos fuertes, CTA a `/nosotros`
+- **Por qué elegirnos** — pilares que los diferencian de la competencia: icono + título + breve descripción
+- **Testimonios** — testimonios de clientes que avalan experiencia y resultados *(contenido pendiente)*
+- **Sección de contacto** — información directa y formulario breve para consultas rápidas, tono emocional con CTA
+- **Footer**
 
 #### 2. Proyectos `/proyectos`
-- Header de sección
-- Filtros: Todos / En Ejecución / Terminados
-- Grilla de proyectos (cards)
-- CTA de Contacto
-- Footer
+- **Nav bar**
+- **Header** — título y breve subtítulo para contextualizar
+- **Filtros** — tabs horizontales: Todos / En Ejecución / Terminados (un solo eje)
+- **Grilla de proyectos** — proyectos en ejecución con mayor jerarquía; cards con imagen principal, nombre, ubicación y pill de estado
+- **Sección de contacto** — CTA para solicitar más información
+- **Footer**
 
 #### 3. Ficha de Proyecto `/proyectos/[slug]`
-- Hero del proyecto
-- Info clave (superficie, ubicación, estado, unidades disponibles, entrega)
-- Descripción
-- Galería de imágenes (renders)
-- Planos *(sección separada — no todos los usuarios quieren ver planos)*
-- Ubicación (Google Maps embed)
-- Proyecto relacionado
-- CTA de Contacto
-- Footer
+- **Nav bar**
+- **Hero** — imagen/render grande, nombre del proyecto, tagline, pill con estado
+- **Información clave** — ubicación, estado, tipologías, fecha de entrega; opcionales: unidades disponibles, % avance de obra
+- **Descripción** — máx. 3 párrafos + highlights del proyecto
+- **Galería principal** — grilla o carrusel de renders e imágenes; mezcla renders con fotos de obra
+- **Planos** — plantas del edificio y planos por unidad con preview *(sección separada — no todos los usuarios quieren verlos)*
+- **Ubicación** — Google Maps embebido + puntos clave cercanos
+- **Siguiente proyecto / relacionado** — acceso directo a otro proyecto para no perder la navegación
+- **Sección de contacto** — WhatsApp con mensaje predeterminado o formulario; objetivo: clasificar el lead
+- **Footer**
 
 #### 4. Nosotros `/nosotros`
-- Header institucional
-- Historia de la empresa *(copy confirmado — ver sección anterior)*
-- Números / métricas (+32.000 m², +220 UF)
-- Equipo *(pendiente definir si incluye fotos y quiénes)*
-- Pilares / Filosofía *(copy confirmado)*
-- CTA de redirección
-- Footer
+- **Nav bar**
+- **Header institucional** — 1-2 líneas de posicionamiento, titular que transmita la esencia de Rigma
+- **Historia** — cómo arrancaron, por qué lo hacen, qué los diferencia y su valor a futuro *(a chequear con cliente)*
+- **Números que respaldan** — métricas con contexto (+32.000 m², +220 UF)
+- **Equipo** — fotos + nombre y rol; refuerza el negocio familiar y lo hace cercano
+- **Pilares / filosofía de trabajo** — 3-4 pilares que guían cómo trabajan
+- **Sección de redirección** — invitar a conocer proyectos o contactarse (1 o 2 CTAs)
+- **Footer**
 
 #### 5. Contacto `/contacto`
-- Encabezado
-- Formulario (incluye selector de proyecto para calificar el lead)
-- Vías alternativas: WhatsApp, email, dirección
-- Footer
+- **Nav bar**
+- **Encabezado** — título destacado e invitación a consultar, agendar visitas o pedir información
+- **Formulario** — incluye selector de proyecto de interés para calificar el lead; puede ir a mail o Google Sheets
+- **Vías alternativas** — dirección física, horarios de atención y redes
+- **Footer**
 
 ### Componentes globales
-- `Navbar` — presente en todas las páginas. Se exploraron 3 variantes: transparente sobre hero, sólida siempre visible, minimal solo logo + hamburger
-- `Footer` — presente en todas las páginas. Incluye: logo, dirección, teléfono, email, links de navegación
+- `Navbar` — presente en todas las páginas
+- `Footer` — logo, dirección, teléfono, email, links de navegación
 - `ContactCTA` — sección reutilizable al final de casi todas las páginas
 
 ---
@@ -296,25 +303,16 @@ type Project = {
 ## Decisiones de diseño tomadas
 
 ### Wireframes (sesión 3/5/2026)
-- **Formato:** tablet (768px) — punto de partida para el diseño
+- **Formato:** a definir — pendiente decidir si mobile-first (375px) o desktop-first
 - **Estilo:** wireframes de media fidelidad — formas claras con tipografía real, sin color
-- **Variantes generadas:** 2 por página (10 artboards en total)
+- **Variantes:** 1 por página (el contenido de cada página está validado en la sección Arquitectura del sitio)
 - **Herramienta:** HTML interactivo con design canvas pan/zoom — archivo en `design/wireframes/`
-
-#### Decisiones por página
-
-| Página | Var A | Var B | Estado |
-|--------|-------|-------|--------|
-| Inicio | Hero full-bleed + nav transparente | Hero split texto/imagen + nav sólida | ⏳ Pendiente validación cliente |
-| Proyectos | Grilla 2×2 con header oscuro | Lista full-width con filtros inline | ⏳ Pendiente validación cliente |
-| Ficha proyecto | Hero imagen + info en fila + galería | Galería arriba + layout editorial 2-cols | ⏳ Pendiente validación cliente |
-| Nosotros | 2 columnas clásica | Hero foto + tipografía grande | ⏳ Pendiente validación cliente |
-| Contacto | Formulario centrado | Split form izq + datos derecha | ⏳ Pendiente validación cliente |
+- **Estado:** ⚠️ Pendiente de verificación — no cerrado
 
 #### Navbar — 3 variantes exploradas
-- **Transparente sobre hero** — usada en Inicio Var A y Ficha Var A
-- **Sólida siempre visible** — usada en Inicio Var B, Proyectos Var A, Nosotros Var A, Contacto Var A
-- **Minimal logo + hamburger** — usada en Proyectos Var B, Ficha Var B, Nosotros Var B, Contacto Var B
+- **Transparente sobre hero**
+- **Sólida siempre visible**
+- **Minimal logo + hamburger**
 
 ---
 
@@ -336,25 +334,6 @@ type Project = {
 
 ---
 
-## Pendientes críticos (bloquean avance)
-
-- [ ] Validar wireframes con el cliente y elegir variante preferida por página
-- [ ] Subir logo al repo (`/public/logo.svg` o formato disponible)
-- [ ] Confirmar estado y datos faltantes de Proyecto 3 (Av. Larrazábal 1255)
-- [ ] Cargar información de Proyecto 4 (y proyectos 5 y 6 si existen)
-- [ ] Confirmar barrio de Zelada 6171
-- [ ] **Definir tipografía** — bloquea inicio de alta fidelidad
-- [ ] Confirmar si la sección Equipo lleva fotos y quiénes aparecen
-
-## Pendientes no críticos
-
-- [ ] Testimonios de clientes (3 bloques para completar)
-- [ ] Cámaras o asociaciones del rubro (para footer)
-- [ ] Descripción y tipologías de Zelada 6171
-- [ ] Financiación de Cosquín 1534
-- [ ] Instagram (a futuro)
-
----
 
 ## Convenciones de trabajo con IA
 
