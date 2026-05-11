@@ -1,7 +1,7 @@
 # CLAUDE.md — Rigma Web
 
 > Archivo de contexto para colaboración con IA. Toda decisión tomada en el proyecto debe reflejarse acá para mantener coherencia entre sesiones y entre colaboradores.
-> Última actualización: 4 de mayo 2026
+> Última actualización: 11 de mayo 2026
 
 ---
 
@@ -43,7 +43,7 @@
 
 | Tecnología   | Rol                        | Notas |
 |--------------|---------------------------|-------|
-| Next.js 14+  | Framework (App Router)    | Con directorio `src/` |
+| Next.js 16+  | Framework (App Router)    | Con directorio `src/` |
 | TypeScript   | Tipado estático           | |
 | Tailwind CSS | Estilos                   | |
 | ESLint       | Linting                   | |
@@ -57,12 +57,29 @@
 
 ---
 
-## Infraestructura actual (en producción)
+## Infraestructura actual
 
 ### Repositorio
 - **GitHub:** [CastellanaJulian/Web-rigma](https://github.com/CastellanaJulian/Web-rigma)
-- **Rama principal:** `main`
-- **Flujo:** push a `main` → Vercel deploya automáticamente
+- **Rama principal:** `main` → producción (rigma.com.ar)
+- **Rama de desarrollo:** `staging` → preview en Vercel (URL automática por rama)
+- **Flujo:** push a cualquier rama → Vercel genera URL de preview. Push a `main` → deploya en producción
+
+### Estructura del repo
+```
+web-rigma/
+├── landing-en-construccion/v0/   ← landing actual en producción
+├── site/                         ← sitio principal en desarrollo
+├── Wireframes/                   ← wireframes HTML interactivos
+├── sitemap/                      ← sitemap CSV (fuente de verdad de arquitectura)
+└── CLAUDE.md
+```
+
+### Sitio principal (`site/`)
+- **Stack:** Next.js 16 + TypeScript + Tailwind CSS (App Router, directorio `src/`)
+- **Rama:** `staging`
+- **Estado:** estructura base armada — sin diseño, con datos mock
+- **Root directory en Vercel (cuando esté listo):** `site/`
 
 ### Landing "en construcción"
 - **Ruta en repo:** `landing-en-construccion/v0/`
@@ -73,7 +90,10 @@
 - **Título en navegador:** Rigma Group
 - **Favicon:** `/public/logo-rigma.png`
 - **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
-- **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local en `/Users/julian/web-rigma/rigma-qr.png` (no subido al repo)
+- **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local (no subido al repo)
+
+### Cambio a producción (cuando el sitio esté listo)
+Cambiar el root directory en Vercel de `landing-en-construccion/v0` a `site/` y mergear `staging` → `main`.
 
 ---
 
@@ -330,10 +350,46 @@ type Project = {
 
 | Archivo | Descripción | Ubicación |
 |---------|-------------|-----------|
-| `Wireframes Rigma standalone.html` | Wireframes interactivos — 5 páginas × 2 variantes | `design/wireframes/` |
+| `ficha-proyecto.html` | Wireframe de ficha de proyecto | `Wireframes/` |
+| `proyectos.html` | Wireframe de página de proyectos | `Wireframes/` |
+| `wireframes-decisions.md` | Decisiones de diseño de los wireframes | `Wireframes/` |
+| `wireframes-system.md` | Sistema y documentación de los wireframes | `Wireframes/` |
+| `Rigma-group-sitemap.csv` | Sitemap oficial — fuente de verdad de arquitectura | `sitemap/` |
+| `projects.ts` | Datos mock de los 3 proyectos (reemplazado por Sanity en Etapa 3) | `site/src/data/` |
+| `project.ts` | Type Project — modelo de datos | `site/src/types/` |
 
 ---
 
+## Estructura del sitio (`site/src/`)
+
+```
+app/
+├── layout.tsx                  ← Navbar + Footer globales
+├── page.tsx                    ← Inicio /
+├── proyectos/
+│   ├── page.tsx                ← Listado /proyectos
+│   └── [slug]/
+│       └── page.tsx            ← Ficha /proyectos/[slug]
+├── nosotros/
+│   └── page.tsx
+└── contacto/
+    └── page.tsx
+
+components/
+├── layout/
+│   ├── Navbar.tsx
+│   └── Footer.tsx
+└── shared/
+    └── ContactCTA.tsx          ← Reutilizable en casi todas las páginas
+
+data/
+└── projects.ts                 ← Mock data — 3 proyectos cargados
+
+types/
+└── project.ts                  ← Type Project
+```
+
+---
 
 ## Convenciones de trabajo con IA
 
@@ -342,10 +398,4 @@ type Project = {
 - Al finalizar una sesión con cambios importantes, actualizar las secciones relevantes
 - Los placeholders de contenido deben ser realistas (no "Lorem ipsum"), usar datos del rubro inmobiliario argentino
 - El tono de los textos es español rioplatense, formal pero cercano
-
----
-
-## Referencias internas
-
-- Proyecto de referencia en este repo: `landing-gustavo/` — landing page similar con Next.js + Tailwind, útil para ver patrones de componentes ya usados
-- Wireframes interactivos: `design/wireframes/Wireframes Rigma standalone.html`
+- Los pendientes del proyecto se gestionan en Miro, no en este archivo
