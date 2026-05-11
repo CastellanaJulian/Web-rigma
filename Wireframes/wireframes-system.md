@@ -2,7 +2,7 @@
 
 > Fuente de verdad estructural durante la fase B (wireframes).
 > Documenta el sistema visual y de componentes para mantener coherencia entre pantallas.
-> Última actualización: 7 de mayo 2026
+> Última actualización: 11 de mayo 2026
 
 > ⚠️ **Alcance:** este archivo describe el sistema de **wireframes** (mid-fi, neutral). El sistema de marca — paleta de colores definitiva, tipografía final, identidad visual — se documenta por separado en `design-system.md` cuando entremos en la etapa de alta fidelidad.
 
@@ -74,7 +74,7 @@ Todos los valores en px (ancho base 1440). Una sola familia: **Montserrat**.
 | `heading-lg`  | 36     | 700  | 1.0         | -0.015em       | Logotipo en footer.                                          |
 | `heading-md`  | 32     | 600  | 1.05        | -0.015em       | Nombre de proyecto en lista editorial (Variante B).          |
 | `heading-sm`  | 28     | 600  | 1.1         | -0.01em        | Título de pilar en `Por qué (B)`.                            |
-| `heading-xs`  | 24     | 700  | 1.0         | 0.02em         | Logotipo en navbar (`RIGMA` UPPERCASE) / título de pilar (A).|
+| `heading-xs`  | 24     | 700  | 1.0         | 0.02em         | Título de pilar (A). (El logotipo usa el componente `Logo`, no este token.) |
 | `quote`       | 20     | 400  | 1.5         | -0.005em       | Texto de testimonio (italic opcional).                       |
 | `card-title`  | 18     | 600  | 1.2         | -0.005em       | Título de card de proyecto (Variante A).                     |
 | `body-lg`     | 18     | 400  | 1.6         | normal         | Subtítulo emocional grande (Contacto A).                     |
@@ -86,6 +86,7 @@ Todos los valores en px (ancho base 1440). Una sola familia: **Montserrat**.
 | `label-md`    | 12     | 500  | 1.2         | 0.10em         | CTA pill de navbar, year en lista de proyectos. **UPPERCASE**. |
 | `label-sm`    | 11     | 500  | 1.2         | 0.12em         | Numeración `01`, kicker de sección, labels de form, columna titles del footer. **UPPERCASE**. |
 | `label-xs`    | 10     | 600  | 1.2         | 0.10em         | Status pill (`En ejecución`, `Terminado`). **UPPERCASE**.    |
+| `label-2xs`   | 9      | 600–700 | 1.2      | 0.14em         | Labels técnicos chicos: KeyDataStrip, form labels, footer column titles. **UPPERCASE**. |
 
 ### Patrones de uso
 
@@ -190,20 +191,31 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 
 ## Componentes globales
 
+### Logo
+- Cuadrado con borde + texto `RIG / MA` en dos líneas, left-aligned dentro del cuadrado.
+- **Estructura:** `div` cuadrado (width = height = `size`) con `border: ~5% de size`. Dentro, dos `div` con `RIG` y `MA` en Montserrat 500, `fontSize ≈ 40% de size`, `lineHeight: 1.05`.
+- **Props:** `size` (px, default 40) · `color` (hex/rgba, default `ink`). El color se aplica tanto al borde como al texto.
+- **Usos estándar:**
+  - Navbar claro: `size=40, color=ink`
+  - Footer oscuro: `size=44, color=rgba(255,255,255,0.85)`
+  - Hero oscuro (si aplica): `size=48, color=rgba(255,255,255,0.9)`
+- Encapsula la identidad del logotipo real (cuadrado con borde + texto partido en dos líneas) como lo muestra la imagen de marca provista por el cliente.
+
 ### NavBar
 - Layout: `space-between` entre logo, nav links, CTA pill.
 - Padding `24 × 56`. Border-bottom `1px line`.
-- **Logo:** `heading-xs` UPPERCASE (Montserrat 24, peso 700, letterSpacing 0.02em). Copy `RIGMA` — caja gráfica al estilo del cartel.
+- **Logo:** componente `<Logo size={40} color={ink} />` (ver sección *Logo* arriba).
 - **Nav links:** `ui-md` (Montserrat 13, peso 500), gap 36px. Estado activo: color `ink`. Resto: `ink2`.
 - **CTA pill:** `label-md` UPPERCASE (Montserrat 12, peso 500, letterSpacing 0.10em), padding `8 × 14`, border 1px line, borderRadius 999. Copy `HABLEMOS →`.
 - **Variante `dark={true}`:** texto blanco, line `rgba(255,255,255,0.15)`, muted `rgba(255,255,255,0.65)`. Misma estructura.
 
 ### Footer
-- Padding `64 / 56 / 32`. Background `surface`. Top border `1px line`.
+- Padding `64 / 56 / 32`. Background `ink` (oscuro). Sin top border — el contraste de fondo ya separa.
 - Grid de 4 columnas: `2fr 1fr 1fr 1fr`, gap 48.
-- **Columna 1:** logo `heading-lg` (Montserrat 36, peso 700, UPPERCASE `RIGMA`) + bajada `ui-md` muted (max-width 280, line-height 1.6).
-- **Columnas 2–4:** título `label-sm UPPERCASE` (Montserrat 11, peso 500, letterSpacing 0.10em) → lista de items `ui-md` color `ink2` con gap 8.
-- **Bottom row:** separator + 2 spans `label-sm` UPPERCASE: `© 2026 RIGMA GROUP` y `BUENOS AIRES · ARGENTINA`.
+- **Columna 1:** componente `<Logo size={44} color="rgba(255,255,255,0.85)" />` + bajada `ui-sm` muted (max-width 280, line-height 1.8). Color texto: `rgba(255,255,255,0.5)`.
+- **Columnas 2–4:** título `label-2xs` UPPERCASE (Montserrat 9, peso 700, letterSpacing 0.16em) color `rgba(255,255,255,0.35)` → lista de items `ui-sm` color `rgba(255,255,255,0.6)` con gap 10.
+- **Bottom row:** `1px solid rgba(255,255,255,0.08)` + span `label-xs` UPPERCASE: `© 2026 RIGMA GROUP · TODOS LOS DERECHOS RESERVADOS`.
+- Íconos de contacto (WhatsApp): SVG stroke fino monocromático, color `rgba(255,255,255,0.5)`.
 
 ### SectionLabel (numeración editorial)
 - Layout horizontal: `[01] ─ KICKER`.
@@ -213,23 +225,41 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 - Prop `align`: `left` (default) o `center`.
 
 ### ContactCTA / Bloque de contacto
-- Dos variantes ya definidas:
-  - **Variante A — emocional:** sección oscura, display-xl, input subrayado simple, fila inferior con datos de contacto en mono.
-  - **Variante B — formulario completo:** split 1fr/1fr, lado izquierdo con título + tabla de datos, lado derecho con form completo (incluye `select` de proyecto de interés).
+- Dos variantes definidas:
+  - **Variante A — emocional:** sección oscura, display-xl, input subrayado simple, fila inferior con datos de contacto.
+  - **Variante B — formulario completo (implementada en Ficha y Proyectos):** columna centrada `maxWidth: 640`, SectionLabel + h2 (fontSize 30, peso 700), seguido del formulario completo. Ver sección *Form fields* para el detalle de campos y estilos.
 - En ambas, el footer se mantiene como sección separada después.
 
 ---
 
 ## Componentes reutilizables
 
-### Card de proyecto — variante grilla (`ProyectosGrid`)
-- Aspect ratio del placeholder: `4/5`.
-- Margin del placeholder al meta: 14 px.
-- Bottom row: flex `space-between` con dos columnas:
-  - Izquierda: `card-title` (Montserrat 18, peso 600) + `ui-sm` muted (location).
-  - Derecha: status pill `label-xs` UPPERCASE, padding `4 × 8`, border 1px. Color depende del estado:
-    - `EN EJECUCIÓN` → border + texto `ink`.
-    - `TERMINADO` → border `line2` + texto `muted`.
+### Card de proyecto — overlay con jerarquía LG / MD (`ProyectosGrid`)
+
+**Grilla:** `repeat(6, 1fr)`, gap 16. Proyectos En Ejecución siempre ordenados primero.
+
+**Tamaño LG** (proyectos En Ejecución, salvo filtro "Terminados"):
+- `gridColumn: 'span 3'` → 2 cards por fila en grilla de 6 cols.
+- `height: 460px` (sin aspectRatio).
+
+**Tamaño MD** (proyectos Terminados, o todos cuando el filtro es "Terminados"):
+- `gridColumn: 'span 2'` → 3 cards por fila en grilla de 6 cols.
+- `aspectRatio: '4/5'` (sin height fija).
+
+**Comportamiento por filtro:**
+- `Todos` → LG (span 3) primero + MD (span 2) debajo. Fila 1: 2 En Ejecución. Fila 2: 3 Terminados.
+- `En ejecución` → todos LG (span 3) → 2 por fila pareja.
+- `Terminados` → todos MD (span 2) → 3 por fila pareja.
+
+**Anatomía de cada card (overlay):**
+- `position: relative`, `overflow: hidden`, cursor pointer.
+- **Placeholder** rayado como fondo absoluto `inset: 0`.
+- **Gradiente overlay** de abajo hacia arriba: `rgba(23,23,23,0.80-0.82)` → transparente.
+- **Contenido** sobre overlay (absoluto, `bottom: 0`), padding `48 36` (LG) / `20 20` (MD):
+  - `StatusPill` con prop `dark={true}` (border blanco semitransparente).
+  - Nombre del proyecto: Montserrat, uppercase, peso 700 (LG: 48px) / peso 600 (MD: 18px), color blanco.
+  - Ubicación: `label-xs` UPPERCASE, `rgba(255,255,255,0.6)`.
+  - CTA `VER PROYECTO →`: Montserrat 10px, peso 700, tracking 0.12em, blanco, borderBottom `rgba(255,255,255,0.4)`.
 
 ### Project Row — variante lista editorial (`ProyectosLista`)
 - Grid: `60px 1.5fr 1fr 80px 140px 40px`. Gap 24, padding `28 0`, border-bottom 1px line.
@@ -274,12 +304,37 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 - **Footer del card:** padding-top 20 + border-top line. Avatar circular 36×36 placeholder (`line` bg) + nombre `ui-md` peso 500 + sub `label-sm` UPPERCASE muted (proyecto asociado).
 
 ### Form fields
-- **Label:** `label-sm` UPPERCASE (Montserrat 11, peso 500, letterSpacing 0.10em), marginBottom 8.
-- **Input texto:** solo borderBottom `1px line2`, height 28 (estilo línea minimal).
-- **Select:** border completo 1px line2, padding `10 × 14`, fontSize 13, indica con chevron `▾` a la derecha.
-- **Textarea:** border completo 1px line2, height 96.
-- **Submit:** background `ink`, color blanco, padding `14 × 24`, `ui-md` peso 500, sin borderRadius. Copy en UPPERCASE: `ENVIAR CONSULTA →`.
-- **Variante inline (Contacto A):** input + botón sobre un mismo `borderBottom` blanco transparente. Sin label, placeholder muteado (`tu@email.com`).
+Patrón único para todos los formularios del sitio. **No usar `<Placeholder>` para campos de formulario** — usar elementos HTML reales con los estilos a continuación.
+
+**`fieldStyle` (aplicar a `input`, `select`, `textarea`):**
+```js
+{
+  width: '100%', padding: '12px 14px',
+  fontSize: 13, fontWeight: 400, color: t.ink,
+  background: t.bg, border: `1px solid ${t.line2}`,
+  borderRadius: 2, appearance: 'none',
+}
+```
+
+**`labelStyle` (aplicar a `<label>`):**  
+`label-2xs` — Montserrat 9px, peso 700, letterSpacing 0.14em, UPPERCASE, color `muted`, marginBottom 8.
+
+- **Input texto:** `<input type="text" placeholder="..." style={fieldStyle} readOnly />`
+- **Input email:** `<input type="email" placeholder="nombre@email.com" style={fieldStyle} readOnly />`
+- **Select:** `<select style={{ ...fieldStyle, color: t.ink }}>` con primera `<option disabled>` como placeholder
+- **Textarea:** `<textarea rows={4} style={{ ...fieldStyle, resize: 'vertical' }} readOnly />`
+- **Submit:** `width: 100%`, padding `16px`, Montserrat 11px peso 700 letterSpacing 0.14em UPPERCASE, bg `ink`, color blanco, borderRadius 2, marginTop 8. Copy: `ENVIAR CONSULTA`
+
+**Layout del bloque de contacto con formulario:**
+- Sección: `padding: 96px 56px`, borderTop `1px line`
+- Contenedor centrado: `maxWidth: 640, margin: '0 auto'`
+- SectionLabel + h2 (fontSize 30, peso 700), marginBottom 48
+- Campos en `flexDirection: column, gap: 24`
+- Fila Nombre + Celular: `grid 1fr 1fr, gap: 16`
+- Selector de proyecto incluye siempre las 3 opciones reales + "Otro / No sé aún"
+- Pre-seleccionar proyecto solo cuando el formulario es específico de una ficha de proyecto
+
+**Variante inline (Contacto A):** input + botón sobre un mismo `borderBottom` blanco transparente. Sin label, placeholder muteado (`tu@email.com`).
 
 ### CTA links / botones inline
 - **Link CTA con underline:** `ui-md` peso 500, color `ink`, `borderBottom: 1px ink`, paddingBottom 2. Ej: `Ver proyectos`, `Conocer más →`.
@@ -297,6 +352,118 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 ### Carrusel indicator (Hero A)
 - Fila de 4 segmentos. Activo: 32×2 px blanco; inactivo: 8×2 px `rgba(255,255,255,0.4)`.
 - A la derecha del set, label `label-sm` UPPERCASE letterSpacing 0.10em opacidad 0.7: `AUTO · 6S`.
+
+### PlanosList (acordeón por tipología + modal)
+- Acordeón: cada grupo tipológico tiene una cabecera clicable (nombre + sublabel + chevron). Solo un grupo abierto a la vez.
+- **Grupos tipológicos estándar:** Monoambiente · 2 ambientes · 3 ambientes (o los que apliquen al proyecto).
+- **Cabecera:** nombre `body-sm` peso 600 ink + sublabel `ui-sm` muted + chevron SVG que rota 180° al abrir. Border-bottom `1px line`. Cursor pointer.
+- **Contenido expandido:** fila horizontal de thumbnails con gap 16, padding `28 0 32`.
+  - **Thumbnail:** 180×128 px, placeholder rayado con `label="plano"`, border `1px line`, borderRadius 2.
+  - Debajo: `ui-sm` peso 600 ink (nombre de unidad) + `label-xs` muted (m²).
+  - Cursor `zoom-in`.
+- **Modal al click en thumbnail:**
+  - Overlay oscuro `rgba(23,23,23,0.78)`, click fuera cierra.
+  - Panel: bg `bg`, padding 48, maxWidth 680, `position: relative`.
+  - **X de cierre:** botón absoluto `top: 16, right: 16`, 32×32, border `1px line`, `×` en `ui-md` muted.
+  - Placeholder grande: height 420, label canónico `plano · {tipologia} {variante}`.
+  - Footer del modal: nombre `body-md` peso 700 + sublabel `ui-sm` muted | botón `DESCARGAR PDF` outline.
+
+### LocationBlock (mapa + puntos de interés)
+- Grid `1fr 380px`, gap 64, padding `80 × 56`, bg `surface`, border-top `1px line`.
+- **Columna izquierda — Mapa:** placeholder rayado `aspect-ratio: 4/3`, border `1px line`. Label canónico: `mapa · {dirección}, {barrio}, {ciudad}`.
+- **Columna derecha — Info:**
+  - Título `body-md` peso 700 ink (ej: `Mataderos, Ciudad de Buenos Aires`).
+  - Párrafo introductorio `body-sm` peso 300 ink2, marginBottom 32, max 3 líneas.
+  - Lista de 4 puntos máximo. Cada punto: icono SVG stroke (28×28, strokeWidth 1.4, color `ink2`) + texto `body-sm` ink2.
+  - **Íconos disponibles para POIs:** `transport`, `health`, `education`, `commerce`.
+- El embed real de Google Maps reemplaza al placeholder en alta fidelidad.
+
+---
+
+## Componentes específicos de Ficha de Proyecto
+
+> Componentes que aparecen en `/proyectos/[slug]`. Razones de diseño en [wireframes-decisions.md → 3.1](wireframes-decisions.md).
+
+### KeyDataStrip (info clave bajo el hero)
+- Fila horizontal a sangre con 4-5 datos primarios del proyecto.
+- Layout: `display: flex` con `justify-content: space-between`, padding `40 × 56`, border-bottom `1px line`.
+- Cada celda es un par **label + valor**:
+  - Label arriba: `label-sm` UPPERCASE muted (`ESTADO`, `UBICACIÓN`, `ENTREGA`, `UNIDADES DISPONIBLES`, `M² CONSTRUIBLES`).
+  - Valor abajo: `heading-xs` peso 700 ink, marginTop 8.
+- Separador entre celdas: 1px vertical line, altura completa, color `line`.
+- **Para `En Ejecución`:** una de las celdas debe ser `AVANCE DE OBRA` con valor formato `60%`.
+- **Para `Terminado`:** la celda equivalente es `ENTREGADO` con el año.
+- Ejemplo Cosquín 1534:
+  | ESTADO       | UBICACIÓN | ENTREGA      | UNIDADES DISPONIBLES | AVANCE DE OBRA |
+  |--------------|-----------|--------------|----------------------|----------------|
+  | En Ejecución | Mataderos | Diciembre 2026 | 4 de 8             | 60%            |
+
+### FichaTecnica (bloque técnico extendido)
+- Aparece después de la descripción, antes de la galería.
+- `SectionLabel` arriba (`05 · FICHA TÉCNICA` o el número que corresponda).
+- Grid de 2 columnas, gap 96, padding `120 × 56`:
+  - **Columna izquierda — Tipologías:** lista de items con divider entre cada uno. Cada item:
+    - Nombre tipología (`heading-md`, peso 600).
+    - Datos de la unidad (`label-sm` UPPERCASE muted): `4 AMBIENTES · 112 M² · DISPONIBLE` o `4 AMBIENTES · 113 M² + 9 M² TERRAZA · DISPONIBLE`.
+  - **Columna derecha — Amenities y servicios:** lista vertical sin bullets, cada item `body-sm` ink2 con padding-bottom 12 y border-bottom 1px line. Ejemplos: `Cocheras (se venden por separado)`, `Terrazas verdes`, `Puertas Pentágono`, `Piso radiante`.
+- Si hay datos extra que no encajan (ej. financiación, condiciones especiales): se suman como una tercera fila a sangre con `label-sm` UPPERCASE muted + `body-md`.
+
+### GaleriaAsimetrica
+- Grid CSS con 1 imagen "héroe" grande arriba + 4-6 thumbs abajo.
+- Estructura:
+  - **Toma héroe:** `aspect-ratio: 16/9`, ancho 100% del container.
+  - **Thumbs row:** grid `repeat(4, 1fr)` (o `repeat(6, 1fr)` si hay 6), `aspect-ratio: 4/3`, gap 12.
+- Padding del bloque: `120 × 56`. Gap vertical entre héroe y thumbs: 12.
+- `SectionLabel` arriba, opcional `quote` o body corto a la derecha (ej. `04 · RENDERS DEL PROYECTO`).
+- **Regla de contenido (decisión 3.1.2):**
+  - Si `project.status === 'En Ejecución'` → label de placeholders `render · {nombre} · {detalle}`.
+  - Si `project.status === 'Terminado'` → label de placeholders `foto · {nombre} · {detalle}`.
+  - **Nunca mezclar** los dos tipos en la misma galería.
+- **Lightbox (click en imagen o en "Ver galería completa"):** overlay oscuro `rgba(0,0,0,0.92)` a pantalla completa con:
+  - Placeholder grande centrado (max-width ~900, height ~70vh), label `render · {nombre}` debajo en blanco muted.
+  - Flechas prev/next SVG stroke blanco, posicionadas en los bordes verticales del overlay.
+  - Contador de posición `"3 / 5"` en `label-xs` blanco opacidad 0.6, arriba a la izquierda.
+  - X de cierre en esquina superior derecha — mismo estilo que el modal de PlanosList (40×40, border `rgba(255,255,255,0.2)`).
+  - Click fuera de la imagen (en el overlay) también cierra.
+  - Botón "Ver galería completa" en la grilla → abre lightbox en el índice 0.
+
+### PlanosList
+- Sección dedicada (no es parte de la galería).
+- `SectionLabel` arriba (`05 · PLANTA Y TIPOLOGÍAS`).
+- Grid horizontal con 1 thumb de planta tipo del edificio + 1 thumb por tipología:
+  - **Thumb planta tipo:** ancho doble, `aspect-ratio: 16/10`. Label en cápsula: `planta tipo · piso completo`.
+  - **Thumbs por tipología:** `aspect-ratio: 4/3`, ancho normal. Cada uno con label estructurado:
+    - `label-sm` UPPERCASE muted: tipo de unidad (`TIPOLOGÍA A`, `TIPOLOGÍA B`...).
+    - `heading-xs` ink: m² + ambientes (`112 M² · 4 AMBIENTES`).
+- Click en cualquier thumb → modal con plano alta resolución + datos completos de la tipología.
+- Para Cosquín 1534: 1 planta tipo + 4 tipologías (2×112m², 1×120m², 1×113m²+9m² terraza).
+
+### LocationBlock (ubicación con placeholder de mapa)
+- Grid 2 columnas, gap 48, padding `120 × 56`.
+- **Columna izquierda — Mapa placeholder:**
+  - Placeholder rayado, `aspect-ratio: 4/3`.
+  - Label en cápsula: `mapa · {dirección completa}` (ej. `mapa · cosquín 1534, mataderos`).
+- **Columna derecha — POIs cercanos:**
+  - `SectionLabel` arriba (`07 · UBICACIÓN`).
+  - Dirección completa en `heading-sm` peso 600.
+  - Lista vertical de 4-6 puntos de interés cercanos. Cada item:
+    - `label-sm` UPPERCASE: `5 MIN · ESTACIÓN MATADEROS`, `8 MIN · MERCADO CENTRAL`, `12 MIN · ACCESO RICCHIERI`.
+    - Padding-bottom 12, border-bottom 1px line.
+- Embed real de Google Maps reemplaza al placeholder en alta fidelidad (no en wireframe).
+
+### NextProjectCard (siguiente proyecto a sangre)
+- Bloque casi a pantalla completa al final de la ficha (antes del bloque de contacto).
+- Layout: `position: relative`, altura mínima 600 px, sin padding lateral.
+- **Imagen de fondo:** placeholder rayado (`render` o `foto` según status del *siguiente* proyecto, no del actual).
+- **Overlay:** gradiente `linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.65))`.
+- **Contenido sobre el overlay** (color blanco, padding `80 × 56`):
+  - Arriba a la izquierda: `label-sm` UPPERCASE opacidad 0.8 → `08 · SIGUIENTE PROYECTO`.
+  - Centro: `display-md` peso 700 (Montserrat 64, letterSpacing -0.02em) — nombre del siguiente proyecto.
+  - Línea inmediata bajo el nombre: `label-md` UPPERCASE opacidad 0.85 → `{UBICACIÓN} · {ESTADO}`.
+  - CTA inferior: link con underline blanco, `ui-md` peso 500, copy `Ver proyecto →`.
+- **Lógica de selección del siguiente** (no es UI, es contenido — vive en el data layer):
+  - Si actual = `En Ejecución` → siguiente también `En Ejecución`.
+  - Si actual = `Terminado` → siguiente preferentemente `En Ejecución`.
 
 ---
 
@@ -319,8 +486,15 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 ### Placeholder de avatar
 - Círculo 36×36 con background `line` (#e5e5e5). Sin label.
 
-### Placeholder de planos / mapas (pendiente)
-- Aún no se diseñó — cuando entre la pantalla de Ficha de proyecto, definir si se mantiene el patrón rayado o se introduce una variante (grilla, contornos).
+### Placeholder de mapa
+- Mismo patrón rayado diagonal. Aspect ratio: **4/3**.
+- Label canónico (lowercase con punto medio): `mapa · {dirección}, {barrio}, {ciudad}` — ej: `mapa · cosquín 1534, mataderos, caba`.
+- En alta fidelidad se reemplaza por embed real de Google Maps con styled map neutro.
+
+### Placeholder de plano
+- Mismo patrón rayado diagonal. Dimensiones: **180×128 px en miniatura**, **height 420 en modal**.
+- Label canónico (lowercase con punto medio): `plano · {tipologia} {variante}` — ej: `plano · monoambiente a`, `plano · 2 ambientes b`.
+- En alta fidelidad se reemplaza por la imagen vectorial del plano provista por el cliente.
 
 ### Anotaciones de copy y datos
 
@@ -382,9 +556,11 @@ Reglas:
 
 ## Pendientes / a definir cuando se sumen pantallas nuevas
 
-- [ ] Patrón de **planos** (Ficha de proyecto): definir si se mantiene rayado o se cambia a línea.
-- [ ] Patrón de **mapa** (Ficha de proyecto): placeholder antes de embed real.
-- [ ] **Filtros / tabs** (página Proyectos): definir estados (activo, hover) y separador.
+- [x] ~~Patrón de **planos**~~ — resuelto 8/5/2026 (rayado con label `plano · {tipología}`).
+- [x] ~~Patrón de **mapa**~~ — resuelto 8/5/2026 (rayado con label `mapa · {dirección}`).
+- [x] ~~**Filtros / tabs** (página Proyectos): definir estados (activo, hover) y separador~~ — resuelto 10/5/2026. Tabs horizontales con border-bottom 2px activo (`ink`) / inactivo (transparente). Label `label-sm` UPPERCASE, gap 40. Implementado en `proyectos.html`.
+- [x] ~~**Modal de planos**~~ — resuelto 9/5/2026. Ver `PlanosList` en este archivo y decisión 2.9.
+- [ ] **Lightbox de galería** (GaleriaAsimetrica): documentado en system (spec completo), pendiente de implementación en `ficha-proyecto.html`.
 - [ ] **Grilla mobile** y reglas responsive: se definen en alta fidelidad.
 - [ ] **Iconografía** de pilares: hoy son 4 formas geométricas; cuando entre alta fidelidad, decidir si se reemplazan por iconos de stroke (estilo cartel de obra) o se mantienen.
 - [ ] **Paleta de marca y tipografía definitiva** → `design-system.md` (Montserrat es solo la elección de wireframe).

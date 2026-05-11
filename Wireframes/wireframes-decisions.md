@@ -3,7 +3,7 @@
 > Complemento de [wireframes-system.md](wireframes-system.md).
 > `system` describe **qué hay**; `decisions` describe **por qué está así**.
 > Memoria del proyecto y respaldo cuando alguien pregunta "¿por qué decidieron hacer X?".
-> Última actualización: 7 de mayo 2026
+> Última actualización: 11 de mayo 2026
 
 ---
 
@@ -76,69 +76,125 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 - **Decidido:** los placeholders de imagen usan repeating-linear-gradient diagonal con label en cápsula central.
 - **Por qué:** comunica de inmediato "esto es placeholder, no contenido final" — evita que el cliente confunda el wireframe con un diseño cerrado. La textura es neutra, no compite con la tipografía sans, y se reemplaza limpiamente por renders cuando lleguen.
 
+### 2.8 Iconografía: stroke fino estilo Lucide (monocromático)
+- **Decidido:** se usan iconos de stroke (strokeWidth 1.4) al estilo Lucide para dos contextos: highlights de descripción (quality, comfort, security) y puntos de interés en ubicación (transport, health, education, commerce). Los iconos son inline SVG, color `ink2`, sin relleno.
+- **Por qué:** los iconos de stroke fino encajan con el lenguaje gráfico del cartel de obra (sobrio, geométrico, sin relleno). Comunican el atributo de cada highlight con más precisión que las formas geométricas abstractas que usábamos en Pilares de Home. Se mantiene coherencia mid-fi sin paleta de color — monocromos `ink2`.
+- **Descartado:** íconos rellenos (filled) — demasiado peso visual para wireframe neutro. Íconos de emoji — saltos de tipografía y dependencia del OS.
+
+### 2.9 Planos: acordeón por tipología + modal con descarga
+- **Decidido:** los planos se agrupan por tipología (Monoambiente, 2 ambientes, 3 ambientes…) en acordeón. Solo un grupo abierto a la vez. Click en miniatura abre modal con preview grande (height 420) + botón "Descargar PDF". Cierre del modal: X en esquina superior derecha.
+- **Por qué:** una grilla plana de N planos no escala con proyectos que tienen muchas tipologías. El acordeón por tipología reduce ruido visual y respeta la jerarquía cognitiva del comprador: primero elige cuántos ambientes, después qué unidad. Modal con descarga atiende al comprador serio que quiere imprimir o estudiar el plano offline.
+- **Descartado:** grilla plana horizontal (no escala, no agrupa) · tabs por tipología (overkill para 3-4 grupos) · planos dentro de galería (los entierra para el usuario casual).
+
+### 2.11 Grilla de Proyectos: jerarquía LG/MD con span en 6 columnas
+- **Decidido:** grilla fija de 6 columnas. Cards LG (`span 3`) muestran proyectos En Ejecución — 2 por fila. Cards MD (`span 2`) muestran Terminados — 3 por fila. En el filtro "Todos" los En Ejecución se ordenan siempre primero, formando su propia fila antes que los Terminados.
+- **Por qué:** los proyectos En Ejecución son el producto comercialmente activo — merecen más peso visual. La grilla de 6 cols con span 3 y span 2 permite que LG y MD convivan en la misma grilla sin lógica condicional compleja: los spans encajan naturalmente (3+3=6, 2+2+2=6) sin nunca romper la fila. Alternativas de span 4 rompían filas al combinar 2 LG.
+- **Descartado:** span 4 para LG (2×LG = 8 cols en grilla 6, rompe filas) · columnas full-width (`1/-1`) — cards solitarias apiladas sin jerarquía de contraste.
+
+### 2.10 Footer: fondo oscuro (`ink`)
+- **Decidido:** el footer lleva `background: ink` (casi negro), no `surface` claro como tenía el system original. Texto principal `rgba(255,255,255,0.6)`. Títulos de columna `rgba(255,255,255,0.35)`. Separador inferior `rgba(255,255,255,0.08)`.
+- **Por qué:** cierra la página con peso institucional. Contrasta con el bloque de contacto claro que viene justo antes, reforzando la jerarquía narrativa (la página termina, no se diluye). El footer oscuro también es convención establecida en sitios de real estate premium — el cliente lo asocia con seriedad sin necesidad de explicación.
+- **Descartado:** footer claro (`surface`) — se confunde visualmente con la sección de contacto que lo precede; la página no "cierra".
+
 ---
 
-## 3. Decisiones pendientes
+## 3. Decisiones por pantalla
 
-### 3.1 Hero: Variante A vs B
+> Decisiones específicas por página. Cada subsección se actualiza a medida que se diseña la pantalla.
+
+### 3.1 Ficha de Proyecto (`/proyectos/[slug]`)
+
+> Sesión: 8/5/2026. Proyecto base usado para validar la plantilla: **Cosquín 1534** (es el que tiene más data del cliente — 8 unidades, amenities completos, m² confirmados, En Ejecución → muestra el caso "comprable hoy"). La plantilla debe aguantar también `Av. Larrazábal 1255` (TBD) y `Zelada 6171` (Terminado).
+
+#### 3.1.1 Información clave: layout híbrido
+- **Decidido:** strip horizontal de 4-5 datos primarios bajo el hero (estado, ubicación, entrega, unidades disponibles, m² o % avance) **+** bloque "ficha técnica" más completo después de la descripción para tipologías y amenities.
+- **Por qué:** balance entre escaneo rápido (el inversor decide en 5 segundos si le interesa) y profundidad para quien sí quiere todos los datos. Un solo strip enterraba demasiada info; una sola grilla enterraba el escaneo rápido. El híbrido cubre ambos perfiles sin que ninguno tenga que scrollear de más.
+
+#### 3.1.2 Galería: grid asimétrico, sin mezclar renders y fotos
+- **Decidido:** 1 toma héroe grande + 4-6 thumbs abajo en grid asimétrico. **Regla por estado:**
+  - `En Ejecución` → galería solo con **renders**.
+  - `Terminado` → galería solo con **fotos reales**.
+  - **No se mezclan** dentro de la misma ficha.
+- **Implicancia:** la misma regla aplica al **Hero** (render para En Ejecución, foto para Terminado).
+- **Por qué:** mezclar renders con fotos genera disonancia narrativa — el lector no sabe si lo que ve "ya existe" o "va a existir". Separar por estado deja el rol de cada tipo de imagen claro: los renders venden lo que aún no existe, las fotos prueban lo que ya está. Para "En Ejecución" la prueba de avance se da por otros canales (% avance en strip, fechas claras), no compitiendo con los renders.
+- Click en cualquier imagen → lightbox/modal con el set completo en carrusel.
+
+#### 3.1.3 Planos: lista de thumbs + modal al click
+- **Decidido:** sección dedicada con 1 thumb de planta tipo del edificio + 1 thumb por tipología (con dato corto: m² + ambientes). Click → modal con plano alta resolución + datos completos de la tipología.
+- **Por qué:** visible para quien lo busca (no escondido en acordeón) sin imponerlo a quien no le interesa. Tabs serían overkill con solo 4 tipologías. Para Cosquín (4 tipologías: 2×112m², 1×120m², 1×113m²+9m² terraza) la lista lineal es lo más legible.
+
+#### 3.1.4 Siguiente proyecto: card grande a sangre
+- **Decidido:** bloque casi a pantalla completa al final de la ficha — render/foto grande + nombre + estado + ubicación + CTA `Ver proyecto →`.
+- **Lógica de selección del siguiente:**
+  - Si el usuario vio un proyecto **En Ejecución** → mostrar otro **En Ejecución** (mantener tracción comercial).
+  - Si vio un **Terminado** → empujar a un **En Ejecución** (objetivo: pasar de admiración a interés de compra).
+- **Por qué:** retener al lector que llegó al final sin convertir. Link simple es muy débil; prev/next es utilitario y sirve más para blogs que para portfolio comercial; card grande seduce.
+
+#### 3.1.5 Ubicación: placeholder rayado en wireframe (no Google Maps real)
+- **Decidido:** placeholder rayado con dirección + lista de 4-5 puntos de interés cercanos al costado en formato `label-sm` UPPERCASE (ej: `5 MIN · ESTACIÓN MATADEROS`, `8 MIN · MERCADO CENTRAL`). Embed real entra recién en alta fidelidad.
+- **Por qué:** Google Maps embebido introduce color, branding Google y tipografía propia que rompen el sistema mid-fi neutro. La lista de POI al costado prueba que el bloque tiene sentido (cercanías reales) sin necesidad del mapa real.
+
+---
+
+## 4. Decisiones pendientes
+
+### 4.1 Hero: Variante A vs B (Home)
 - **Pendiente.** A discutir con el cliente en sesión de validación.
 - **A:** full-bleed con render del proyecto destacado + carrusel auto cada 6s. Tono inmersivo, foco en el producto.
 - **B:** split editorial — titular tipográfico izquierda, copy derecha, strip de 3 thumbs abajo. Tono institucional/editorial, da más peso a la marca antes que al proyecto.
 - **Criterio para decidir:** si el cliente prioriza "que vean los proyectos rápido" → A. Si prioriza "que entiendan quién es Rigma" → B.
 
-### 3.2 Navbar: 3 variantes exploradas
+### 4.2 Navbar: 3 variantes exploradas
 - **Pendiente.** Decisión a tomar después de tener todas las pantallas en contexto (Home + Proyectos + Ficha + Nosotros + Contacto). El comportamiento del navbar depende del hero de cada pantalla.
 - **(1)** Transparente sobre hero, vuelve sólido al scrollear.
 - **(2)** Sólida siempre visible.
 - **(3)** Minimal: logo + hamburger.
 
-### 3.3 4to proyecto del cliente
+### 4.3 4to proyecto del cliente
 - **Pendiente.** El cliente todavía no entregó información del 4to proyecto. Mientras, los wireframes muestran 3 reales + filler para los slots restantes en grillas amplias.
-
-### 3.4 Patrón de planos en Ficha de proyecto
-- **Pendiente.** A definir cuando se sume la pantalla — mantener rayado diagonal o cambiar a línea/contorno (más cercano al lenguaje técnico de plano).
-
-### 3.5 Iconografía de pilares
-- **Pendiente.** En el wireframe los pilares de "Por qué Rigma" usan 4 formas geométricas simples (cuadrado, círculo, rombo, cuadrado lleno). En alta fidelidad se decide si se mantienen o se reemplazan por iconos de stroke (estilo cartel de obra: `🚗 cocheras`, `🌳 espacios comunes`, etc.).
 
 ---
 
-## 4. Decisiones rechazadas y por qué
+## 5. Decisiones rechazadas y por qué
 
 > Si proponemos algo que está acá, primero releer la justificación. Si hay datos nuevos que invaliden el rechazo, se reabre la discusión y se mueve la entrada a la sección correspondiente.
 
-### 4.1 Mobile-first — rechazado
+### 5.1 Mobile-first — rechazado
 - **Razón:** ver 2.2. El público evalúa desde desktop, mid-fi mobile no agrega validación estructural, y diseñar las dos en paralelo duplica el costo. Mobile se resuelve en alta fidelidad sobre estructuras ya cerradas.
 
-### 4.2 Filtros multi-eje (estado + barrio + tipología) — rechazado
+### 5.2 Filtros multi-eje (estado + barrio + tipología) — rechazado
 - **Razón:** ver 1.4. El catálogo no tiene volumen para justificar facetas múltiples. El comprador filtra mentalmente por estado primero; el resto se ve en la card. UI más simple, menos código a mantener.
 
-### 4.3 Múltiples variantes por página (3+ por pantalla) — rechazado
+### 5.3 Múltiples variantes por página (3+ por pantalla) — rechazado
 - **Razón:** el sitemap tiene contenido validado — no estamos explorando "qué va en cada página", estamos explorando "cómo se muestra". Múltiples variantes por página dispersan la conversación. La regla quedó: 1 variante por página, salvo Home (donde sí hay decisiones reales de orden + forma de mostrar proyectos → 2 variantes A y B).
 
-### 4.4 Tipografía serif editorial (Instrument Serif) — rechazado
+### 5.4 Tipografía serif editorial (Instrument Serif) — rechazado
 - **Razón:** los wireframes iniciales de Claude Design usaban serif para titulares (estilo editorial). Después de ver el cartel de obra de Rigma — geométrico sans con pesos + tracking en mayúsculas — decidimos que la serif editorial competía con la identidad gráfica que ya tiene la marca en producción. Sans-only acerca el wireframe al territorio actual del cliente sin comprometer la decisión de marca definitiva.
 
-### 4.5 Lorem ipsum genérico + nombres ficticios de proyecto — rechazado
+### 5.5 Lorem ipsum genérico + nombres ficticios de proyecto — rechazado
 - **Razón:** ver 2.3. "Edificio Lacroze · Palermo" desvía la conversación a "ese no es nuestro proyecto". Datos reales (aunque incompletos) acercan al cliente al producto que se va a vender desde el sitio.
 
-### 4.6 Densidad limitada (max 6 bloques por pantalla) — rechazado
+### 5.6 Densidad limitada (max 6 bloques por pantalla) — rechazado
 - **Razón:** anclamos la estructura al sitemap, no a un máximo arbitrario. Si el sitemap exige 7 bloques porque ese es el flujo correcto, el wireframe tiene 7. Lo que regula la cantidad es la decisión de producto, no la regla visual. La regla visual no debería pisar al sitemap.
 
-### 4.7 Métricas ficticias (+20 / 18 / +850 / 4) — rechazado
+### 5.7 Métricas ficticias (+20 / 18 / +850 / 4) — rechazado
 - **Razón:** los wireframes de Claude Design venían con métricas inventadas porque no se había compartido la info real. Hoy tenemos datos del cliente (`+32.000 m²`, `+220 UF`, `+3 generaciones`, `2016`) — usar esos en lugar de los inventados es coherente con la decisión 2.3 de mocks reales.
 
-### 4.8 Familia tipográfica triple (sans + serif + mono) — rechazado
+### 5.8 Familia tipográfica triple (sans + serif + mono) — rechazado
 - **Razón:** los wireframes iniciales usaban Inter + Instrument Serif + JetBrains Mono. Tres familias fragmentan la jerarquía y no matchean al cartel de obra (que es una sola familia con pesos + tracking). Reemplazadas por Montserrat con escala de pesos.
 
 ---
 
-## 5. Histórico de cambios
+## 6. Histórico de cambios
 
 | Fecha       | Quién                | Cambio                                                                                         |
 |-------------|----------------------|------------------------------------------------------------------------------------------------|
 | 2026-05-03  | Claude Design        | Wireframes de Home (variantes A y B) generados con Claude Design. Sistema base: Inter + Instrument Serif + JetBrains Mono. |
 | 2026-05-07  | Luca + Claude Code   | Sumo `wireframes-system.md` y `wireframes-decisions.md` al repo como fuente de verdad de la fase B. |
-| 2026-05-07  | Luca + Claude Code   | Cambio tipografía a sans-only (Montserrat) — alineada al cartel de obra de Rigma. Razón en 2.6 y 4.4. |
-| 2026-05-07  | Luca + Claude Code   | Saco la regla "máx 6 bloques por pantalla" — la estructura la define el sitemap. Razón en 1.3 y 4.6. |
-| 2026-05-07  | Luca + Claude Code   | Datos mock pasan a usar nombres reales de Rigma (`Cosquín 1534`, `Zelada 6171`, `Av. Larrazábal 1255`) y métricas reales. Razón en 2.3 y 4.5/4.7. |
+| 2026-05-07  | Luca + Claude Code   | Cambio tipografía a sans-only (Montserrat) — alineada al cartel de obra de Rigma. Razón en 2.6 y 5.4. |
+| 2026-05-07  | Luca + Claude Code   | Saco la regla "máx 6 bloques por pantalla" — la estructura la define el sitemap. Razón en 1.3 y 5.6. |
+| 2026-05-07  | Luca + Claude Code   | Datos mock pasan a usar nombres reales de Rigma (`Cosquín 1534`, `Zelada 6171`, `Av. Larrazábal 1255`) y métricas reales. Razón en 2.3 y 5.5/5.7. |
+| 2026-05-08  | Luca + Claude Code   | Decisiones de Ficha de Proyecto: layout híbrido info clave, galería asimétrica con regla `render En Ejecución / foto Terminado`, planos como lista + modal, siguiente proyecto card grande, mapa como placeholder. Sección 3.1 nueva. |
+| 2026-05-09  | Luca + Claude Code   | Wireframe `ficha-proyecto.html` generado. Documentadas decisiones 2.8 (iconos stroke), 2.9 (planos en acordeón + modal con X + PDF), 2.10 (footer oscuro). Sumado token `label-2xs` (9px). Componentes PlanosList y LocationBlock documentados en system. Pendiente 4.4 (iconografía pilares) movido a resuelto en 2.8. Labels de placeholder alineados a convención lowercase · punto medio. |
+| 2026-05-10  | Luca + Claude Code   | Wireframe `proyectos.html` generado: PageHeader, FilterTabs, ProyectosGrid con jerarquía LG/MD, EmptyState, ContactSection con formulario. Documentada decisión 2.11 (grilla 6 cols, span 3 LG / span 2 MD). Patrón de form fields actualizado en system: `<input>` / `<select>` / `<textarea>` reales (no `<Placeholder>`). FilterTabs marcado como resuelto en pendientes. |
+| 2026-05-11  | Luca + Claude Code   | Ajustes `proyectos.html`: título "Nuestros proyectos", cards sin año (solo ubicación), ContactSection con formulario centrado idéntico a ficha. Corrección de grilla: spans corregidos a 3/2 en 6 cols para que 2 LG quepan en una fila. Sincronización completa de system y decisions con estado real de wireframes. |
