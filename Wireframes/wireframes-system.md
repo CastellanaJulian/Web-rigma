@@ -202,12 +202,11 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 - Encapsula la identidad del logotipo real (cuadrado con borde + texto partido en dos líneas) como lo muestra la imagen de marca provista por el cliente.
 
 ### NavBar
-- Layout: `space-between` entre logo, nav links, CTA pill.
-- Padding `24 × 56`. Border-bottom `1px line`.
+- Layout: `space-between` entre logo (izquierda) y nav links (derecha). Sin CTA pill.
+- Padding `0 × 56`. Height 64. Border-bottom `1px line`. `position: sticky, top: 0, zIndex: 100`. Background `rgba(255,255,255,0.96)`.
 - **Logo:** componente `<Logo size={40} color={ink} />` (ver sección *Logo* arriba).
-- **Nav links:** `ui-md` (Montserrat 13, peso 500), gap 36px. Estado activo: color `ink`. Resto: `ink2`.
-- **CTA pill:** `label-md` UPPERCASE (Montserrat 12, peso 500, letterSpacing 0.10em), padding `8 × 14`, border 1px line, borderRadius 999. Copy `HABLEMOS →`.
-- **Variante `dark={true}`:** texto blanco, line `rgba(255,255,255,0.15)`, muted `rgba(255,255,255,0.65)`. Misma estructura.
+- **Nav links:** 10px peso 600, tracking 0.12em, UPPERCASE, gap 40. Estado activo: color `ink` + `borderBottom: 1.5px solid ink`. Resto: color `muted`, border transparente.
+- Links: `INICIO · PROYECTOS · NOSOTROS · CONTACTO`. El activo varía según la página.
 
 ### Footer
 - Padding `64 / 56 / 32`. Background `ink` (oscuro). Sin top border — el contraste de fondo ya separa.
@@ -335,6 +334,19 @@ Patrón único para todos los formularios del sitio. **No usar `<Placeholder>` p
 - Pre-seleccionar proyecto solo cuando el formulario es específico de una ficha de proyecto
 
 **Variante inline (Contacto A):** input + botón sobre un mismo `borderBottom` blanco transparente. Sin label, placeholder muteado (`tu@email.com`).
+
+**Variante dark (Contacto Home):** sección con `background: t.ink`, formulario centrado igual que Variante B pero con estilos de campo invertidos:
+
+`fieldStyleDark`:
+```js
+{ width: '100%', padding: '12px 14px', fontSize: 13, fontWeight: 400,
+  color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.18)', borderRadius: 2, appearance: 'none' }
+```
+`labelStyleDark`: 9px peso 700 tracking 0.14em UPPERCASE, color `rgba(255,255,255,0.45)`, marginBottom 8.
+- Botón submit invertido: `background: '#ffffff'`, `color: t.ink`.
+- H2 emocional grande (64px, peso 700, letterSpacing -0.02em, color white).
+- `SectionLabel` con prop `dark={true}` para heredar color blanco.
 
 ### CTA links / botones inline
 - **Link CTA con underline:** `ui-md` peso 500, color `ink`, `borderBottom: 1px ink`, paddingBottom 2. Ej: `Ver proyectos`, `Conocer más →`.

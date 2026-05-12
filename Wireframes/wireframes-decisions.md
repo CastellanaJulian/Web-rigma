@@ -96,6 +96,11 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 - **Por qué:** cierra la página con peso institucional. Contrasta con el bloque de contacto claro que viene justo antes, reforzando la jerarquía narrativa (la página termina, no se diluye). El footer oscuro también es convención establecida en sitios de real estate premium — el cliente lo asocia con seriedad sin necesidad de explicación.
 - **Descartado:** footer claro (`surface`) — se confunde visualmente con la sección de contacto que lo precede; la página no "cierra".
 
+### 2.12 Hero: Variante A full bleed (Inicio)
+- **Decidido:** hero a viewport completo (`100vh`) con placeholder rayado de fondo, overlay gradiente `180deg` opaco abajo y transparente al centro, contenido anclado al borde inferior. Carrusel indicator con 4 segmentos (activo 32×2, inactivos 8×2) + label `AUTO · 6S`.
+- **Por qué:** el render del proyecto destacado ocupa toda la pantalla desde el primer scroll, comunicando inmediatamente el producto. El overlay bottom-to-top garantiza legibilidad del titular sin oscurecer la imagen. El carrusel indicator insinúa interactividad futura sin requerir JS complejo en el wireframe.
+- **Descartado:** Variante B (split editorial) — más institucional pero ralentiza la llegada al producto; puede ser útil en versión "Nosotros" pero no en Home comercial.
+
 ---
 
 ## 3. Decisiones por pantalla
@@ -133,6 +138,28 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 #### 3.1.5 Ubicación: placeholder rayado en wireframe (no Google Maps real)
 - **Decidido:** placeholder rayado con dirección + lista de 4-5 puntos de interés cercanos al costado en formato `label-sm` UPPERCASE (ej: `5 MIN · ESTACIÓN MATADEROS`, `8 MIN · MERCADO CENTRAL`). Embed real entra recién en alta fidelidad.
 - **Por qué:** Google Maps embebido introduce color, branding Google y tipografía propia que rompen el sistema mid-fi neutro. La lista de POI al costado prueba que el bloque tiene sentido (cercanías reales) sin necesidad del mapa real.
+
+### 3.2 Inicio (`/`)
+
+> Sesión: 11/5/2026.
+
+#### 3.2.1 Hero: Variante A full bleed
+- **Decidido:** ver decisión 2.12.
+
+#### 3.2.2 Proyectos destacados: solo los 2 En Ejecución
+- **Decidido:** mostrar únicamente los proyectos con `status === 'En Ejecución'` (Cosquín 1534 + Av. Larrazábal 1255) en la sección de destacados. Dos cards LG (span 3) en grilla de 6 cols.
+- **Por qué:** los proyectos en ejecución son los comercialmente relevantes — son los que se pueden comprar ahora. Mostrar Zelada 6171 (Terminado) en Home no suma valor de venta y distrae del CTA principal. Los terminados se ven en la página Proyectos.
+
+#### 3.2.3 Sección Nosotros: copy + stats a la derecha
+- **Decidido:** grid `1.2fr 1fr` — columna izquierda con copy real del cliente (historia) + CTA, columna derecha con Stats Block 2×2 (métricas reales: +32.000 m², +220 UF, +3 generaciones, 2016).
+- **Por qué:** las métricas dan credibilidad inmediata cuando el lector llega al bloque "Nosotros". Ponerlas al costado del copy (no debajo) permite escanear ambos en paralelo sin sacrificar el ritmo de lectura del texto.
+
+#### 3.2.4 Por qué elegirnos: Variante A — 4 cols claro con marcas geométricas
+- **Decidido:** 4 columnas sobre fondo `surface`, cada pilar con marca geométrica (cuadrado / círculo / rombo / cuadrado lleno) 32×32 + título 24px + descripción. Background `surface` diferencia la sección del bloque `bg` contiguo sin recurrir a oscuro.
+
+#### 3.2.5 Contacto: dark + formulario (sin WhatsApp)
+- **Decidido:** sección con `background: t.ink`, H2 emocional 64px, formulario centrado con `fieldStyleDark`. WhatsApp se evalúa como botón flotante global — no se suma a esta sección por ahora.
+- **Por qué:** la sección oscura cierra el scroll con peso emocional antes del footer (que también es dark — dos bloques oscuros seguidos, pero el formulario los diferencia visualmente). El botón flotante de WhatsApp serviría a todas las páginas sin repetir el CTA aquí.
 
 ---
 
@@ -198,3 +225,4 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 | 2026-05-09  | Luca + Claude Code   | Wireframe `ficha-proyecto.html` generado. Documentadas decisiones 2.8 (iconos stroke), 2.9 (planos en acordeón + modal con X + PDF), 2.10 (footer oscuro). Sumado token `label-2xs` (9px). Componentes PlanosList y LocationBlock documentados en system. Pendiente 4.4 (iconografía pilares) movido a resuelto en 2.8. Labels de placeholder alineados a convención lowercase · punto medio. |
 | 2026-05-10  | Luca + Claude Code   | Wireframe `proyectos.html` generado: PageHeader, FilterTabs, ProyectosGrid con jerarquía LG/MD, EmptyState, ContactSection con formulario. Documentada decisión 2.11 (grilla 6 cols, span 3 LG / span 2 MD). Patrón de form fields actualizado en system: `<input>` / `<select>` / `<textarea>` reales (no `<Placeholder>`). FilterTabs marcado como resuelto en pendientes. |
 | 2026-05-11  | Luca + Claude Code   | Ajustes `proyectos.html`: título "Nuestros proyectos", cards sin año (solo ubicación), ContactSection con formulario centrado idéntico a ficha. Corrección de grilla: spans corregidos a 3/2 en 6 cols para que 2 LG quepan en una fila. Sincronización completa de system y decisions con estado real de wireframes. |
+| 2026-05-11  | Luca + Claude Code   | Wireframe `inicio.html` generado. Hero Variante A full bleed, sección Nosotros con Stats Block real, Por qué elegirnos 4 cols (Variante A), Testimonios con copy plausible, Contacto dark + formulario. Decisiones 2.12 y 3.2 documentadas. Agregado patrón `fieldStyleDark` / `labelStyleDark` en system para formularios sobre fondo oscuro. |
