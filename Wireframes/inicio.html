@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio — Wireframe · Rigma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f0f0f0;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 1440px; margin: 0 auto; background: #ffffff; box-shadow: 0 0 60px rgba(0,0,0,0.12); }
+    input, textarea, select {
+      font-family: 'Montserrat', sans-serif;
+      outline: none;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus, select:focus { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // ── DESIGN TOKENS ─────────────────────────────────────────────────
+    const t = {
+      bg:       '#ffffff',
+      ink:      '#171717',
+      ink2:     '#404040',
+      muted:    '#737373',
+      line:     '#e5e5e5',
+      line2:    '#d4d4d4',
+      surface:  '#fafafa',
+      surface2: '#f5f5f5',
+    };
+
+    // ── PROYECTOS (datos canónicos — fuente: CLAUDE.md + wireframes-system.md)
+    const ALL_PROJECTS = [
+      {
+        id:     'cosquin',
+        name:   'Cosquín 1534',
+        loc:    'Mataderos',
+        status: 'En Ejecución',
+        label:  'render · cosquín 1534',
+      },
+      {
+        id:     'larrazabal',
+        name:   'Av. Larrazábal 1255',
+        loc:    'Mataderos',
+        status: 'En Ejecución',
+        label:  'render · av. larrazábal 1255',
+      },
+      {
+        id:     'zelada',
+        name:   'Zelada 6171',
+        loc:    'Mataderos',
+        status: 'Terminado',
+        label:  'foto · zelada 6171',
+      },
+    ];
+
+    // ── PLACEHOLDER (striped) ─────────────────────────────────────────
+    function Placeholder({ label, style = {} }) {
+      return (
+        <div style={{
+          background: `repeating-linear-gradient(135deg, ${t.surface2} 0 14px, ${t.line2} 14px 15px)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', overflow: 'hidden',
+          ...style,
+        }}>
+          {label && (
+            <span style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: 10, fontWeight: 600,
+              letterSpacing: '0.04em',
+              color: t.muted,
+              background: 'rgba(255,255,255,0.82)',
+              padding: '5px 12px', borderRadius: 2,
+              textAlign: 'center', maxWidth: '80%',
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // ── SECTION LABEL ─────────────────────────────────────────────────
+    function SectionLabel({ children, dark = false }) {
+      const color = dark ? 'rgba(255,255,255,0.45)' : t.muted;
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase', color,
+          marginBottom: 36,
+        }}>
+          <span style={{ width: 20, height: 1, background: color, flexShrink: 0 }} />
+          {children}
+        </div>
+      );
+    }
+
+    // ── STATUS PILL ───────────────────────────────────────────────────
+    function StatusPill({ status, dark = false }) {
+      return (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '5px 12px',
+          border: dark ? '1px solid rgba(255,255,255,0.35)' : `1px solid ${t.line2}`,
+          background: dark ? 'rgba(255,255,255,0.12)' : t.surface,
+          color: dark ? '#ffffff' : t.ink2,
+          borderRadius: 2,
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: dark ? 'rgba(255,255,255,0.75)' : t.muted,
+            flexShrink: 0,
+          }} />
+          {status}
+        </span>
+      );
+    }
+
+    // ── LOGO ──────────────────────────────────────────────────────────
+    function Logo({ size = 40, color = t.ink }) {
+      const border   = Math.round(size * 0.055);
+      const fontSize = Math.round(size * 0.4);
+      const pad      = Math.round(size * 0.1);
+      return (
+        <div style={{
+          width: size, height: size, flexShrink: 0,
+          border: `${border}px solid ${color}`,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: `0 ${pad}px`, lineHeight: 1.05,
+        }}>
+          <div style={{ fontSize, fontWeight: 500, letterSpacing: '-0.01em', color, fontFamily: "'Montserrat', sans-serif" }}>RIG</div>
+          <div style={{ fontSize, fontWeight: 500, letterSpacing: '-0.01em', color, fontFamily: "'Montserrat', sans-serif" }}>MA</div>
+        </div>
+      );
+    }
+
+    // ── NAVBAR ────────────────────────────────────────────────────────
+    function NavBar() {
+      return (
+        <nav style={{
+          position: 'sticky', top: 0, zIndex: 100,
+          height: 64, background: 'rgba(255,255,255,0.96)',
+          borderBottom: `1px solid ${t.line}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 56px',
+        }}>
+          <Logo size={40} color={t.ink} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+            {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
+              <span key={link} style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: link === 'INICIO' ? t.ink : t.muted,
+                cursor: 'pointer',
+                borderBottom: link === 'INICIO' ? `1.5px solid ${t.ink}` : '1.5px solid transparent',
+                paddingBottom: 3,
+              }}>
+                {link}
+              </span>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ── PROJECT CARD ──────────────────────────────────────────────────
+    function ProjectCard({ project }) {
+      const pillLabel = project.status === 'En Ejecución' ? 'EN EJECUCIÓN' : 'TERMINADO';
+      return (
+        <div style={{
+          position: 'relative', cursor: 'pointer', overflow: 'hidden',
+          gridColumn: 'span 3', height: 400,
+        }}>
+          <Placeholder label={project.label} style={{ position: 'absolute', inset: 0 }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(23,23,23,0.80) 0%, rgba(23,23,23,0.15) 55%, transparent 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '0 48px 36px',
+          }}>
+            <div style={{ marginBottom: 14 }}>
+              <StatusPill status={pillLabel} dark />
+            </div>
+            <h3 style={{
+              fontSize: 40, fontWeight: 700, letterSpacing: '-0.01em',
+              textTransform: 'uppercase', color: '#ffffff',
+              lineHeight: 1, marginBottom: 8,
+            }}>
+              {project.name}
+            </h3>
+            <p style={{
+              fontSize: 11, fontWeight: 400, letterSpacing: '0.08em',
+              textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)',
+              marginBottom: 20,
+            }}>
+              {project.loc}
+            </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: '#ffffff',
+              borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: 2,
+            }}>
+              VER PROYECTO →
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── HERO (Variante A — full bleed) ────────────────────────────────
+    function Hero() {
+      return (
+        <section style={{
+          height: '100vh', minHeight: 580,
+          position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Render placeholder fondo */}
+          <Placeholder
+            label="render · cosquín 1534"
+            style={{ position: 'absolute', inset: 0 }}
+          />
+
+          {/* Overlay gradiente */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.72) 100%)',
+          }} />
+
+          {/* Contenido — anclado al fondo */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '0 56px 72px',
+          }}>
+            {/* Kicker */}
+            <div style={{
+              fontSize: 10, fontWeight: 500, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)',
+              marginBottom: 24,
+            }}>
+              — RIGMA GROUP
+            </div>
+
+            {/* Titular principal */}
+            <h1 style={{
+              fontSize: 88, fontWeight: 700, letterSpacing: '-0.025em',
+              color: '#ffffff', lineHeight: 0.95,
+              marginBottom: 24, maxWidth: 800,
+            }}>
+              Construimos lugares<br />donde quedarse.
+            </h1>
+
+            {/* Bajada */}
+            <p style={{
+              fontSize: 15, fontWeight: 300, lineHeight: 1.7,
+              color: 'rgba(255,255,255,0.75)',
+              maxWidth: 520, marginBottom: 40,
+            }}>
+              Espacios multifuncionales con diseño, funcionalidad y calidad
+              en cada detalle. Tres generaciones construyendo en Buenos Aires.
+            </p>
+
+            {/* Fila inferior: CTA + carrusel indicator */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{
+                fontSize: 11, fontWeight: 700, letterSpacing: '0.12em',
+                textTransform: 'uppercase', color: t.ink,
+                background: '#ffffff', padding: '12px 24px',
+                borderRadius: 2, cursor: 'pointer',
+              }}>
+                VER PROYECTOS →
+              </div>
+
+              {/* Carrusel indicator */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end' }}>
+                  {[true, false, false, false].map((active, i) => (
+                    <div key={i} style={{
+                      width: active ? 32 : 8,
+                      height: 2,
+                      background: active ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                    }} />
+                  ))}
+                </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 500, letterSpacing: '0.10em',
+                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)',
+                }}>
+                  AUTO · 6S
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── PROYECTOS DESTACADOS ──────────────────────────────────────────
+    function ProyectosDestacados() {
+      const featured = ALL_PROJECTS.filter(p => p.status === 'En Ejecución');
+      return (
+        <section style={{ padding: '96px 56px' }}>
+          {/* Header row */}
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'flex-end', marginBottom: 48,
+          }}>
+            <div>
+              <SectionLabel>Proyectos destacados</SectionLabel>
+              <h2 style={{
+                fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em',
+                color: t.ink, lineHeight: 1,
+              }}>
+                Lo que construimos
+              </h2>
+            </div>
+            <div style={{
+              fontSize: 13, fontWeight: 500, color: t.ink2,
+              borderBottom: `1px solid ${t.line2}`, paddingBottom: 2, cursor: 'pointer',
+            }}>
+              Ver todos los proyectos →
+            </div>
+          </div>
+
+          {/* Grilla: 2 LG en 6 cols */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(6, 1fr)',
+            gap: 16,
+          }}>
+            {featured.map(p => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    // ── NOSOTROS ──────────────────────────────────────────────────────
+    function NosotrosSection() {
+      const stats = [
+        { num: '+32.000', label: 'M² Construidos' },
+        { num: '+15',     label: 'Proyectos Desarrollados' },
+      ];
+      return (
+        <section style={{
+          padding: '120px 56px',
+          borderTop: `1px solid ${t.line}`,
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'stretch' }}>
+          <div>
+            <SectionLabel>Nosotros</SectionLabel>
+            <h2 style={{
+              fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em',
+              color: t.ink, lineHeight: 1.2, marginBottom: 28,
+            }}>
+              Una constructora familiar con tres generaciones de trayectoria.
+            </h2>
+            <p style={{
+              fontSize: 16, fontWeight: 400, lineHeight: 1.75,
+              color: t.ink2, marginBottom: 20,
+            }}>
+              Somos una empresa constructora familiar con una sólida trayectoria que se remonta a tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma de trabajo basada en la responsabilidad, el compromiso y la mejora continua.
+            </p>
+            <p style={{
+              fontSize: 16, fontWeight: 400, lineHeight: 1.75,
+              color: t.ink2, marginBottom: 48,
+            }}>
+              Nos especializamos en el desarrollo de espacios multifuncionales, pensados para optimizar el uso, la flexibilidad y el confort en cada proyecto. Nos diferenciamos por priorizar la calidad en cada etapa, desde el diseño hasta la ejecución.
+            </p>
+
+            {/* Stats integradas */}
+            <div style={{
+              display: 'flex', gap: 0,
+              borderTop: `1px solid ${t.line}`,
+              marginBottom: 48,
+            }}>
+              {stats.map((s, i) => (
+                <div key={i} style={{
+                  padding: '32px 48px 32px 0',
+                  paddingLeft: i > 0 ? 48 : 0,
+                  borderLeft: i > 0 ? `1px solid ${t.line}` : 'none',
+                  marginLeft: i > 0 ? 48 : 0,
+                }}>
+                  <div style={{
+                    fontSize: 64, fontWeight: 700, letterSpacing: '-0.02em',
+                    color: t.ink, lineHeight: 1,
+                  }}>
+                    {s.num}
+                  </div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 500, letterSpacing: '0.10em',
+                    textTransform: 'uppercase', color: t.muted, marginTop: 10,
+                  }}>
+                    {s.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{
+              fontSize: 13, fontWeight: 500, color: t.ink,
+              borderBottom: `1px solid ${t.ink}`,
+              paddingBottom: 2, cursor: 'pointer', display: 'inline',
+            }}>
+              Conocer más sobre Rigma →
+            </div>
+          </div>
+
+          {/* Columna derecha — Imagen */}
+          <Placeholder
+            label="foto · equipo / obra / empresa"
+            style={{ width: '100%', height: '100%', minHeight: 400 }}
+          />
+          </div>
+        </section>
+      );
+    }
+
+    // ── POR QUÉ ELEGIRNOS (Variante A — 4 cols claro) ─────────────────
+    function PorQueSection() {
+      const pilares = [
+        {
+          titulo: 'Calidad constructiva',
+          desc:   'Cuidamos cada detalle, desde el diseño hasta la elección de los materiales.',
+        },
+        {
+          titulo: 'Compromiso y entrega',
+          desc:   'Cumplimos los plazos y mantenemos al cliente informado en cada etapa.',
+        },
+        {
+          titulo: 'Tradición familiar',
+          desc:   'Tres generaciones de experiencia avalan cada decisión que tomamos.',
+        },
+        {
+          titulo: 'Espacios funcionales',
+          desc:   'Diseñamos pensando en cómo vas a vivir el espacio, no solo en cómo se ve.',
+        },
+      ];
+
+      return (
+        <section style={{
+          padding: '120px 56px',
+          background: t.surface,
+          borderTop: `1px solid ${t.line}`,
+        }}>
+          <SectionLabel>Por qué elegirnos</SectionLabel>
+          <h2 style={{
+            fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em',
+            color: t.ink, lineHeight: 1, marginBottom: 72, maxWidth: 480,
+          }}>
+            Lo que nos diferencia.
+          </h2>
+
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 32, paddingTop: 0,
+          }}>
+            {pilares.map((p, i) => (
+              <div key={i}>
+                {/* Punto relleno */}
+                <div style={{
+                  width: 12, height: 12, borderRadius: '50%',
+                  background: t.ink, marginBottom: 28,
+                }} />
+                <h3 style={{
+                  fontSize: 24, fontWeight: 700, letterSpacing: '-0.005em',
+                  color: t.ink, lineHeight: 1.1, marginBottom: 12,
+                }}>
+                  {p.titulo}
+                </h3>
+                <p style={{
+                  fontSize: 14, fontWeight: 400, lineHeight: 1.6, color: t.ink2,
+                }}>
+                  {p.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    // ── CONTACTO (dark + formulario) ──────────────────────────────────
+    function ContactoSection() {
+      const fieldStyleDark = {
+        width: '100%', padding: '12px 14px',
+        fontSize: 13, fontWeight: 400,
+        color: 'rgba(255,255,255,0.85)',
+        background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        borderRadius: 2, appearance: 'none',
+      };
+      const labelStyleDark = {
+        display: 'block', fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.14em', textTransform: 'uppercase',
+        color: 'rgba(255,255,255,0.45)', marginBottom: 8,
+      };
+      return (
+        <section style={{
+          background: t.ink, padding: '120px 56px',
+        }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
+            <SectionLabel dark>Contacto</SectionLabel>
+            <h2 style={{
+              fontSize: 64, fontWeight: 700, letterSpacing: '-0.02em',
+              color: '#ffffff', lineHeight: 1, marginBottom: 56,
+            }}>
+              Encontrá tu próxima inversión.
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {/* Nombre + Celular en fila */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyleDark}>Nombre completo</label>
+                  <input type="text" placeholder="Ej: María González" style={fieldStyleDark} readOnly />
+                </div>
+                <div>
+                  <label style={labelStyleDark}>Celular</label>
+                  <input type="text" placeholder="+54 11 ···· ····" style={fieldStyleDark} readOnly />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label style={labelStyleDark}>Email</label>
+                <input type="email" placeholder="nombre@email.com" style={fieldStyleDark} readOnly />
+              </div>
+
+              {/* Proyecto de interés */}
+              <div>
+                <label style={labelStyleDark}>Proyecto de interés</label>
+                <select style={{ ...fieldStyleDark, color: 'rgba(255,255,255,0.85)' }} defaultValue="">
+                  <option value="" disabled style={{ background: '#2a2a2a' }}>Seleccioná un proyecto</option>
+                  <option value="Cosquín 1534" style={{ background: '#2a2a2a' }}>Cosquín 1534</option>
+                  <option value="Av. Larrazábal 1255" style={{ background: '#2a2a2a' }}>Av. Larrazábal 1255</option>
+                  <option value="Zelada 6171" style={{ background: '#2a2a2a' }}>Zelada 6171</option>
+                  <option value="otro" style={{ background: '#2a2a2a' }}>Otro / No sé aún</option>
+                </select>
+              </div>
+
+              {/* Mensaje */}
+              <div>
+                <label style={labelStyleDark}>Mensaje</label>
+                <textarea
+                  placeholder="Contanos qué información necesitás..."
+                  rows={4}
+                  style={{ ...fieldStyleDark, resize: 'vertical' }}
+                  readOnly
+                />
+              </div>
+
+              {/* Submit */}
+              <button style={{
+                width: '100%', padding: '16px',
+                fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                background: '#ffffff', color: t.ink,
+                border: 'none', cursor: 'pointer', borderRadius: 2,
+                marginTop: 8,
+                fontFamily: "'Montserrat', sans-serif",
+              }}>
+                ENVIAR CONSULTA
+              </button>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── FOOTER ────────────────────────────────────────────────────────
+    function Footer() {
+      return (
+        <footer style={{ background: t.ink, padding: '56px 56px 40px' }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1fr',
+            gap: 48, marginBottom: 48,
+          }}>
+            <div>
+              <div style={{ marginBottom: 20 }}>
+                <Logo size={44} color="rgba(255,255,255,0.85)" />
+              </div>
+              <div style={{
+                fontSize: 12, fontWeight: 300, lineHeight: 1.9,
+                color: 'rgba(255,255,255,0.5)',
+              }}>
+                Guardia Nacional 739, PB<br />
+                Ciudad de Buenos Aires
+              </div>
+            </div>
+            <div>
+              <div style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
+                textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 20,
+              }}>
+                Proyectos
+              </div>
+              {['Cosquín 1534', 'Av. Larrazábal 1255', 'Zelada 6171'].map(p => (
+                <div key={p} style={{
+                  fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.6)',
+                  marginBottom: 10, cursor: 'pointer',
+                }}>
+                  {p}
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
+                textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 20,
+              }}>
+                Empresa
+              </div>
+              {['Inicio', 'Nosotros', 'Proyectos', 'Contacto'].map(l => (
+                <div key={l} style={{
+                  fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.6)',
+                  marginBottom: 10, cursor: 'pointer',
+                }}>
+                  {l}
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
+                textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 20,
+              }}>
+                Contacto
+              </div>
+              <div style={{
+                fontSize: 12, fontWeight: 300, lineHeight: 2,
+                color: 'rgba(255,255,255,0.6)', marginBottom: 16,
+              }}>
+                Rigmagrupo@gmail.com
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 1.89.526 3.657 1.44 5.163L2 22l4.98-1.418A9.954 9.954 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1.45 5.5c-.18-.45-.37-.46-.54-.47-.14-.01-.3-.01-.46-.01-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.67 2.66 4.1 3.63.57.22 1.02.35 1.37.45.57.18 1.1.15 1.51.09.46-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.015-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78z" fill="rgba(255,255,255,0.5)"/>
+                </svg>
+                <span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.6)' }}>
+                  WhatsApp
+                </span>
+              </div>
+            </div>
+          </div>
+          <div style={{
+            paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)',
+            fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.25)',
+            letterSpacing: '0.06em',
+          }}>
+            © 2026 Rigma Group · Todos los derechos reservados
+          </div>
+        </footer>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────────────────────
+    function App() {
+      return (
+        <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
+          <NavBar />
+          <Hero />
+          <ProyectosDestacados />
+          <NosotrosSection />
+          <PorQueSection />
+          <ContactoSection />
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
