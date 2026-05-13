@@ -101,7 +101,7 @@ Todos los valores en px (ancho base 1440). Una sola familia: **Montserrat**.
 ### Jerarquía por pantalla
 
 ```
-Kicker de sección  →  label-sm UPPERCASE  ("01 ─ PROYECTOS", peso 500, tracking 0.12em)
+Kicker de sección  →  SectionLabel UPPERCASE  ("PROYECTOS", 10px peso 600, tracking 0.2em) — sin número
 Título de bloque   →  display-sm o display-md  (peso 700, tracking negativo)
 Body / bajada      →  body-md  (peso 400)
 Items / labels     →  ui-md  (peso 500)
@@ -124,8 +124,10 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 |---------------------------------------|----------------------------------|
 | Sección estándar (vertical)           | 120 px arriba y abajo            |
 | Sección emocional (Contacto A)        | 160 px arriba y abajo            |
+| PageHeader (primera sección de página)| 80 px top · 56 px sides · 64 px bottom |
+| Sección que sigue a PageHeader        | 48 px top · 120 px bottom (o estándar) |
 | Sección hero split (HeroB)            | 80 px top, 0 bottom              |
-| Hero overlay (HeroA, dark)            | 40 px (interno del overlay)      |
+| Hero overlay (HeroA, dark)            | 96 px bottom (contenido anclado) |
 | Padding horizontal de página          | **56 px** constante              |
 | Navbar                                | 24 px vertical · 56 px horizontal|
 | Footer                                | 64 top · 56 horiz · 32 bottom    |
@@ -216,18 +218,34 @@ Escala base alineada a múltiplos de 4 (compatible con Tailwind default).
 - **Bottom row:** `1px solid rgba(255,255,255,0.08)` + span `label-xs` UPPERCASE: `© 2026 RIGMA GROUP · TODOS LOS DERECHOS RESERVADOS`.
 - Íconos de contacto (WhatsApp): SVG stroke fino monocromático, color `rgba(255,255,255,0.5)`.
 
-### SectionLabel (numeración editorial)
-- Layout horizontal: `[01] ─ KICKER`.
-- `label-sm` UPPERCASE (Montserrat 11, peso 500, letterSpacing 0.12em), color `muted`.
-- Separador: rect 24×1 color `line2`.
-- En sección oscura: wrap en `<div style={{ color: 'rgba(255,255,255,0.7)' }}>` para heredar transparencia.
-- Prop `align`: `left` (default) o `center`.
+### SectionLabel
+- Layout horizontal: línea 20×1 + texto kicker.
+- `label-sm` UPPERCASE (Montserrat 10, peso 600, letterSpacing 0.2em), color `muted`.
+- Separador: `<span style={{ width: 20, height: 1, background: color }}>` — usa el mismo `color` que el texto.
+- `marginBottom: 36`.
+- Prop `dark`: cambia color a `rgba(255,255,255,0.45)` para secciones sobre fondo `ink`.
+- **Sin numeración** — el label es solo el nombre de la sección ("Historia", "Proyectos", etc.), no "01 — Historia". La numeración editorial era una exploración inicial descartada.
 
 ### ContactCTA / Bloque de contacto
 - Dos variantes definidas:
   - **Variante A — emocional:** sección oscura, display-xl, input subrayado simple, fila inferior con datos de contacto.
   - **Variante B — formulario completo (implementada en Ficha y Proyectos):** columna centrada `maxWidth: 640`, SectionLabel + h2 (fontSize 30, peso 700), seguido del formulario completo. Ver sección *Form fields* para el detalle de campos y estilos.
 - En ambas, el footer se mantiene como sección separada después.
+
+### ContactPage — layout split con imagen a sangre (`/contacto`)
+Layout exclusivo de la página dedicada de Contacto. No confundir con `ContactCTA` (componente reutilizable en otras páginas).
+
+- **Grid:** `1fr 1fr`, `gap: 0`, `alignItems: 'stretch'`, `minHeight: calc(100vh - 65px)`. Sin padding lateral en la sección — se maneja por columna.
+- **Columna izquierda:** `padding: 48px 64px 48px 56px`, `display: flex`, `flexDirection: column`.
+  - H1 44px, peso 700, letterSpacing -0.02em, marginBottom 10.
+  - Subtítulo 14px, peso 300, lineHeight 1.6, marginBottom 24.
+  - Formulario: `flex column`, `gap: 14`. Campos: Nombre + Celular (grid 1fr 1fr, gap 12) / Email / Proyecto (select) / Mensaje (2 filas).
+  - Botón submit: `padding: 14px 24px`, auto width, `bg: ink`, `color: white`, `borderRadius: 2`, copy `ENVIAR CONSULTA →`. Mismo componente visual que VER PROYECTOS en hero.
+  - Canales de contacto: `marginTop: 24`, `paddingTop: 20`, `borderTop: 1px line`, `grid repeat(3, 1fr)`, `gap: 24`. Cada canal: icono SVG 20px + label uppercase 9px + valor 12px 500 `ink2`.
+  - **⚠️ No usar `flex: 1`** en el contenedor del formulario — hace que el form se infle al `minHeight` del viewport y empuja los canales fuera del primer vistazo.
+- **Columna derecha:** placeholder rayado `height: 100%`, `minHeight: 600`. Label: `foto · equipo / obra / empresa`. Sin padding. Sangra hasta el borde derecho del contenedor.
+- **Canales implementados:** WhatsApp (`+54 11 6596 2401`) · Email (`Rigmagrupo@gmail.com`) · Oficina (`Guardia Nacional 739, PB · CABA`).
+- Sin SectionLabel en la columna izquierda — el contexto lo da el navbar activo + H1.
 
 ---
 
@@ -322,7 +340,7 @@ Patrón único para todos los formularios del sitio. **No usar `<Placeholder>` p
 - **Input email:** `<input type="email" placeholder="nombre@email.com" style={fieldStyle} readOnly />`
 - **Select:** `<select style={{ ...fieldStyle, color: t.ink }}>` con primera `<option disabled>` como placeholder
 - **Textarea:** `<textarea rows={4} style={{ ...fieldStyle, resize: 'vertical' }} readOnly />`
-- **Submit:** `width: 100%`, padding `16px`, Montserrat 11px peso 700 letterSpacing 0.14em UPPERCASE, bg `ink`, color blanco, borderRadius 2, marginTop 8. Copy: `ENVIAR CONSULTA`
+- **Submit:** `width: 100%`, padding `14px 24px`, Montserrat 11px peso 700 letterSpacing 0.14em UPPERCASE, bg `ink`, color blanco, borderRadius 2, marginTop 8. Copy: `ENVIAR CONSULTA` (sin flecha — la flecha `→` se reserva para CTAs de navegación).
 
 **Layout del bloque de contacto con formulario:**
 - Sección: `padding: 96px 56px`, borderTop `1px line`

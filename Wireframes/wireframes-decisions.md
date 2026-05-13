@@ -163,6 +163,74 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 
 ---
 
+### 3.3 Nosotros (`/nosotros`)
+
+> Sesión: 12/5/2026.
+
+#### 3.3.0 Estructura de la página (versión final)
+- **Decidido:** PageHeader tipográfico → Historia + Métricas fusionadas → Equipo (4 cards) → Filosofía (dark, imagen + 3 pilares) → Redirección (doble CTA claro) → Footer.
+- **Ritmo de fondos:** claro (header/historia/equipo) → oscuro (pilares) → claro (redirección) → oscuro (footer). No hay dos secciones oscuras consecutivas.
+- **SectionLabels sin numeración** — alineado a `proyectos.html` e `inicio.html`, donde el label es solo el nombre de la sección ("Historia", "Equipo", etc.).
+
+#### 3.3.1 PageHeader: tipográfico sin imagen, sin borderBottom
+- **Decidido:** SectionLabel "Nosotros" + H1 56px "Tres generaciones. / Una forma de construir." + subtítulo 300. `padding: 80px 56px 64px` (64px inferior, igual que `/proyectos`). Sin `borderBottom`.
+- **Por qué:** la foto institucional entra en Historia (inmediatamente debajo). Sin `borderBottom` el PageHeader y la Historia fluyen como un solo bloque introductorio. El `padding-bottom: 64px` del header + `padding-top: 48px` de Historia da 112px de separación — igual que en `/proyectos`.
+- **Descartado:** split hero con imagen (demasiado parecido a Contacto), full bleed (pierde legibilidad del subtítulo).
+
+#### 3.3.2 Historia + Métricas: banner + 2 columnas
+- **Decidido:** imagen banner `aspectRatio: 16/6` a ancho completo arriba. Debajo: grid `1fr 1fr`, gap 80. Columna izquierda: 2 párrafos condensados del copy confirmado (sin CTA). Columna derecha: 2 métricas apiladas con separador (`+32.000 m²` y `+220 UF`).
+- **Por qué:** la imagen a ancho completo da impacto visual inmediato sin romper el ritmo de lectura. Las 2 columnas debajo equilibran texto e indicadores numéricos a la misma altura — el lector puede leer o escanear en paralelo. Se eligieron las 2 métricas de mayor peso concreto (+32.000 m² y +220 UF); las otras 2 (+3 generaciones y 2016) ya están presentes en el H1 y el subtítulo del PageHeader.
+- **Descartado:** split texto/imagen lateral (primera versión) — la imagen portrait 4/5 no daba suficiente aire al texto de 3 párrafos. Sección de métricas separada (segunda versión) — fragmentaba innecesariamente el bloque de historia.
+
+#### 3.3.3 Equipo: 4 cards portrait 3/4
+- **Decidido:** 4 cards en grilla `repeat(4, 1fr)`, gap 32. Cada card: placeholder portrait `aspectRatio: 3/4` + "Nombre Apellido" + rol genérico plausible.
+- **Por qué:** el wireframe necesita mostrar el bloque para que el cliente lo apruebe o descarte. Los roles son plausibles para una constructora familiar pero no comprometen personas reales.
+- **Nota:** el cliente confirmó que el equipo tiene 5 integrantes. Durante la iteración se probó `repeat(5, 1fr)` con fotos `1:1`, pero se descartó porque el portrait 3/4 es más apropiado para presentaciones de personas. Se mantienen 4 cards hasta confirmar los 5 integrantes con el cliente (ver `CLAUDE.md → Pendientes críticos`).
+
+#### 3.3.4 Filosofía: dark — imagen izquierda + 3 pilares derecha (sin números)
+- **Decidido:** fondo `ink`, grid `1fr 1fr`, gap 80. Columna izquierda: placeholder imagen con patrón rayado oscuro, `height: 100%`. Columna derecha: 3 pilares apilados (título 20px 600 + descripción 14px `rgba(255,255,255,0.65)`), separados por `borderBottom rgba(255,255,255,0.12)`.
+- **Por qué:** la imagen rompe la monotonía de un bloque puramente tipográfico en dark y da presencia institucional. 3 pilares (vs 4) permiten que cada uno respire. Sin números grandes — los números eran peso visual extra que no sumaba jerarquía cuando la columna de imagen ya establece el equilibrio visual.
+- **Descartado:** 4 pilares numerados en 2 columnas (primera versión) — sin imagen, el bloque era solo texto oscuro repetitivo; los números grandes ocupaban espacio sin aportar.
+
+#### 3.3.5 Redirección: doble CTA claro
+- **Decidido:** sección clara (bg), H2 48px + subtítulo 300 + botón primario "VER PROYECTOS →" + link inline "Contactarnos →".
+- **Por qué:** separa visualmente los dos bloques oscuros (Filosofía y Footer). Dos CTAs cubren los dos flujos del visitante: comprar (Proyectos) o consultar (Contacto). Sin formulario — eso ya está en `/contacto`.
+
+---
+
+### 3.4 Contacto (`/contacto`)
+
+> Sesión: 12/5/2026.
+
+#### 3.4.1 Estructura: split `1fr 1fr` — contenido izquierda + imagen derecha a sangre
+- **Decidido:** una sola sección con grid `1fr 1fr`. Columna izquierda: H1 + subtítulo + formulario + canales de contacto. Columna derecha: placeholder `foto · equipo / obra / empresa` a sangre (sin padding lateral), `height: 100%`, `minHeight: calc(100vh - 65px)`.
+- **Por qué:** el layout split resuelve dos problemas al mismo tiempo — acorta el formulario (que antes se sentía "alargado" al ocupar todo el ancho) y da contexto institucional sin necesidad de un bloque separado. La imagen a sangre hace que la página se sienta moderna y de una pantalla completa sin sacrificar el formulario.
+- **Descartado:** formulario centrado + canales debajo (inicial) — todo en una columna era demasiado largo, requería scroll para llegar a los datos de contacto. Split form/canales con separador vertical (intermedio) — el formulario seguía demasiado ancho y los datos de contacto tenían poco aire.
+
+#### 3.4.2 H1 sin SectionLabel
+- **Decidido:** la columna izquierda empieza directo con H1 44px "Hablemos." + subtítulo 14px 300. Sin SectionLabel encima.
+- **Por qué:** el contexto de la página es obvio desde la URL y el navbar activo. El SectionLabel agregaría ~52px de altura que dificultan que todo entre en el primer vistazo sin scroll.
+
+#### 3.4.3 Canales de contacto: fila horizontal debajo del formulario
+- **Decidido:** 3 canales (WhatsApp / Email / Oficina) en `grid repeat(3, 1fr)` debajo del formulario, separados del form por `borderTop: 1px line`. Cada canal: icono SVG 20px + label uppercase 9px + valor 12px 500. Sin sub-texto secundario (compacto).
+- **Por qué:** con la columna izquierda ocupando solo el 50% del ancho, los canales en fila horizontal caben perfectamente y quedan visibles sin scroll. Si estuvieran en columna propia (como en la versión intermedia), la imagen no tendría lugar.
+- **Trampa evitada:** `flex: 1` en el contenedor del formulario causaba que el form se inflara hasta llenar la altura completa del viewport (por el `minHeight: calc(100vh - 65px)`), empujando los canales justo fuera del primer vistazo. Se resolvió eliminando `flex: 1`.
+
+#### 3.4.4 Botón submit: padding 14×24, sin flecha
+- **Decidido:** `padding: 14px 24px`, `width: 100%`, `letterSpacing: 0.12em`, `borderRadius: 2`. Copy: `ENVIAR CONSULTA` (sin flecha).
+- **Por qué:** `padding 14×24` es el estándar del sistema para botón sólido. La flecha `→` se reserva para CTAs de navegación secundarios ("VER PROYECTOS →", "Contactarnos →") — en el submit del formulario no corresponde porque no lleva a otra pantalla sino que ejecuta una acción.
+
+#### 3.4.5 Placeholder imagen: `foto · equipo / obra / empresa`
+- **Decidido:** label del placeholder a sangre es `foto · equipo / obra / empresa`.
+- **Por qué:** la página de Contacto no corresponde a ningún proyecto específico — la foto que iría acá en alta fidelidad es institucional (equipo, obra en construcción, fachada). El label lo deja claro sin inventar un proyecto.
+- **Descartado:** `render · cosquín 1534` — sería incorrecto asociar un proyecto a la página de contacto general.
+
+#### 3.4.6 Sin horarios de atención, sin mapa
+- **Decidido:** no se incluyen horarios ni mapa en el wireframe.
+- **Por qué:** los horarios están pendientes de confirmar con el cliente — mostrar un dato incierto en el wireframe arrastra la conversación hacia operaciones en vez de estructura. El mapa entra en alta fidelidad, consistente con la decisión 3.1.5.
+
+---
+
 ## 4. Decisiones pendientes
 
 ### 4.1 Hero: Variante A vs B (Home)
@@ -226,3 +294,6 @@ Cuando se tome una decisión nueva — o se cambie una existente — se actualiz
 | 2026-05-10  | Luca + Claude Code   | Wireframe `proyectos.html` generado: PageHeader, FilterTabs, ProyectosGrid con jerarquía LG/MD, EmptyState, ContactSection con formulario. Documentada decisión 2.11 (grilla 6 cols, span 3 LG / span 2 MD). Patrón de form fields actualizado en system: `<input>` / `<select>` / `<textarea>` reales (no `<Placeholder>`). FilterTabs marcado como resuelto en pendientes. |
 | 2026-05-11  | Luca + Claude Code   | Ajustes `proyectos.html`: título "Nuestros proyectos", cards sin año (solo ubicación), ContactSection con formulario centrado idéntico a ficha. Corrección de grilla: spans corregidos a 3/2 en 6 cols para que 2 LG quepan en una fila. Sincronización completa de system y decisions con estado real de wireframes. |
 | 2026-05-11  | Luca + Claude Code   | Wireframe `inicio.html` generado. Hero Variante A full bleed, sección Nosotros con Stats Block real, Por qué elegirnos 4 cols (Variante A), Testimonios con copy plausible, Contacto dark + formulario. Decisiones 2.12 y 3.2 documentadas. Agregado patrón `fieldStyleDark` / `labelStyleDark` en system para formularios sobre fondo oscuro. |
+| 2026-05-12  | Julian + Claude Code | Wireframe `contacto.html` generado e iterado hasta versión final. Layout split `1fr 1fr`: columna izquierda (H1 + form + canales horizontal) + columna derecha (imagen a sangre `foto · equipo / obra / empresa`). Botón submit alineado al sistema (padding 14×24, ancho auto, flecha). Eliminado `flex:1` del form que empujaba canales fuera del viewport. Decisiones 3.3.1–3.3.6 documentadas. |
+| 2026-05-12  | Julian + Claude Code | Wireframe `nosotros.html` generado e iterado hasta versión final. Estructura: PageHeader tipográfico (sin borderBottom) → Historia + Métricas fusionadas (banner 16/6 + 2 cols texto/stats) → Equipo (4 cards 3:4) → Filosofía (dark, imagen + 3 pilares sin números) → Redirección (doble CTA claro). Decisiones 3.3.0–3.3.5 documentadas. SectionLabels sin numeración en todos los wireframes. |
+| 2026-05-12  | Julian + Claude Code | Auditoría de coherencia visual entre los 5 wireframes. Corregido: SectionLabel dark `0.55→0.45` en `contacto.html` y `nosotros.html`; `lineColor` simplificado a usar `color`; prop `center` eliminado de `nosotros.html`; `fontFamily` añadido al Logo de `nosotros.html`. Submit button estandarizado: `padding: 14px 24px` en todos los archivos, sin flecha en submit (`ENVIAR CONSULTA`). Hero `inicio.html`: `padding-bottom 72px→96px`. Subsecciones Contacto renumeradas a 3.4.x. |

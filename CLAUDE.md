@@ -1,7 +1,7 @@
 # CLAUDE.md — Rigma Web
 
 > Archivo de contexto para colaboración con IA. Toda decisión tomada en el proyecto debe reflejarse acá para mantener coherencia entre sesiones y entre colaboradores.
-> Última actualización: 11 de mayo 2026
+> Última actualización: 12 de mayo 2026
 
 ---
 
@@ -17,7 +17,7 @@
 
 ## Equipo y colaboración
 
-- Dos desarrolladores trabajando en conjunto con IA (Claude Code / Claude Design)
+- Dos desarrolladores trabajando en conjunto con IA (Claude Code)
 - Flujo: cada colaborador trabaja en su entorno local, usa este archivo como contexto compartido
 - **Regla:** toda decisión de diseño, arquitectura o contenido que se tome debe actualizarse en este archivo antes de hacer commit
 
@@ -33,7 +33,7 @@
 | 4 | Salida a producción    | ⏳ Pendiente | Deploy Vercel, entrega al cliente |
 
 **Sub-etapas actuales (Etapa 2):**
-- [x] Wireframes — generados el 3/5/2026, pendiente validación con cliente
+- [x] Wireframes — 5/5 pantallas completadas (`ficha-proyecto`, `proyectos`, `inicio`, `contacto`, `nosotros`). Pendiente validación con cliente.
 - [ ] Diseño en alta fidelidad
 - [ ] Prototipo estático con placeholders
 
@@ -43,57 +43,16 @@
 
 | Tecnología   | Rol                        | Notas |
 |--------------|---------------------------|-------|
-| Next.js 16+  | Framework (App Router)    | Con directorio `src/` |
+| Next.js 14+  | Framework (App Router)    | Con directorio `src/` |
 | TypeScript   | Tipado estático           | |
 | Tailwind CSS | Estilos                   | |
 | ESLint       | Linting                   | |
 | Sanity       | CMS headless              | Plan gratuito — se integra en Etapa 3 |
-| Vercel       | Hosting                   | Plan gratuito — ya deployado con dominio rigma.com.ar |
-| Vercel Analytics | Analytics de tráfico  | Ya integrado en la landing |
+| Vercel       | Hosting                   | Plan gratuito |
 
 **Import alias:** `@/*` → `src/*`
 
 > ⚠️ Durante la Etapa 2 se trabaja con datos mock estáticos. Sanity se integra en la Etapa 3.
-
----
-
-## Infraestructura actual
-
-### Repositorio
-- **GitHub:** [CastellanaJulian/Web-rigma](https://github.com/CastellanaJulian/Web-rigma)
-- **Rama principal:** `main` → producción (rigma.com.ar)
-- **Rama de desarrollo:** `staging` → preview en Vercel (URL automática por rama)
-- **Flujo:** push a cualquier rama → Vercel genera URL de preview. Push a `main` → deploya en producción
-
-### Estructura del repo
-```
-web-rigma/
-├── landing-en-construccion/v0/   ← landing actual en producción
-├── site/                         ← sitio principal en desarrollo
-├── Wireframes/                   ← wireframes HTML interactivos
-├── sitemap/                      ← sitemap CSV (fuente de verdad de arquitectura)
-└── CLAUDE.md
-```
-
-### Sitio principal (`site/`)
-- **Stack:** Next.js 16 + TypeScript + Tailwind CSS (App Router, directorio `src/`)
-- **Rama:** `staging`
-- **Estado:** estructura base armada — sin diseño, con datos mock
-- **Root directory en Vercel (cuando esté listo):** `site/`
-
-### Landing "en construcción"
-- **Ruta en repo:** `landing-en-construccion/v0/`
-- **Generada con:** v0 (Vercel)
-- **Stack:** Next.js + Tailwind + shadcn/ui
-- **Deploy root directory en Vercel:** `landing-en-construccion/v0`
-- **URL:** rigma.com.ar
-- **Título en navegador:** Rigma Group
-- **Favicon:** `/public/logo-rigma.png`
-- **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
-- **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local (no subido al repo)
-
-### Cambio a producción (cuando el sitio esté listo)
-Cambiar el root directory en Vercel de `landing-en-construccion/v0` a `site/` y mergear `staging` → `main`.
 
 ---
 
@@ -106,8 +65,9 @@ Cambiar el root directory en Vercel de `landing-en-construccion/v0` a `site/` y 
 - Paleta monocromática — no hay colores de acento definidos aún
 
 ### Tipografía
-- ⚠️ **No definida** — se decide en la etapa de diseño en alta fidelidad (bloquea avance)
+- Definitiva: no definida — se decide en alta fidelidad
 - Referencia de estilo: elegante, seria, con personalidad de marca premium/institucional
+- **En wireframes:** Montserrat (300/400/500/600/700 + italic 400) — geométrica, diseñada en Buenos Aires, alineada al cartel de obra de Rigma. Ver `Wireframes/wireframes-system.md`.
 
 ### Logo
 - Disponible en escala de grises
@@ -225,60 +185,53 @@ Cambiar el root directory en Vercel de `landing-en-construccion/v0` a `site/` y 
 
 ## Arquitectura del sitio
 
-> Fuente de verdad: `sitemap/Rigma-group-sitemap.csv`
-
 ### Páginas (5)
 
 #### 1. Inicio `/`
-- **Nav bar**
-- **Hero** — imagen o video grande con logo/slogan. Puede ser carrusel de proyectos. CTA para ir a ver proyectos
-- **Proyectos destacados** — preview de proyectos con CTA a `/proyectos`
-- **Nosotros** — 2 o 3 párrafos sobre quiénes son, 3/4 datos fuertes, CTA a `/nosotros`
-- **Por qué elegirnos** — pilares que los diferencian de la competencia: icono + título + breve descripción
-- **Testimonios** — testimonios de clientes que avalan experiencia y resultados *(contenido pendiente)*
-- **Sección de contacto** — información directa y formulario breve para consultas rápidas, tono emocional con CTA
-- **Footer**
+- Hero (tagline + CTA)
+- Proyectos destacados
+- Snippet de Nosotros
+- Por qué elegirnos
+- Testimonios *(contenido pendiente — usar placeholders)*
+- CTA de Contacto
+- Footer
 
 #### 2. Proyectos `/proyectos`
-- **Nav bar**
-- **Header** — título y breve subtítulo para contextualizar
-- **Filtros** — tabs horizontales: Todos / En Ejecución / Terminados (un solo eje)
-- **Grilla de proyectos** — proyectos en ejecución con mayor jerarquía; cards con imagen principal, nombre, ubicación y pill de estado
-- **Sección de contacto** — CTA para solicitar más información
-- **Footer**
+- Header de sección
+- Filtros: Todos / En Ejecución / Terminados
+- Grilla de proyectos (cards)
+- CTA de Contacto
+- Footer
 
 #### 3. Ficha de Proyecto `/proyectos/[slug]`
-- **Nav bar**
-- **Hero** — imagen/render grande, nombre del proyecto, tagline, pill con estado
-- **Información clave** — ubicación, estado, tipologías, fecha de entrega; opcionales: unidades disponibles, % avance de obra
-- **Descripción** — máx. 3 párrafos + highlights del proyecto
-- **Galería principal** — grilla o carrusel de renders e imágenes; mezcla renders con fotos de obra
-- **Planos** — plantas del edificio y planos por unidad con preview *(sección separada — no todos los usuarios quieren verlos)*
-- **Ubicación** — Google Maps embebido + puntos clave cercanos
-- **Siguiente proyecto / relacionado** — acceso directo a otro proyecto para no perder la navegación
-- **Sección de contacto** — WhatsApp con mensaje predeterminado o formulario; objetivo: clasificar el lead
-- **Footer**
+- Hero del proyecto
+- Info clave (superficie, ubicación, estado, unidades disponibles, entrega)
+- Descripción
+- Galería de imágenes (renders)
+- Planos *(sección separada — no todos los usuarios quieren ver planos)*
+- Ubicación (Google Maps embed)
+- Proyecto relacionado
+- CTA de Contacto
+- Footer
 
 #### 4. Nosotros `/nosotros`
-- **Nav bar**
-- **Header institucional** — 1-2 líneas de posicionamiento, titular que transmita la esencia de Rigma
-- **Historia** — cómo arrancaron, por qué lo hacen, qué los diferencia y su valor a futuro *(a chequear con cliente)*
-- **Números que respaldan** — métricas con contexto (+32.000 m², +220 UF)
-- **Equipo** — fotos + nombre y rol; refuerza el negocio familiar y lo hace cercano
-- **Pilares / filosofía de trabajo** — 3-4 pilares que guían cómo trabajan
-- **Sección de redirección** — invitar a conocer proyectos o contactarse (1 o 2 CTAs)
-- **Footer**
+- Header institucional
+- Historia de la empresa *(copy confirmado — ver sección anterior)*
+- Números / métricas (+32.000 m², +220 UF)
+- Equipo *(pendiente definir si incluye fotos y quiénes)*
+- Pilares / Filosofía *(copy confirmado)*
+- CTA de redirección
+- Footer
 
 #### 5. Contacto `/contacto`
-- **Nav bar**
-- **Encabezado** — título destacado e invitación a consultar, agendar visitas o pedir información
-- **Formulario** — incluye selector de proyecto de interés para calificar el lead; puede ir a mail o Google Sheets
-- **Vías alternativas** — dirección física, horarios de atención y redes
-- **Footer**
+- Layout split `1fr 1fr` a pantalla completa — sin secciones apiladas
+- **Columna izquierda:** H1 "Hablemos." + subtítulo + formulario (Nombre, Celular, Email, Proyecto de interés, Mensaje, botón `ENVIAR CONSULTA →`) + canales en fila horizontal debajo (WhatsApp · Email · Oficina)
+- **Columna derecha:** imagen institucional a sangre (equipo / obra / empresa)
+- Footer
 
 ### Componentes globales
 - `Navbar` — presente en todas las páginas
-- `Footer` — logo, dirección, teléfono, email, links de navegación
+- `Footer` — presente en todas las páginas. Incluye: logo, dirección, teléfono, email, links de navegación
 - `ContactCTA` — sección reutilizable al final de casi todas las páginas
 
 ---
@@ -320,22 +273,6 @@ type Project = {
 
 ---
 
-## Decisiones de diseño tomadas
-
-### Wireframes (sesión 3/5/2026)
-- **Formato:** a definir — pendiente decidir si mobile-first (375px) o desktop-first
-- **Estilo:** wireframes de media fidelidad — formas claras con tipografía real, sin color
-- **Variantes:** 1 por página (el contenido de cada página está validado en la sección Arquitectura del sitio)
-- **Herramienta:** HTML interactivo con design canvas pan/zoom — archivo en `design/wireframes/`
-- **Estado:** ⚠️ Pendiente de verificación — no cerrado
-
-#### Navbar — 3 variantes exploradas
-- **Transparente sobre hero**
-- **Sólida siempre visible**
-- **Minimal logo + hamburger**
-
----
-
 ## Referencias de diseño
 
 | Sitio | Por qué gustó |
@@ -346,48 +283,22 @@ type Project = {
 
 ---
 
-## Archivos del proyecto
+## Pendientes críticos (bloquean avance)
 
-| Archivo | Descripción | Ubicación |
-|---------|-------------|-----------|
-| `ficha-proyecto.html` | Wireframe de ficha de proyecto | `Wireframes/` |
-| `proyectos.html` | Wireframe de página de proyectos | `Wireframes/` |
-| `wireframes-decisions.md` | Decisiones de diseño de los wireframes | `Wireframes/` |
-| `wireframes-system.md` | Sistema y documentación de los wireframes | `Wireframes/` |
-| `Rigma-group-sitemap.csv` | Sitemap oficial — fuente de verdad de arquitectura | `sitemap/` |
-| `projects.ts` | Datos mock de los 3 proyectos (reemplazado por Sanity en Etapa 3) | `site/src/data/` |
-| `project.ts` | Type Project — modelo de datos | `site/src/types/` |
+- [ ] Subir logo al repo (`/public/logo.svg` o formato disponible)
+- [ ] Confirmar estado y datos faltantes de Proyecto 3 (Av. Larrazábal 1255)
+- [ ] Cargar información de Proyecto 4 (y proyectos 5 y 6 si existen)
+- [ ] Confirmar barrio de Zelada 6171
+- [ ] Definir tipografía en etapa de alta fidelidad
+- [ ] Confirmar si la sección Equipo lleva fotos y quiénes aparecen
 
----
+## Pendientes no críticos
 
-## Estructura del sitio (`site/src/`)
-
-```
-app/
-├── layout.tsx                  ← Navbar + Footer globales
-├── page.tsx                    ← Inicio /
-├── proyectos/
-│   ├── page.tsx                ← Listado /proyectos
-│   └── [slug]/
-│       └── page.tsx            ← Ficha /proyectos/[slug]
-├── nosotros/
-│   └── page.tsx
-└── contacto/
-    └── page.tsx
-
-components/
-├── layout/
-│   ├── Navbar.tsx
-│   └── Footer.tsx
-└── shared/
-    └── ContactCTA.tsx          ← Reutilizable en casi todas las páginas
-
-data/
-└── projects.ts                 ← Mock data — 3 proyectos cargados
-
-types/
-└── project.ts                  ← Type Project
-```
+- [ ] Testimonios de clientes (3 bloques para completar)
+- [ ] Cámaras o asociaciones del rubro (para footer)
+- [ ] Descripción y tipologías de Zelada 6171
+- [ ] Financiación de Cosquín 1534
+- [ ] Instagram (a futuro)
 
 ---
 
@@ -398,4 +309,10 @@ types/
 - Al finalizar una sesión con cambios importantes, actualizar las secciones relevantes
 - Los placeholders de contenido deben ser realistas (no "Lorem ipsum"), usar datos del rubro inmobiliario argentino
 - El tono de los textos es español rioplatense, formal pero cercano
-- Los pendientes del proyecto se gestionan en Miro, no en este archivo
+
+---
+
+## Referencias internas
+
+- Proyecto de referencia en este repo: `landing-gustavo/` — landing page similar con Next.js + Tailwind, útil para ver patrones de componentes ya usados
+- Wireframes mid-fi en `Wireframes/` — fuente de verdad de estructura de pantallas durante Etapa 2. Archivos: `inicio.html`, `proyectos.html`, `ficha-proyecto.html`, `contacto.html` (falta `nosotros.html`). Complementar con `wireframes-system.md` (componentes y tokens) y `wireframes-decisions.md` (decisiones y justificaciones).
