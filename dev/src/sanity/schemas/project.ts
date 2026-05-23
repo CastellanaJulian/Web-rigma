@@ -131,8 +131,23 @@ export const project = defineType({
       description: 'Menor = aparece antes en la grilla',
       type: 'number',
     }),
+    defineField({
+      name: 'featured',
+      title: 'Destacado en Inicio',
+      description: 'Si está activo, este proyecto aparece en el carrusel y en la sección de destacados de la home.',
+      type: 'boolean',
+      initialValue: false,
+    }),
   ],
   orderings: [
+    {
+      title: 'Destacados primero',
+      name: 'featuredFirst',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'order', direction: 'asc' },
+      ],
+    },
     {
       title: 'Orden manual',
       name: 'orderAsc',
@@ -147,8 +162,16 @@ export const project = defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'status',
+      status: 'status',
+      featured: 'featured',
       media: 'coverImage',
+    },
+    prepare({ title, status, featured, media }) {
+      return {
+        title,
+        subtitle: `${status ?? '—'}${featured ? ' · ★ Destacado' : ''}`,
+        media,
+      }
     },
   },
 })
