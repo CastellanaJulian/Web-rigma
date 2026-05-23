@@ -47,13 +47,13 @@
 | TypeScript   | Tipado estático           | |
 | Tailwind CSS | Estilos                   | |
 | ESLint       | Linting                   | |
-| Sanity       | CMS headless              | Plan gratuito — se integra en Etapa 3 |
+| Sanity       | CMS headless              | Plan gratuito — Studio inicializado en `dev/` el 23/05/2026 |
 | Vercel       | Hosting                   | Plan gratuito — ya deployado con dominio rigma.com.ar |
 | Vercel Analytics | Analytics de tráfico  | Ya integrado en la landing |
 
 **Import alias:** `@/*` → `src/*`
 
-> ⚠️ Durante la Etapa 2 se trabaja con datos mock estáticos. Sanity se integra en la Etapa 3.
+> Etapa 2: el sitio público sigue con datos mock estáticos. Sanity Studio + schemas ya están inicializados en `dev/` para que el cliente pueda cargar contenido en paralelo al diseño. Las queries del frontend al CMS se conectan en Etapa 3.
 
 ---
 
@@ -74,6 +74,22 @@
 - **Favicon:** `/public/logo-rigma.png`
 - **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
 - **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local en `/Users/julian/web-rigma/rigma-qr.png` (no subido al repo)
+
+### Sitio nuevo en desarrollo (`dev/`)
+- **Ruta en repo:** `dev/`
+- **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + ESLint, App Router, `src/`, alias `@/*`
+- **Sanity Studio embebido:** ruta `/studio` (página split en `src/app/studio/[[...tool]]/page.tsx` server + `Studio.tsx` client)
+- **Schemas:** `src/sanity/schemas/{project,testimonial,siteSettings}.ts` — `siteSettings` es singleton vía `src/sanity/structure.ts`
+- **Config:** `sanity.config.ts` + `sanity.cli.ts` en la raíz de `dev/`
+- **Estado:** todavía no deployado a Vercel — corre solo en local con `cd dev && npm run dev` → `localhost:3000/studio`. La idea es que cuando el diseño esté listo, este proyecto reemplaza a `landing-en-construccion/` en producción.
+
+### Sanity
+- **Project ID:** `0q5stz3o`
+- **Organization ID:** `oirIJubQi`
+- **Dataset único:** `production` (public)
+- **Plan:** Free
+- **URL del Studio standalone:** pendiente (correr `cd dev && npx sanity deploy` con login interactivo)
+- **Variables de entorno** (`dev/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`. Ejemplo en `dev/.env.local.example`.
 
 ---
 
