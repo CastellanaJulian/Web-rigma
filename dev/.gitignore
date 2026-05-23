@@ -37,6 +37,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# sanity build artifacts
+/dist
+/.sanity
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

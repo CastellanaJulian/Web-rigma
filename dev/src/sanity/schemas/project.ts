@@ -113,6 +113,13 @@ export const project = defineType({
       type: 'geopoint',
     }),
     defineField({
+      name: 'nearbyPoints',
+      title: 'Puntos cercanos',
+      description: 'Lugares de interés cerca del proyecto. Ej: "Subte línea A a 200m", "Plaza de los Mataderos a 3 cuadras"',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
       name: 'relatedProject',
       title: 'Proyecto relacionado',
       type: 'reference',

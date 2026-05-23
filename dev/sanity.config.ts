@@ -3,7 +3,6 @@ import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { apiVersion, dataset, projectId } from './src/sanity/env'
 import { schemaTypes } from './src/sanity/schemas'
-import { structure } from './src/sanity/structure'
 
 export default defineConfig({
   name: 'rigma',
@@ -13,7 +12,7 @@ export default defineConfig({
   dataset,
   schema: { types: schemaTypes },
   plugins: [
-    structureTool({ structure }),
+    structureTool(),
     visionTool({ defaultApiVersion: apiVersion }),
   ],
 })
