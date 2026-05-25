@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio — Alta Fidelidad · Rigma</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: #d0d0d0; -webkit-font-smoothing: antialiased; }
+    #root { max-width: 1440px; margin: 0 auto; background: #FBFBFB; box-shadow: 0 0 80px rgba(0,0,0,0.16); }
+    input, textarea, select { font-family: 'Montserrat', sans-serif; outline: none; }
+    button { font-family: 'Montserrat', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── DESIGN TOKENS ─────────────────────────────────────────────────
+    const t = {
+      bg:           '#FBFBFB',
+      bgWarm:       '#F0E9E2',
+      surface:      '#E9E9E9',
+      surfaceWarm:  '#CFC5BC',
+      accent:       '#B59969',
+      ink:          '#1E1E1E',
+      inkElevated:  '#353631',
+      textPrimary:   '#1E1E1E',
+      textSecondary: 'rgba(30,30,30,0.65)',
+      textTertiary:  'rgba(30,30,30,0.45)',
+      line:          '#E9E9E9',
+      onDarkPrimary:   '#FFFFFF',
+      onDarkSecondary: 'rgba(255,255,255,0.65)',
+      onDarkTertiary:  'rgba(255,255,255,0.45)',
+      onDarkLine:      'rgba(255,255,255,0.15)',
+    };
+
+    // ── DATOS ─────────────────────────────────────────────────────────
+    // Guardá las imágenes en assets/:
+    //   img-1.jpg → interior escandinavo   img-2.jpg → render terraza
+    //   img-3.jpg → interior sala beige    img-4.jpg → obra andamios
+    const IMGS = {
+      larrazabal: './assets/img-2.jpg',
+      cosquin:    './assets/img-1.jpg',
+      nosotros:   './assets/img-4.jpg',
+      zelada:     './assets/img-3.jpg',
+    };
+
+    const HERO_SLIDES = [
+      { src: IMGS.larrazabal },
+      { src: IMGS.cosquin },
+      { src: IMGS.nosotros },
+      { src: IMGS.zelada },
+    ];
+
+    const ALL_PROJECTS = [
+      { id: 'cosquin',    name: 'Cosquín 1534',       loc: 'Mataderos',    status: 'En Ejecución', img: IMGS.cosquin },
+      { id: 'larrazabal', name: 'Av. Larrazábal 1255', loc: 'Mataderos',    status: 'En Ejecución', img: IMGS.larrazabal },
+      { id: 'zelada',     name: 'Zelada 6171',          loc: 'Buenos Aires', status: 'Terminado',    img: IMGS.zelada },
+    ];
+
+    // ── IMG CON FALLBACK ──────────────────────────────────────────────
+    function Img({ src, alt = '', style = {} }) {
+      const [err, setErr] = useState(false);
+      if (err) return <Placeholder label={alt} style={style} />;
+      return (
+        <img src={src} alt={alt} onError={() => setErr(true)}
+          style={{ objectFit: 'cover', display: 'block', ...style }} />
+      );
+    }
+
+    // ── PLACEHOLDER ───────────────────────────────────────────────────
+    function Placeholder({ label, style = {} }) {
+      return (
+        <div style={{
+          background: `repeating-linear-gradient(135deg, ${t.surface} 0 14px, #d0d0d0 14px 15px)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...style,
+        }}>
+          {label && (
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              color: t.textTertiary, background: 'rgba(255,255,255,0.88)',
+              padding: '5px 14px', borderRadius: 2, textAlign: 'center', maxWidth: '80%',
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // ── SECTION LABEL ─────────────────────────────────────────────────
+    function SectionLabel({ children, dark = false }) {
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: dark ? t.onDarkTertiary : t.textTertiary,
+          marginBottom: 36,
+        }}>
+          <span style={{ width: 20, height: 1, background: t.accent, flexShrink: 0 }} />
+          {children}
+        </div>
+      );
+    }
+
+    // ── STATUS PILL ───────────────────────────────────────────────────
+    function StatusPill({ status, dark = false }) {
+      const isActive = status === 'EN EJECUCIÓN';
+      return (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '5px 12px',
+          border: dark ? `1px solid ${t.onDarkLine}` : `1px solid ${t.line}`,
+          background: dark ? 'rgba(255,255,255,0.10)' : 'transparent',
+          color: dark ? t.onDarkPrimary : t.textPrimary,
+          borderRadius: 2,
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: isActive ? t.accent : (dark ? t.onDarkTertiary : t.textTertiary),
+            flexShrink: 0,
+          }} />
+          {status}
+        </span>
+      );
+    }
+
+    // ── LOGO ──────────────────────────────────────────────────────────
+    function Logo({ size = 40, color = t.ink }) {
+      const border = Math.round(size * 0.055);
+      const fs     = Math.round(size * 0.4);
+      const pad    = Math.round(size * 0.12);
+      return (
+        <div style={{
+          width: size, height: size, flexShrink: 0,
+          border: `${border}px solid ${color}`,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: `0 ${pad}px`, lineHeight: 1.05,
+        }}>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>RIG</div>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>MA</div>
+        </div>
+      );
+    }
+
+    // ── ICON ──────────────────────────────────────────────────────────
+    function Icon({ children }) {
+      return (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke={t.accent} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          {children}
+        </svg>
+      );
+    }
+
+    // ── ARROW BTN (hero carousel) — a nivel módulo para identidad estable
+    function ArrowBtn({ dir, onClick }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <button
+          onClick={onClick}
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{
+            position: 'absolute',
+            top: '50%', transform: 'translateY(-50%)',
+            [dir === 'left' ? 'left' : 'right']: 32,
+            width: 48, height: 48,
+            background: hov ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
+            border: `1px solid rgba(255,255,255,${hov ? '0.45' : '0.25'})`,
+            borderRadius: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', zIndex: 10,
+            transition: 'background 0.2s ease, border-color 0.2s ease',
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            {dir === 'left'
+              ? <polyline points="15 18 9 12 15 6" />
+              : <polyline points="9 18 15 12 9 6" />}
+          </svg>
+        </button>
+      );
+    }
+
+    // ── BTN ───────────────────────────────────────────────────────────
+    function Btn({ variant = 'primary', children, style = {} }) {
+      const [hov, setHov] = useState(false);
+      const variants = {
+        primary:   { base: { background: t.onDarkPrimary, color: t.ink }, hover: { background: t.accent } },
+        secondary: { base: { background: 'transparent', border: '1px solid rgba(255,255,255,0.30)', color: t.onDarkPrimary }, hover: { background: 'rgba(255,255,255,0.10)' } },
+      };
+      const v = variants[variant];
+      return (
+        <div
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{ ...v.base, ...(hov ? v.hover : {}), transition: 'background 0.2s ease', cursor: 'pointer', ...style }}
+        >
+          {children}
+        </div>
+      );
+    }
+
+    // ── HOVER LINK ────────────────────────────────────────────────────
+    function HoverLink({ children, baseColor, baseBorder, style = {} }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <span
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{
+            color: hov ? t.accent : baseColor,
+            borderBottom: `1px solid ${hov ? t.accent : baseBorder}`,
+            cursor: 'pointer',
+            transition: 'color 0.2s ease, border-color 0.2s ease',
+            ...style,
+          }}
+        >
+          {children}
+        </span>
+      );
+    }
+
+    // ── NAVBAR ────────────────────────────────────────────────────────
+    function NavBar() {
+      return (
+        <nav style={{
+          position: 'sticky', top: 0, zIndex: 100,
+          height: 64,
+          background: 'rgba(251,251,251,0.92)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderBottom: `1px solid ${t.line}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 56px',
+        }}>
+          <Logo size={40} color={t.ink} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+            {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
+              <span key={link} style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: link === 'INICIO' ? t.ink : t.textSecondary,
+                cursor: 'pointer',
+                borderBottom: link === 'INICIO' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
+                paddingBottom: 3,
+              }}>
+                {link}
+              </span>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ── PROJECT CARD ──────────────────────────────────────────────────
+    function ProjectCard({ project, span = 3, height = 460 }) {
+      const [hovered, setHovered] = useState(false);
+      const pillLabel = project.status === 'En Ejecución' ? 'EN EJECUCIÓN' : 'TERMINADO';
+      return (
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            position: 'relative', cursor: 'pointer', overflow: 'hidden',
+            gridColumn: `span ${span}`, height,
+            transform: hovered ? 'scale(1.015)' : 'scale(1)',
+            transition: 'transform 0.5s ease',
+          }}
+        >
+          <Img src={project.img} alt={project.name}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(30,30,30,0.90) 0%, rgba(30,30,30,0.20) 55%, transparent 100%)',
+          }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 40px 36px' }}>
+            <div style={{ marginBottom: 14 }}>
+              <StatusPill status={pillLabel} dark />
+            </div>
+            <h3 style={{
+              fontSize: 36, fontWeight: 700, letterSpacing: '-0.01em',
+              textTransform: 'uppercase', color: t.onDarkPrimary,
+              lineHeight: 1, marginBottom: 6,
+            }}>
+              {project.name}
+            </h3>
+            <p style={{
+              fontSize: 15, fontWeight: 500, letterSpacing: '0.06em',
+              color: t.onDarkSecondary, marginBottom: 22,
+            }}>
+              {project.loc}
+            </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: hovered ? t.accent : t.onDarkPrimary,
+              borderBottom: `1px solid ${hovered ? t.accent : 'rgba(255,255,255,0.35)'}`,
+              paddingBottom: 2,
+              transition: 'color 0.3s ease, border-color 0.3s ease',
+            }}>
+              VER PROYECTO →
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── HERO ──────────────────────────────────────────────────────────
+    function Hero() {
+      const [active, setActive] = useState(0);
+      const [mounted, setMounted] = useState(false);
+      const total = HERO_SLIDES.length;
+      const prev = () => setActive((active - 1 + total) % total);
+      const next = () => setActive((active + 1) % total);
+
+      useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 80);
+        return () => clearTimeout(timer);
+      }, []);
+
+      const fadeUp = (delay) => ({
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 1s ease, transform 1s ease',
+        transitionDelay: `${delay}ms`,
+      });
+
+      return (
+        <section style={{ height: '100vh', minHeight: 640, position: 'relative', overflow: 'hidden', background: t.ink }}>
+          <Img
+            src={HERO_SLIDES[active].src}
+            alt=""
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(30,30,30,0.72) 0%, rgba(30,30,30,0.55) 40%, rgba(30,30,30,0.95) 100%)',
+          }} />
+
+          <ArrowBtn dir="left" onClick={prev} />
+          <ArrowBtn dir="right" onClick={next} />
+
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 112px 96px' }}>
+            <h1 style={{
+              fontSize: 88, fontWeight: 300, letterSpacing: '-0.03em',
+              color: t.onDarkPrimary, lineHeight: 0.96,
+              marginBottom: 28, maxWidth: 860,
+              ...fadeUp(0),
+            }}>
+              Construimos{' '}
+              <em style={{ fontStyle: 'italic', fontWeight: 400, color: t.accent }}>espacios</em>
+              {' '}que perduran
+            </h1>
+
+            <p style={{
+              fontSize: 16, fontWeight: 400, lineHeight: 1.7,
+              color: t.onDarkSecondary, maxWidth: 500, marginBottom: 48,
+              ...fadeUp(160),
+            }}>
+              Proyectos en ejecución en Buenos Aires con diseño funcional,
+              materiales premium y tres generaciones de trayectoria que
+              respaldan cada obra.
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', ...fadeUp(300) }}>
+              <div style={{ display: 'flex', gap: 14 }}>
+                <Btn variant="primary" style={{
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
+                }}>
+                  VER PROYECTOS
+                </Btn>
+                <Btn variant="secondary" style={{
+                  fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
+                }}>
+                  CONTACTANOS
+                </Btn>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {HERO_SLIDES.map((_, i) => (
+                    <div key={i} onClick={() => setActive(i)} style={{
+                      width: i === active ? 28 : 6, height: 2, borderRadius: 1,
+                      background: i === active ? t.accent : 'rgba(255,255,255,0.30)',
+                      cursor: 'pointer',
+                      transition: 'width 0.3s ease, background 0.3s ease',
+                    }} />
+                  ))}
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.10em', color: t.onDarkSecondary }}>
+                  0{active + 1} / 0{total}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── PROYECTOS DESTACADOS ──────────────────────────────────────────
+    function ProyectosDestacados() {
+      const featured = ALL_PROJECTS.filter(p => p.status === 'En Ejecución');
+      return (
+        <section style={{ padding: '120px 56px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 52 }}>
+            <div>
+              <SectionLabel>Proyectos destacados</SectionLabel>
+              <h2 style={{ fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em', color: t.ink, lineHeight: 1 }}>
+                Lo que construimos
+              </h2>
+            </div>
+            <HoverLink
+              baseColor={t.textSecondary}
+              baseBorder="rgba(30,30,30,0.25)"
+              style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
+            >
+              Ver todos los proyectos →
+            </HoverLink>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+            {featured.map(p => <ProjectCard key={p.id} project={p} span={3} height={460} />)}
+          </div>
+        </section>
+      );
+    }
+
+    // ── COUNT UP ──────────────────────────────────────────────────────
+    function CountUp({ target, prefix = '', format }) {
+      const [value, setValue] = useState(0);
+      const ref = useRef(null);
+      const started = useRef(false);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting || started.current) return;
+          started.current = true;
+          const duration = 2000;
+          const startTime = performance.now();
+          const tick = (now) => {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setValue(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }, { threshold: 0.4 });
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+      }, [target]);
+
+      const display = format ? format(value) : value.toString();
+      return <span ref={ref}>{prefix}{display}</span>;
+    }
+
+    // ── NOSOTROS ──────────────────────────────────────────────────────
+    function NosotrosSection() {
+      const stats = [
+        { target: 32000, prefix: '+', label: 'M² Construidos',      fmt: n => n >= 1000 ? Math.floor(n/1000) + '.' + String(n % 1000).padStart(3,'0') : String(n) },
+        { target: 220,   prefix: '+', label: 'Unidades Funcionales', fmt: null },
+      ];
+      const bodyText = { fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary };
+      return (
+        <section style={{ padding: '120px 56px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
+            <div>
+              <SectionLabel>Nosotros</SectionLabel>
+              <h2 style={{
+                fontSize: 36, fontWeight: 700, letterSpacing: '-0.015em',
+                color: t.ink, lineHeight: 1.2, marginBottom: 32,
+              }}>
+                Tres generaciones construyendo en Buenos Aires
+              </h2>
+              <p style={{ ...bodyText, marginBottom: 20 }}>
+                Somos una empresa constructora familiar con una sólida trayectoria que se remonta a tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma de trabajo basada en la responsabilidad, el compromiso y la mejora continua.
+              </p>
+              <p style={{ ...bodyText, marginBottom: 56 }}>
+                Nos especializamos en el desarrollo de espacios multifuncionales pensados para optimizar el uso, la flexibilidad y el confort. Cada proyecto es una oportunidad de inversión respaldada por décadas de experiencia constructiva.
+              </p>
+
+              <div style={{ display: 'flex', gap: 48, marginBottom: 48 }}>
+                {stats.map((s, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em', color: t.accent, lineHeight: 1 }}>
+                      <CountUp target={s.target} prefix={s.prefix} format={s.fmt} />
+                    </div>
+                    <div style={{
+                      fontSize: 10, fontWeight: 600, letterSpacing: '0.14em',
+                      textTransform: 'uppercase', color: t.textTertiary, marginTop: 10,
+                    }}>
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <HoverLink
+                baseColor={t.ink}
+                baseBorder={t.ink}
+                style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
+              >
+                Conocer más sobre Rigma →
+              </HoverLink>
+            </div>
+
+            <Img src={IMGS.nosotros} alt="Interior · equipo / obra"
+              style={{ width: '100%', aspectRatio: '4/5', minHeight: 480, flexShrink: 0 }} />
+          </div>
+        </section>
+      );
+    }
+
+    // ── POR QUÉ ELEGIRNOS ─────────────────────────────────────────────
+    function PorQueSection() {
+      const pilares = [
+        {
+          icon: <Icon><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></Icon>,
+          titulo: 'Calidad en cada detalle',
+          desc: 'Materiales premium, puertas exclusivas y terminaciones de primer nivel que cuidan el valor de cada propiedad en el tiempo.',
+        },
+        {
+          icon: <Icon>
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/>
+          </Icon>,
+          titulo: 'Plazos que se cumplen',
+          desc: 'Obras con avance documentado y fechas de entrega comprometidas desde el primer día.',
+        },
+        {
+          icon: <Icon>
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </Icon>,
+          titulo: 'Trayectoria comprobada',
+          desc: 'Más de 32.000 m² construidos y tres generaciones en el rubro respaldan cada proyecto que firmamos.',
+        },
+        {
+          icon: <Icon>
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+          </Icon>,
+          titulo: 'Espacios multifuncionales',
+          desc: 'Proyectos pensados para optimizar el uso, el confort y la calidad de vida en cada metro cuadrado.',
+        },
+      ];
+      const sectionRef = useRef(null);
+      const [visible, setVisible] = useState(false);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+        }, { threshold: 0.6 });
+        if (sectionRef.current) observer.observe(sectionRef.current);
+        return () => observer.disconnect();
+      }, []);
+
+
+      return (
+        <section ref={sectionRef} style={{ padding: '120px 56px', background: t.bgWarm }}>
+          <SectionLabel>Por qué elegirnos</SectionLabel>
+          <h2 style={{
+            fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em',
+            color: t.textPrimary, lineHeight: 1, marginBottom: 80, maxWidth: 440,
+          }}>
+            Nuestra forma de construir
+          </h2>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40,
+            borderTop: `1px solid rgba(30,30,30,0.15)`, paddingTop: 56,
+          }}>
+            {pilares.map((p, i) => (
+              <div key={i} style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? 'translateY(0)' : 'translateY(28px)',
+                transition: 'opacity 1s ease, transform 1s ease',
+                transitionDelay: visible ? `${i * 220}ms` : '0ms',
+              }}>
+                <div style={{ marginBottom: 28 }}>{p.icon}</div>
+                <h3 style={{
+                  fontSize: 22, fontWeight: 700, letterSpacing: '-0.005em',
+                  color: t.textPrimary, lineHeight: 1.2, marginBottom: 14,
+                }}>
+                  {p.titulo}
+                </h3>
+                <p style={{ fontSize: 14, fontWeight: 400, lineHeight: 1.65, color: t.textSecondary }}>
+                  {p.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    // ── CONTACTO ──────────────────────────────────────────────────────
+    function ContactoSection() {
+      const [hovSubmit, setHovSubmit] = useState(false);
+      const fieldStyle = {
+        width: '100%', padding: '13px 16px',
+        fontSize: 13, fontWeight: 400,
+        color: t.onDarkPrimary,
+        background: 'rgba(255,255,255,0.07)',
+        border: `1px solid ${t.onDarkLine}`,
+        borderRadius: 2, appearance: 'none',
+      };
+      const labelStyle = {
+        display: 'block', fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: t.onDarkTertiary, marginBottom: 8,
+      };
+      return (
+        <section style={{ background: t.ink, padding: '120px 56px' }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
+            <SectionLabel dark>Contacto</SectionLabel>
+            <h2 style={{
+              fontSize: 66, fontWeight: 300, letterSpacing: '-0.03em',
+              color: t.onDarkPrimary, lineHeight: 1.05, marginBottom: 52,
+            }}>
+              Encontrá tu<br />
+              próxima{' '}
+              <em style={{ fontStyle: 'italic', fontWeight: 400, color: t.accent }}>
+                inversión
+              </em>
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Nombre completo</label>
+                  <input type="text" placeholder="Ej: María González" style={fieldStyle} readOnly />
+                </div>
+                <div>
+                  <label style={labelStyle}>Celular</label>
+                  <input type="text" placeholder="+54 11 ···· ····" style={fieldStyle} readOnly />
+                </div>
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input type="email" placeholder="nombre@email.com" style={fieldStyle} readOnly />
+              </div>
+              <div>
+                <label style={labelStyle}>Proyecto de interés</label>
+                <select style={{ ...fieldStyle, color: t.onDarkSecondary }} defaultValue="">
+                  <option value="" disabled style={{ background: t.inkElevated }}>Seleccioná un proyecto</option>
+                  <option value="cosquin"    style={{ background: t.inkElevated }}>Cosquín 1534</option>
+                  <option value="larrazabal" style={{ background: t.inkElevated }}>Av. Larrazábal 1255</option>
+                  <option value="zelada"     style={{ background: t.inkElevated }}>Zelada 6171</option>
+                  <option value="otro"       style={{ background: t.inkElevated }}>Otro / No sé aún</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Mensaje</label>
+                <textarea placeholder="Contanos qué información necesitás..."
+                  rows={3}
+                  style={{ ...fieldStyle, resize: 'none', overflow: 'hidden' }}
+                  onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                />
+              </div>
+              <button
+                onMouseEnter={() => setHovSubmit(true)}
+                onMouseLeave={() => setHovSubmit(false)}
+                style={{
+                  width: '100%', padding: '15px 24px',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
+                  background: hovSubmit ? t.accent : t.onDarkPrimary, color: t.ink,
+                  border: 'none', cursor: 'pointer', borderRadius: 2, marginTop: 4,
+                  transition: 'background 0.2s ease',
+                }}>
+                ENVIAR CONSULTA
+              </button>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── FOOTER ────────────────────────────────────────────────────────
+    function Footer() {
+      return (
+        <footer style={{ background: t.ink, borderTop: `1px solid ${t.onDarkLine}`, padding: '60px 56px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+            <div>
+              <div style={{ marginBottom: 24 }}><Logo size={44} color="rgba(255,255,255,0.85)" /></div>
+              <p style={{ fontSize: 13, fontWeight: 300, lineHeight: 2, color: t.onDarkSecondary, marginBottom: 16 }}>
+                Guardia Nacional 739, PB<br />Ciudad de Buenos Aires
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.9, color: t.onDarkSecondary }}>
+                Rigmagrupo@gmail.com<br />+54 11 6596 2401
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Proyectos</div>
+              {['Cosquín 1534', 'Av. Larrazábal 1255', 'Zelada 6171'].map(p => (
+                <div key={p} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{p}</div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Empresa</div>
+              {['Inicio', 'Nosotros', 'Proyectos', 'Contacto'].map(l => (
+                <div key={l} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{l}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{
+            paddingTop: 24, borderTop: `1px solid ${t.onDarkLine}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 400, color: t.onDarkTertiary, letterSpacing: '0.06em' }}>
+              © 2026 Rigma Group · Todos los derechos reservados
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: t.accent }}>
+              Viví diferente, viví RIGMA
+            </span>
+          </div>
+        </footer>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────────────────────
+    function App() {
+      return (
+        <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
+          <NavBar />
+          <Hero />
+          <ProyectosDestacados />
+          <NosotrosSection />
+          <PorQueSection />
+          <ContactoSection />
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
