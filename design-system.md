@@ -27,7 +27,7 @@ Rasgos clave:
 | Token          | Hex       | Uso                                                                            |
 |----------------|-----------|--------------------------------------------------------------------------------|
 | `bg`           | `#FBFBFB` | Fondo base del sitio y color claro de tipografía sobre oscuro.                 |
-| `bg-warm`      | `#F0E9E2` | Fondo terciario cálido — secciones de destaque sobre claro (ej. "Por qué elegirnos"). |
+| `bg-warm`      | `#E3E3E3` | Fondo terciario cálido — secciones de destaque sobre claro (ej. "Por qué elegirnos"). |
 | `accent`       | `#B59969` | Acento de marca. Italic editorial, kickers UPPERCASE, dot de status, separadores decorativos, hover de links sobre oscuro. |
 | `ink`          | `#1E1E1E` | Texto principal sobre claro. Fondo de secciones destacadas oscuras (hero, contacto, footer). |
 | `ink-elevated` | `#353631` | Superficie elevada sobre `ink` — panel de destaque dentro de sección oscura (ref. panel "CONSULTAS" del cerco). Cards, hover states, navbar scroll. |
