@@ -67,12 +67,9 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.30);
     }
-    @keyframes gridFadeIn {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .grid-fade-in {
-      animation: gridFadeIn 0.38s ease forwards;
+    @keyframes cardEnter {
+      from { opacity: 0.3; transform: translateY(3px); }
+      to   { opacity: 1;   transform: translateY(0); }
     }
   </style>
 </head>
@@ -110,10 +107,11 @@
     };
 
     const ALL_PROJECTS = [
-      { id: 'cosquin',    slug: 'cosquin-1534',    name: 'Cosquín 1534',        loc: 'Mataderos', status: 'En Ejecución', img: IMGS.cosquin },
-      { id: 'larrazabal', slug: 'larrazabal-1255',  name: 'Av. Larrazábal 1255', loc: 'Mataderos', status: 'En Ejecución', img: IMGS.larrazabal },
-      { id: 'zelada',     slug: 'zelada-6171',      name: 'Zelada 6171',          loc: 'Mataderos', status: 'Terminado',    img: IMGS.zelada },
-      { id: 'filler',     slug: 'murguiondo-2034',  name: 'Murguiondo 2034',      loc: 'Mataderos', status: 'Terminado',    img: IMGS.filler },
+      { id: 'cosquin',    slug: 'cosquin-1534',    name: 'Cosquín 1534',        loc: 'Mataderos', status: 'En Ejecución', img: IMGS.cosquin,    featured: true  },
+      { id: 'larrazabal', slug: 'larrazabal-1255',  name: 'Av. Larrazábal 1255', loc: 'Mataderos', status: 'En Ejecución', img: IMGS.larrazabal, featured: true  },
+      { id: 'zelada',     slug: 'zelada-6171',      name: 'Zelada 6171',          loc: 'Mataderos', status: 'Terminado',    img: IMGS.zelada,     featured: false },
+      { id: 'filler',     slug: 'murguiondo-2034',  name: 'Murguiondo 2034',      loc: 'Mataderos', status: 'Terminado',    img: IMGS.filler,     featured: false },
+      { id: 'proyecto5',  slug: 'proyecto-5',       name: 'Proyecto 5',           loc: 'Mataderos', status: 'Terminado',    img: IMGS.cosquin,    featured: false },
     ];
 
     // PROTOTIPO: coordenadas reales solo para Zelada. Cosquín y Larrazábal son aproximadas en Mataderos.
@@ -379,67 +377,74 @@
     }
 
     // ── PROJECT CARD ──────────────────────────────────────────────────
-    function ProjectCard({ project, size, span }) {
+    function ProjectCard({ project, size, span, index }) {
       const [hovered, setHovered] = useState(false);
       const isLg = size === 'lg';
       const pillLabel = project.status === 'En Ejecución' ? 'EN EJECUCIÓN' : 'TERMINADO';
 
       return (
-        <div
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          style={{
-            position: 'relative', cursor: 'pointer', overflow: 'hidden',
-            gridColumn: `span ${span}`,
-            height: isLg ? 460 : undefined,
-            aspectRatio: isLg ? undefined : '4/5',
-            transform: hovered ? 'scale(1.015)' : 'scale(1)',
-            transition: 'transform 0.5s ease',
-          }}
-        >
-          <Img src={project.img} alt={project.name}
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(to top, rgba(30,30,30,0.90) 0%, rgba(30,30,30,0.20) 55%, transparent 100%)',
-          }} />
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            padding: isLg ? '0 40px 36px' : '0 20px 20px',
-          }}>
-            <div style={{ marginBottom: isLg ? 14 : 10 }}>
-              <StatusPill status={pillLabel} dark />
-            </div>
-            <h2 style={{
-              fontSize: isLg ? 48 : 18,
-              fontWeight: isLg ? 700 : 600,
-              letterSpacing: isLg ? '-0.01em' : '0.01em',
-              textTransform: 'uppercase',
-              color: t.onDarkPrimary,
-              lineHeight: isLg ? 1 : 1.1,
-              marginBottom: isLg ? 8 : 6,
-            }}>
-              {project.name}
-            </h2>
-            <p style={{
-              fontSize: isLg ? 12 : 10,
-              fontWeight: 400, letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: t.onDarkSecondary,
-              marginBottom: isLg ? 22 : 14,
-            }}>
-              {project.loc}
-            </p>
+        // Wrapper: maneja grid placement + animación de entrada
+        <div style={{
+          gridColumn: `span ${span}`,
+          height: 460,
+          animation: 'cardEnter 0.6s ease-in-out both',
+          animationDelay: `${index * 30}ms`,
+        }}>
+          {/* Inner: maneja hover scale — separado para no conflictar con animation transform */}
+          <div
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              position: 'relative', cursor: 'pointer', overflow: 'hidden',
+              width: '100%', height: '100%',
+              transform: hovered ? 'scale(1.015)' : 'scale(1)',
+              transition: 'transform 0.5s ease',
+            }}
+          >
+            <Img src={project.img} alt={project.name}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: hovered ? t.accent : t.onDarkPrimary,
-              borderBottom: `1px solid ${hovered ? t.accent : 'rgba(255,255,255,0.35)'}`,
-              paddingBottom: 2,
-              transition: 'color 0.3s ease, border-color 0.3s ease',
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, rgba(30,30,30,0.90) 0%, rgba(30,30,30,0.20) 55%, transparent 100%)',
+            }} />
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              padding: isLg ? '0 40px 36px' : '0 20px 20px',
             }}>
-              VER PROYECTO →
+              <div style={{ marginBottom: isLg ? 14 : 10 }}>
+                <StatusPill status={pillLabel} dark />
+              </div>
+              <h2 style={{
+                fontSize: 22,
+                fontWeight: 700,
+                letterSpacing: '-0.01em',
+                textTransform: 'uppercase',
+                color: t.onDarkPrimary,
+                lineHeight: 1.1,
+                marginBottom: 8,
+              }}>
+                {project.name}
+              </h2>
+              <p style={{
+                fontSize: 11,
+                fontWeight: 400, letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: t.onDarkSecondary,
+                marginBottom: 18,
+              }}>
+                {project.loc}
+              </p>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: hovered ? t.accent : t.onDarkPrimary,
+                borderBottom: `1px solid ${hovered ? t.accent : 'rgba(255,255,255,0.35)'}`,
+                paddingBottom: 2,
+                transition: 'color 0.3s ease, border-color 0.3s ease',
+              }}>
+                VER PROYECTO →
+              </div>
             </div>
           </div>
         </div>
@@ -452,13 +457,12 @@
 
       let cards;
       if (filter === 'todos') {
-        const enEjecucion = projects.filter(p => p.status === 'En Ejecución');
-        const terminados  = projects.filter(p => p.status !== 'En Ejecución');
-        const lgSpan = getResponsiveSpan(enEjecucion.length);
-        const mdSpan = getResponsiveSpan(terminados.length);
+        const featured = projects.filter(p => p.featured);
+        const resto    = projects.filter(p => !p.featured);
+        const mdSpan   = getResponsiveSpan(resto.length);
         cards = [
-          ...enEjecucion.map(p => ({ project: p, size: 'lg', span: lgSpan })),
-          ...terminados.map(p =>  ({ project: p, size: 'md', span: mdSpan })),
+          ...featured.map(p => ({ project: p, size: 'lg', span: 3 })),
+          ...resto.map(p =>    ({ project: p, size: 'md', span: mdSpan })),
         ];
       } else {
         const size = filter === 'en-ejecucion' ? 'lg' : 'md';
@@ -468,8 +472,8 @@
 
       return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
-          {cards.map(({ project, size, span }) => (
-            <ProjectCard key={project.id} project={project} size={size} span={span} />
+          {cards.map(({ project, size, span }, index) => (
+            <ProjectCard key={project.id} project={project} size={size} span={span} index={index} />
           ))}
         </div>
       );
@@ -718,7 +722,7 @@
           <NavBar />
           <PageHeader />
           <FilterTabs active={filter} onChange={setFilter} />
-          <section key={filter} className="grid-fade-in" style={{ padding: '48px 56px 80px' }}>
+          <section key={filter} style={{ padding: '48px 56px 80px' }}>
             <ProyectosGrid projects={visible} filter={filter} />
           </section>
           <MapaSection />
