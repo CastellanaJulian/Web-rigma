@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nosotros — Alta Fidelidad · Rigma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: #d0d0d0; -webkit-font-smoothing: antialiased; }
+    #root { max-width: 1440px; margin: 0 auto; background: #FBFBFB; box-shadow: 0 0 80px rgba(0,0,0,0.16); }
+    input, textarea, select { font-family: 'Montserrat', sans-serif; outline: none; }
+    button { font-family: 'Montserrat', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── DESIGN TOKENS ─────────────────────────────────────────────────
+    const t = {
+      bg:            '#FBFBFB',
+      bgWarm:        '#E3E3E3',
+      surface:       '#E9E9E9',
+      surfaceWarm:   '#CFC5BC',
+      accent:        '#B59969',
+      ink:           '#1E1E1E',
+      inkElevated:   '#353631',
+      textPrimary:   '#1E1E1E',
+      textSecondary: 'rgba(30,30,30,0.65)',
+      textTertiary:  'rgba(30,30,30,0.45)',
+      line:          '#E9E9E9',
+      onDarkPrimary:   '#FFFFFF',
+      onDarkSecondary: 'rgba(255,255,255,0.65)',
+      onDarkTertiary:  'rgba(255,255,255,0.45)',
+      onDarkLine:      'rgba(255,255,255,0.15)',
+    };
+
+    // ── IMG CON FALLBACK ──────────────────────────────────────────────
+    function Img({ src, alt = '', style = {} }) {
+      const [err, setErr] = useState(false);
+      if (err) return <Placeholder label={alt} style={style} />;
+      return (
+        <img src={src} alt={alt} onError={() => setErr(true)}
+          style={{ objectFit: 'cover', display: 'block', ...style }} />
+      );
+    }
+
+    // ── PLACEHOLDER ───────────────────────────────────────────────────
+    function Placeholder({ label, style = {} }) {
+      return (
+        <div style={{
+          background: `repeating-linear-gradient(135deg, ${t.surface} 0 14px, #d0d0d0 14px 15px)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...style,
+        }}>
+          {label && (
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              color: t.textTertiary, background: 'rgba(255,255,255,0.88)',
+              padding: '5px 14px', borderRadius: 2, textAlign: 'center', maxWidth: '80%',
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // ── SECTION LABEL ─────────────────────────────────────────────────
+    function SectionLabel({ children, dark = false }) {
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: dark ? t.onDarkSecondary : t.textSecondary,
+          marginBottom: 36,
+        }}>
+          <span style={{ width: 20, height: 1, background: t.accent, flexShrink: 0 }} />
+          {children}
+        </div>
+      );
+    }
+
+    // ── LOGO ──────────────────────────────────────────────────────────
+    function Logo({ size = 40, color = t.ink }) {
+      const border = Math.round(size * 0.055);
+      const fs     = Math.round(size * 0.4);
+      const pad    = Math.round(size * 0.12);
+      return (
+        <div style={{
+          width: size, height: size, flexShrink: 0,
+          border: `${border}px solid ${color}`,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: `0 ${pad}px`, lineHeight: 1.05,
+        }}>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>RIG</div>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>MA</div>
+        </div>
+      );
+    }
+
+    // ── HOVER LINK ────────────────────────────────────────────────────
+    function HoverLink({ children, baseColor, baseBorder, style = {} }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <span
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{
+            color: hov ? t.accent : baseColor,
+            borderBottom: `1px solid ${hov ? t.accent : baseBorder}`,
+            cursor: 'pointer',
+            transition: 'color 0.2s ease, border-color 0.2s ease',
+            ...style,
+          }}
+        >
+          {children}
+        </span>
+      );
+    }
+
+    // ── NAVBAR ────────────────────────────────────────────────────────
+    function NavBar() {
+      return (
+        <nav style={{
+          position: 'sticky', top: 0, zIndex: 100,
+          height: 64,
+          background: 'rgba(251,251,251,0.92)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderBottom: `1px solid ${t.line}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 56px',
+        }}>
+          <Logo size={40} color={t.ink} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+            {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
+              <span key={link} style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: link === 'NOSOTROS' ? t.ink : t.textSecondary,
+                cursor: 'pointer',
+                borderBottom: link === 'NOSOTROS' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
+                paddingBottom: 3,
+              }}>
+                {link}
+              </span>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ── COUNT UP ──────────────────────────────────────────────────────
+    function CountUp({ target, prefix = '', format }) {
+      const [value, setValue] = useState(0);
+      const ref = useRef(null);
+      const started = useRef(false);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting || started.current) return;
+          started.current = true;
+          const duration = 2000;
+          const startTime = performance.now();
+          const tick = (now) => {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setValue(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }, { threshold: 0.4 });
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+      }, [target]);
+
+      const display = format ? format(value) : value.toString();
+      return <span ref={ref}>{prefix}{display}</span>;
+    }
+
+    // ── 01 · PAGE HEADER ──────────────────────────────────────────────
+    function PageHeader() {
+      return (
+        <section style={{ padding: '80px 56px 64px' }}>
+          <SectionLabel>Nosotros</SectionLabel>
+          <h1 style={{
+            fontSize: 56, fontWeight: 700, lineHeight: 1.05,
+            letterSpacing: '-0.025em', color: t.ink,
+            maxWidth: 680, marginBottom: 24,
+          }}>
+            Tres generaciones.<br />
+            Una forma de construir.
+          </h1>
+          <p style={{
+            fontSize: 16, fontWeight: 300, lineHeight: 1.7,
+            color: t.textSecondary, maxWidth: 540,
+          }}>
+            Empresa constructora familiar fundada en 2016, con trayectoria de tres generaciones en el rubro. Responsabilidad, compromiso y mejora continua en cada proyecto.
+          </p>
+        </section>
+      );
+    }
+
+    // ── 02 · HISTORIA ─────────────────────────────────────────────────
+    function HistoriaSection() {
+      return (
+        <section style={{ padding: '48px 56px 120px', borderBottom: `1px solid ${t.line}` }}>
+          <SectionLabel>Historia</SectionLabel>
+
+          <Img
+            src="./assets/img-obra.jpg"
+            alt="foto · equipo / obra / empresa"
+            style={{ width: '100%', aspectRatio: '16/6', objectPosition: 'center bottom', marginBottom: 64 }}
+          />
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+
+            {/* Columna izquierda: copy historia */}
+            <div>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: 1.75, color: t.textSecondary, marginBottom: 24 }}>
+                Somos una empresa constructora familiar con una sólida trayectoria que se remonta a tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma de trabajo basada en la responsabilidad, el compromiso y la mejora continua. Este recorrido nos permite combinar la tradición constructiva con una mirada actual, adaptada a las nuevas necesidades del mercado.
+              </p>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: 1.75, color: t.textSecondary }}>
+                Nos especializamos en el desarrollo de espacios multifuncionales, pensados para optimizar el uso, la flexibilidad y el confort en cada proyecto. Entendemos cada proyecto como único, y trabajamos con cercanía con el cliente para lograr resultados que combinen funcionalidad, estética y durabilidad.
+              </p>
+            </div>
+
+            {/* Columna derecha: métricas con animación contador */}
+            <div>
+              <div style={{ paddingBottom: 48, borderBottom: `1px solid ${t.line}` }}>
+                <div style={{
+                  fontSize: 56, fontWeight: 700, lineHeight: 1,
+                  letterSpacing: '-0.02em', color: t.accent, marginBottom: 12,
+                }}>
+                  <CountUp
+                    target={32000}
+                    prefix="+"
+                    format={n => n >= 1000 ? Math.floor(n / 1000) + '.' + String(n % 1000).padStart(3, '0') : String(n)}
+                  />
+                </div>
+                <div style={{
+                  fontSize: 11, fontWeight: 500, letterSpacing: '0.10em',
+                  textTransform: 'uppercase', color: t.textSecondary,
+                }}>
+                  M² construidos
+                </div>
+              </div>
+              <div style={{ paddingTop: 48 }}>
+                <div style={{
+                  fontSize: 56, fontWeight: 700, lineHeight: 1,
+                  letterSpacing: '-0.02em', color: t.accent, marginBottom: 12,
+                }}>
+                  <CountUp target={220} prefix="+" />
+                </div>
+                <div style={{
+                  fontSize: 11, fontWeight: 500, letterSpacing: '0.10em',
+                  textTransform: 'uppercase', color: t.textSecondary,
+                }}>
+                  Unidades funcionales
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      );
+    }
+
+    // ── 03 · FILOSOFÍA ────────────────────────────────────────────────
+    function PilaresSection() {
+      const pillars = [
+        {
+          title: 'Calidad en cada etapa',
+          desc: 'Cuidamos los detalles constructivos desde el diseño hasta la ejecución. La calidad no es un resultado: es el proceso que lo garantiza.',
+        },
+        {
+          title: 'Compromiso con el cliente',
+          desc: 'Trabajamos en cercanía con quienes confían en nosotros. Entendemos cada proyecto como único y lo tratamos como tal.',
+        },
+        {
+          title: 'Espacios que agregan valor',
+          desc: 'Desarrollamos espacios multifuncionales pensados para optimizar el uso, la flexibilidad y el confort de cada habitante.',
+        },
+      ];
+
+      const sectionRef = useRef(null);
+      const [visible, setVisible] = useState(false);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+        }, { threshold: 0.3 });
+        if (sectionRef.current) observer.observe(sectionRef.current);
+        return () => observer.disconnect();
+      }, []);
+
+      return (
+        <section style={{ background: t.bgWarm, padding: '120px 56px' }}>
+          <SectionLabel>Filosofía de trabajo</SectionLabel>
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr',
+            gap: 80, alignItems: 'stretch',
+          }}>
+
+            {/* Columna izquierda: imagen real */}
+            <div style={{ position: 'relative', overflow: 'hidden', minHeight: 400 }}>
+              <Img
+                src="./assets/img-plano.jpg"
+                alt="foto · equipo / obra / empresa"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+              />
+            </div>
+
+            {/* Columna derecha: pilares con animación stagger */}
+            <div ref={sectionRef} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              {pillars.map((p, i) => (
+                <div key={i} style={{
+                  paddingTop: i === 0 ? 0 : 36,
+                  paddingBottom: i < pillars.length - 1 ? 36 : 0,
+                  borderBottom: i < pillars.length - 1 ? '1px solid rgba(30,30,30,0.15)' : 'none',
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? 'translateY(0)' : 'translateY(28px)',
+                  transition: 'opacity 1s ease, transform 1s ease',
+                  transitionDelay: visible ? `${i * 220}ms` : '0ms',
+                }}>
+                  <div style={{
+                    fontSize: 20, fontWeight: 600, color: t.textPrimary,
+                    lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 10,
+                  }}>
+                    {p.title}
+                  </div>
+                  <div style={{
+                    fontSize: 14, fontWeight: 400, lineHeight: 1.7,
+                    color: t.textSecondary,
+                  }}>
+                    {p.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+      );
+    }
+
+    // ── 04 · CTA REDIRECCIÓN ──────────────────────────────────────────
+    const PREVIEW_PROJECTS = [
+      { name: 'Cosquín 1534',        loc: 'Mataderos', img: './assets/img-1.jpg' },
+      { name: 'Av. Larrazábal 1255', loc: 'Mataderos', img: './assets/img-2.jpg' },
+    ];
+
+    function ProjectPreview({ name, loc, img }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <div
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{
+            flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer',
+            aspectRatio: '4/3',
+            transform: hov ? 'scale(1.015)' : 'scale(1)',
+            transition: 'transform 0.5s ease',
+          }}
+        >
+          <Img src={img} alt={name}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(30,30,30,0.85) 0%, rgba(30,30,30,0.1) 50%, transparent 100%)',
+          }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 20px 20px' }}>
+            <h3 style={{
+              fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em',
+              textTransform: 'uppercase', color: t.onDarkPrimary, lineHeight: 1.1, marginBottom: 5,
+            }}>
+              {name}
+            </h3>
+            <p style={{
+              fontSize: 10, fontWeight: 400, letterSpacing: '0.08em',
+              textTransform: 'uppercase', color: t.onDarkSecondary,
+            }}>
+              {loc}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    function RedireccionSection() {
+      const [hovBtn, setHovBtn] = useState(false);
+
+      return (
+        <section style={{ position: 'relative', overflow: 'hidden', minHeight: 580, background: t.ink }}>
+
+          {/* Imagen de fondo */}
+          <Img
+            src="./assets/img-4.jpg"
+            alt="foto · obra / empresa"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+          />
+
+          {/* Overlay — mismo gradiente que el hero */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(30,30,30,0.55) 0%, rgba(30,30,30,0.50) 40%, rgba(30,30,30,0.92) 100%)',
+          }} />
+
+          {/* Contenido sobre la imagen */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '0 56px 80px', zIndex: 2,
+          }}>
+            <SectionLabel dark>Más sobre nosotros</SectionLabel>
+            <h2 style={{
+              fontSize: 48, fontWeight: 700, lineHeight: 1.05,
+              letterSpacing: '-0.02em', color: t.onDarkPrimary,
+              marginBottom: 20, maxWidth: 620,
+            }}>
+              Conocé nuestros proyectos o escribinos directamente.
+            </h2>
+            <p style={{
+              fontSize: 15, fontWeight: 300, lineHeight: 1.75,
+              color: t.onDarkSecondary, marginBottom: 40, maxWidth: 520,
+            }}>
+              Cada obra tiene su historia. Visitá el portfolio para ver disponibilidad y detalle de cada proyecto, o escribinos para consultas personalizadas.
+            </p>
+            <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+              <button
+                onMouseEnter={() => setHovBtn(true)}
+                onMouseLeave={() => setHovBtn(false)}
+                style={{
+                  padding: '14px 28px',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                  background: hovBtn ? t.accent : t.onDarkPrimary,
+                  color: t.ink,
+                  border: 'none', cursor: 'pointer', borderRadius: 2,
+                  transition: 'background 0.2s ease',
+                }}>
+                VER PROYECTOS →
+              </button>
+              <HoverLink
+                baseColor={t.onDarkPrimary}
+                baseBorder={t.onDarkSecondary}
+                style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em', paddingBottom: 2 }}
+              >
+                Contactarnos →
+              </HoverLink>
+            </div>
+          </div>
+
+        </section>
+      );
+    }
+
+    // ── FOOTER ────────────────────────────────────────────────────────
+    function Footer() {
+      return (
+        <footer style={{ background: t.ink, borderTop: `1px solid ${t.onDarkLine}`, padding: '60px 56px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+            <div>
+              <div style={{ marginBottom: 24 }}><Logo size={44} color="rgba(255,255,255,0.85)" /></div>
+              <p style={{ fontSize: 13, fontWeight: 300, lineHeight: 2, color: t.onDarkSecondary, marginBottom: 16 }}>
+                Guardia Nacional 739, PB<br />Ciudad de Buenos Aires
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.9, color: t.onDarkSecondary }}>
+                Rigmagrupo@gmail.com<br />+54 11 6596 2401
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Proyectos</div>
+              {['Cosquín 1534', 'Av. Larrazábal 1255', 'Zelada 6171'].map(p => (
+                <div key={p} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{p}</div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Empresa</div>
+              {['Inicio', 'Nosotros', 'Proyectos', 'Contacto'].map(l => (
+                <div key={l} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{l}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{
+            paddingTop: 24, borderTop: `1px solid ${t.onDarkLine}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 400, color: t.onDarkTertiary, letterSpacing: '0.06em' }}>
+              © 2026 Rigma Group · Todos los derechos reservados
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: t.accent }}>
+              Viví diferente, viví RIGMA
+            </span>
+          </div>
+        </footer>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────────────────────
+    function App() {
+      return (
+        <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
+          <NavBar />
+          <PageHeader />
+          <HistoriaSection />
+          <PilaresSection />
+          <RedireccionSection />
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

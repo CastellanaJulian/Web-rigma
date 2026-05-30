@@ -53,6 +53,10 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
       z-index: 10 !important;
     }
+    @keyframes cardSlideUp {
+      from { transform: translateY(18px); }
+      to   { transform: translateY(0); }
+    }
     .rigma-marker {
       width: 36px; height: 36px;
       background: #B59969;
@@ -66,10 +70,6 @@
       background: #1E1E1E;
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.30);
-    }
-    @keyframes cardEnter {
-      from { opacity: 0.3; transform: translateY(3px); }
-      to   { opacity: 1;   transform: translateY(0); }
     }
   </style>
 </head>
@@ -387,8 +387,8 @@
         <div style={{
           gridColumn: `span ${span}`,
           height: 460,
-          animation: 'cardEnter 0.6s ease-in-out both',
-          animationDelay: `${index * 30}ms`,
+          animation: 'cardSlideUp 0.5s ease-out both',
+          animationDelay: `${index * 40}ms`,
         }}>
           {/* Inner: maneja hover scale — separado para no conflictar con animation transform */}
           <div
@@ -471,7 +471,7 @@
       }
 
       return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+        <div key={filter} style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
           {cards.map(({ project, size, span }, index) => (
             <ProjectCard key={project.id} project={project} size={size} span={span} index={index} />
           ))}
@@ -517,8 +517,8 @@
 
         const pinIcon = L.divIcon({
           html: `<div class="rigma-marker">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17 11V3H7v4H3v14h18V11h-4zM9 19H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V9h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/>
             </svg>
           </div>`,
           className: '',
@@ -714,16 +714,29 @@
 
     // ── APP ───────────────────────────────────────────────────────────
     function App() {
-      const [filter, setFilter] = useState('todos');
-      const visible = filterProjects(ALL_PROJECTS, filter);
+      const [filter, setFilter]           = useState('todos');
+      const [displayFilter, setDisplayFilter] = useState('todos');
+      const [fading, setFading]           = useState(false);
+
+      const handleFilterChange = (f) => {
+        setFilter(f);
+        setFading(true);
+        setTimeout(() => { setDisplayFilter(f); setFading(false); }, 240);
+      };
+
+      const visible = filterProjects(ALL_PROJECTS, displayFilter);
 
       return (
         <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
           <NavBar />
           <PageHeader />
-          <FilterTabs active={filter} onChange={setFilter} />
-          <section key={filter} style={{ padding: '48px 56px 80px' }}>
-            <ProyectosGrid projects={visible} filter={filter} />
+          <FilterTabs active={filter} onChange={handleFilterChange} />
+          <section style={{
+            padding: '48px 56px 80px',
+            opacity: fading ? 0 : 1,
+            transition: fading ? 'opacity 0.2s ease' : 'opacity 0.6s ease',
+          }}>
+            <ProyectosGrid projects={visible} filter={displayFilter} />
           </section>
           <MapaSection />
           <ContactoSection />
