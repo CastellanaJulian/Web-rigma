@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyectos — Alta Fidelidad · Rigma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: #d0d0d0; -webkit-font-smoothing: antialiased; }
+    #root { max-width: 1440px; margin: 0 auto; background: #FBFBFB; box-shadow: 0 0 80px rgba(0,0,0,0.16); }
+    input, textarea, select { font-family: 'Montserrat', sans-serif; outline: none; }
+    button { font-family: 'Montserrat', sans-serif; }
+    .leaflet-container { font-family: 'Montserrat', sans-serif; }
+    .rigma-tooltip {
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+      background: #1E1E1E !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-radius: 2px !important;
+      padding: 6px 14px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+      white-space: nowrap !important;
+    }
+    .rigma-tooltip.leaflet-tooltip-top::before { border-top-color: #1E1E1E !important; }
+    .leaflet-popup-content-wrapper {
+      padding: 0 !important;
+      border-radius: 2px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14) !important;
+      overflow: hidden;
+      border: none !important;
+    }
+    .leaflet-popup-content { margin: 0 !important; }
+    .leaflet-popup-tip { background: #FBFBFB !important; }
+    .leaflet-popup-close-button {
+      width: 24px !important; height: 24px !important;
+      line-height: 24px !important; text-align: center !important;
+      background: rgba(255,255,255,0.92) !important;
+      color: #1E1E1E !important;
+      font-size: 14px !important;
+      top: 8px !important; right: 8px !important;
+      border-radius: 2px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+      z-index: 10 !important;
+    }
+    .rigma-marker {
+      width: 36px; height: 36px;
+      background: #B59969;
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .rigma-marker:hover {
+      background: #1E1E1E;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.30);
+    }
+    @keyframes gridFadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .grid-fade-in {
+      animation: gridFadeIn 0.38s ease forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── DESIGN TOKENS ─────────────────────────────────────────────────
+    const t = {
+      bg:            '#FBFBFB',
+      bgWarm:        '#E3E3E3',
+      surface:       '#E9E9E9',
+      surfaceWarm:   '#CFC5BC',
+      accent:        '#B59969',
+      ink:           '#1E1E1E',
+      inkElevated:   '#353631',
+      textPrimary:   '#1E1E1E',
+      textSecondary: 'rgba(30,30,30,0.65)',
+      textTertiary:  'rgba(30,30,30,0.45)',
+      line:          '#E9E9E9',
+      onDarkPrimary:   '#FFFFFF',
+      onDarkSecondary: 'rgba(255,255,255,0.65)',
+      onDarkTertiary:  'rgba(255,255,255,0.45)',
+      onDarkLine:      'rgba(255,255,255,0.15)',
+    };
+
+    // ── DATOS ─────────────────────────────────────────────────────────
+    const IMGS = {
+      cosquin:    './assets/img-1.jpg',
+      larrazabal: './assets/img-2.jpg',
+      zelada:     './assets/img-3.jpg',
+      filler:     './assets/img-4.jpg',
+    };
+
+    const ALL_PROJECTS = [
+      { id: 'cosquin',    slug: 'cosquin-1534',    name: 'Cosquín 1534',        loc: 'Mataderos', status: 'En Ejecución', img: IMGS.cosquin },
+      { id: 'larrazabal', slug: 'larrazabal-1255',  name: 'Av. Larrazábal 1255', loc: 'Mataderos', status: 'En Ejecución', img: IMGS.larrazabal },
+      { id: 'zelada',     slug: 'zelada-6171',      name: 'Zelada 6171',          loc: 'Mataderos', status: 'Terminado',    img: IMGS.zelada },
+      { id: 'filler',     slug: 'murguiondo-2034',  name: 'Murguiondo 2034',      loc: 'Mataderos', status: 'Terminado',    img: IMGS.filler },
+    ];
+
+    // PROTOTIPO: coordenadas reales solo para Zelada. Cosquín y Larrazábal son aproximadas en Mataderos.
+    const MAP_PROJECTS = [
+      {
+        name: 'Zelada 6171', slug: 'zelada-6171', lat: -34.6568, lng: -58.5041,
+        img: IMGS.zelada, status: 'Terminado', loc: 'Mataderos',
+        typologies: 'Entregado Jun 2025 · 2.150 m²',
+      },
+      {
+        name: 'Cosquín 1534', slug: 'cosquin-1534', lat: -34.6540, lng: -58.5015,
+        img: IMGS.cosquin, status: 'En Ejecución', loc: 'Mataderos',
+        typologies: '8 deptos · 4 ambientes · 112–120 m²',
+      },
+      {
+        name: 'Av. Larrazábal 1255', slug: 'larrazabal-1255', lat: -34.6595, lng: -58.5065,
+        img: IMGS.larrazabal, status: 'En Ejecución', loc: 'Mataderos',
+        typologies: '17 unidades funcionales',
+      },
+    ];
+
+    const FILTERS = [
+      { id: 'todos',        label: 'Todos' },
+      { id: 'en-ejecucion', label: 'En ejecución' },
+      { id: 'terminados',   label: 'Terminados' },
+    ];
+
+    function filterProjects(projects, filter) {
+      if (filter === 'en-ejecucion') return projects.filter(p => p.status === 'En Ejecución');
+      if (filter === 'terminados')   return projects.filter(p => p.status === 'Terminado');
+      return projects;
+    }
+
+    function getResponsiveSpan(count) {
+      if (count === 1) return 6;
+      if (count % 3 === 0) return 2;
+      return 3;
+    }
+
+    // ── IMG CON FALLBACK ──────────────────────────────────────────────
+    function Img({ src, alt = '', style = {} }) {
+      const [err, setErr] = useState(false);
+      if (err) return <Placeholder label={alt} style={style} />;
+      return (
+        <img src={src} alt={alt} onError={() => setErr(true)}
+          style={{ objectFit: 'cover', display: 'block', ...style }} />
+      );
+    }
+
+    // ── PLACEHOLDER ───────────────────────────────────────────────────
+    function Placeholder({ label, style = {} }) {
+      return (
+        <div style={{
+          background: `repeating-linear-gradient(135deg, ${t.surface} 0 14px, #d0d0d0 14px 15px)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...style,
+        }}>
+          {label && (
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              color: t.textTertiary, background: 'rgba(255,255,255,0.88)',
+              padding: '5px 14px', borderRadius: 2, textAlign: 'center', maxWidth: '80%',
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // ── SECTION LABEL ─────────────────────────────────────────────────
+    function SectionLabel({ children, dark = false }) {
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: dark ? t.onDarkSecondary : t.textSecondary,
+          marginBottom: 36,
+        }}>
+          <span style={{ width: 20, height: 1, background: t.accent, flexShrink: 0 }} />
+          {children}
+        </div>
+      );
+    }
+
+    // ── STATUS PILL ───────────────────────────────────────────────────
+    function StatusPill({ status, dark = false }) {
+      const isActive = status === 'EN EJECUCIÓN';
+      return (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '5px 12px',
+          border: dark ? `1px solid ${t.onDarkLine}` : `1px solid ${t.line}`,
+          background: dark ? 'rgba(255,255,255,0.10)' : 'transparent',
+          color: dark ? t.onDarkPrimary : t.textPrimary,
+          borderRadius: 2,
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: isActive ? t.accent : (dark ? t.onDarkTertiary : t.textTertiary),
+            flexShrink: 0,
+          }} />
+          {status}
+        </span>
+      );
+    }
+
+    // ── LOGO ──────────────────────────────────────────────────────────
+    function Logo({ size = 40, color = t.ink }) {
+      const border = Math.round(size * 0.055);
+      const fs     = Math.round(size * 0.4);
+      const pad    = Math.round(size * 0.12);
+      return (
+        <div style={{
+          width: size, height: size, flexShrink: 0,
+          border: `${border}px solid ${color}`,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: `0 ${pad}px`, lineHeight: 1.05,
+        }}>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>RIG</div>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>MA</div>
+        </div>
+      );
+    }
+
+    // ── HOVER LINK ────────────────────────────────────────────────────
+    function HoverLink({ children, baseColor, baseBorder, style = {} }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <span
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+          style={{
+            color: hov ? t.accent : baseColor,
+            borderBottom: `1px solid ${hov ? t.accent : baseBorder}`,
+            cursor: 'pointer',
+            transition: 'color 0.2s ease, border-color 0.2s ease',
+            ...style,
+          }}
+        >
+          {children}
+        </span>
+      );
+    }
+
+    // ── NAVBAR ────────────────────────────────────────────────────────
+    function NavBar() {
+      return (
+        <nav style={{
+          position: 'sticky', top: 0, zIndex: 100,
+          height: 64,
+          background: 'rgba(251,251,251,0.92)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderBottom: `1px solid ${t.line}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 56px',
+        }}>
+          <Logo size={40} color={t.ink} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+            {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
+              <span key={link} style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: link === 'PROYECTOS' ? t.ink : t.textSecondary,
+                cursor: 'pointer',
+                borderBottom: link === 'PROYECTOS' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
+                paddingBottom: 3,
+              }}>
+                {link}
+              </span>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ── PAGE HEADER ───────────────────────────────────────────────────
+    function PageHeader() {
+      return (
+        <section style={{ padding: '80px 56px 64px' }}>
+          <SectionLabel>Proyectos</SectionLabel>
+          <h1 style={{
+            fontSize: 56, fontWeight: 700, letterSpacing: '-0.02em',
+            color: t.ink, lineHeight: 1, marginBottom: 20,
+          }}>
+            Nuestros proyectos
+          </h1>
+          <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.6, color: t.textSecondary, maxWidth: 520 }}>
+            Lo que estamos construyendo y lo que ya entregamos.
+            Cada proyecto, un estándar de calidad y cumplimiento.
+          </p>
+        </section>
+      );
+    }
+
+    // ── FILTER TABS ───────────────────────────────────────────────────
+    function FilterTabs({ active, onChange }) {
+      return (
+        <div style={{ padding: '0 56px', borderBottom: `1px solid ${t.line}` }}>
+          <div style={{ display: 'flex', gap: 40 }}>
+            {FILTERS.map(f => {
+              const isActive = f.id === active;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => onChange(f.id)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: '0 0 16px',
+                    fontSize: 11, fontWeight: isActive ? 600 : 500,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    color: isActive ? t.ink : t.textSecondary,
+                    borderBottom: isActive ? `2px solid ${t.accent}` : '2px solid transparent',
+                    marginBottom: -1,
+                    fontFamily: "'Montserrat', sans-serif",
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ── EMPTY STATE ───────────────────────────────────────────────────
+    function EmptyState() {
+      return (
+        <div style={{
+          padding: '96px 0', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', textAlign: 'center', gap: 16,
+        }}>
+          <div style={{
+            width: 48, height: 48, border: `1px solid ${t.line}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 8,
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke={t.textSecondary} strokeWidth="1.4" strokeLinecap="round">
+              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+          </div>
+          <p style={{ fontSize: 14, fontWeight: 600, color: t.ink, letterSpacing: '0.01em' }}>
+            Pronto sumaremos nuevos proyectos en esta categoría.
+          </p>
+          <p style={{ fontSize: 13, fontWeight: 300, color: t.textSecondary, maxWidth: 320, lineHeight: 1.7 }}>
+            Mientras tanto podés escribirnos y contarnos qué estás buscando.
+          </p>
+          <HoverLink
+            baseColor={t.ink}
+            baseBorder={t.ink}
+            style={{ marginTop: 8, fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', paddingBottom: 2 }}
+          >
+            ESCRIBIR POR WHATSAPP
+          </HoverLink>
+        </div>
+      );
+    }
+
+    // ── PROJECT CARD ──────────────────────────────────────────────────
+    function ProjectCard({ project, size, span }) {
+      const [hovered, setHovered] = useState(false);
+      const isLg = size === 'lg';
+      const pillLabel = project.status === 'En Ejecución' ? 'EN EJECUCIÓN' : 'TERMINADO';
+
+      return (
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            position: 'relative', cursor: 'pointer', overflow: 'hidden',
+            gridColumn: `span ${span}`,
+            height: isLg ? 460 : undefined,
+            aspectRatio: isLg ? undefined : '4/5',
+            transform: hovered ? 'scale(1.015)' : 'scale(1)',
+            transition: 'transform 0.5s ease',
+          }}
+        >
+          <Img src={project.img} alt={project.name}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(30,30,30,0.90) 0%, rgba(30,30,30,0.20) 55%, transparent 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: isLg ? '0 40px 36px' : '0 20px 20px',
+          }}>
+            <div style={{ marginBottom: isLg ? 14 : 10 }}>
+              <StatusPill status={pillLabel} dark />
+            </div>
+            <h2 style={{
+              fontSize: isLg ? 48 : 18,
+              fontWeight: isLg ? 700 : 600,
+              letterSpacing: isLg ? '-0.01em' : '0.01em',
+              textTransform: 'uppercase',
+              color: t.onDarkPrimary,
+              lineHeight: isLg ? 1 : 1.1,
+              marginBottom: isLg ? 8 : 6,
+            }}>
+              {project.name}
+            </h2>
+            <p style={{
+              fontSize: isLg ? 12 : 10,
+              fontWeight: 400, letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: t.onDarkSecondary,
+              marginBottom: isLg ? 22 : 14,
+            }}>
+              {project.loc}
+            </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: hovered ? t.accent : t.onDarkPrimary,
+              borderBottom: `1px solid ${hovered ? t.accent : 'rgba(255,255,255,0.35)'}`,
+              paddingBottom: 2,
+              transition: 'color 0.3s ease, border-color 0.3s ease',
+            }}>
+              VER PROYECTO →
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── PROYECTOS GRID ────────────────────────────────────────────────
+    function ProyectosGrid({ projects, filter }) {
+      if (projects.length === 0) return <EmptyState />;
+
+      let cards;
+      if (filter === 'todos') {
+        const enEjecucion = projects.filter(p => p.status === 'En Ejecución');
+        const terminados  = projects.filter(p => p.status !== 'En Ejecución');
+        const lgSpan = getResponsiveSpan(enEjecucion.length);
+        const mdSpan = getResponsiveSpan(terminados.length);
+        cards = [
+          ...enEjecucion.map(p => ({ project: p, size: 'lg', span: lgSpan })),
+          ...terminados.map(p =>  ({ project: p, size: 'md', span: mdSpan })),
+        ];
+      } else {
+        const size = filter === 'en-ejecucion' ? 'lg' : 'md';
+        const span = getResponsiveSpan(projects.length);
+        cards = projects.map(p => ({ project: p, size, span }));
+      }
+
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+          {cards.map(({ project, size, span }) => (
+            <ProjectCard key={project.id} project={project} size={size} span={span} />
+          ))}
+        </div>
+      );
+    }
+
+    // ── MAPA SECTION ──────────────────────────────────────────────────
+    // PROTOTIPO: Leaflet + OSM. En producción: reemplazar por Mapbox GL JS con estilo oscuro.
+    function MapaSection() {
+      const mapRef         = useRef(null);
+      const mapInstanceRef = useRef(null);
+
+      useEffect(() => {
+        if (!mapRef.current || mapInstanceRef.current) return;
+
+        const map = L.map(mapRef.current, { scrollWheelZoom: false, attributionControl: false })
+          .setView([-34.657, -58.504], 15);
+        mapInstanceRef.current = map;
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+          maxZoom: 19,
+        }).addTo(map);
+
+        // Dibuja el límite real de Mataderos desde OpenStreetMap
+        fetch('https://nominatim.openstreetmap.org/search?q=Mataderos,Buenos+Aires,Argentina&format=geojson&polygon_geojson=1&limit=1')
+          .then(r => r.json())
+          .then(data => {
+            const feature = data.features?.[0];
+            if (!feature || feature.geometry.type === 'Point') return;
+            L.geoJSON(feature, {
+              style: {
+                color: '#B59969',
+                weight: 1.5,
+                fillColor: '#B59969',
+                fillOpacity: 0.10,
+                dashArray: '5 5',
+              }
+            }).addTo(map);
+          })
+          .catch(() => {});
+
+        const pinIcon = L.divIcon({
+          html: `<div class="rigma-marker">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17 11V3H7v4H3v14h18V11h-4zM9 19H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V9h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+            </svg>
+          </div>`,
+          className: '',
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+          popupAnchor: [0, -22],
+        });
+
+        MAP_PROJECTS.forEach(p => {
+          const isActive = p.status === 'En Ejecución';
+          const dotColor  = isActive ? '#B59969' : 'rgba(30,30,30,0.45)';
+          const pillLabel = isActive ? 'EN EJECUCIÓN' : 'TERMINADO';
+
+          const popupHtml = `
+            <div style="width:260px;font-family:'Montserrat',sans-serif;">
+              <div style="height:164px;overflow:hidden;background:repeating-linear-gradient(135deg,#E9E9E9 0 14px,#d0d0d0 14px 15px);">
+                <img src="${p.img}" alt="${p.name}"
+                  style="width:100%;height:100%;object-fit:cover;display:block;"
+                  onerror="this.style.display='none'" />
+              </div>
+              <div style="padding:16px 18px 18px;">
+                <div style="display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border:1px solid #E9E9E9;border-radius:2px;color:#1E1E1E;margin-bottom:10px;">
+                  <span style="width:5px;height:5px;border-radius:50%;background:${dotColor};flex-shrink:0;"></span>
+                  ${pillLabel}
+                </div>
+                <div style="font-size:15px;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#1E1E1E;line-height:1.1;margin-bottom:5px;">${p.name}</div>
+                <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(30,30,30,0.55);margin-bottom:14px;">${p.loc}</div>
+                <div
+                  onclick="alert('Ir a /proyectos/${p.slug}')"
+                  onmouseover="this.style.color='#B59969';this.style.borderBottomColor='#B59969'"
+                  onmouseout="this.style.color='#1E1E1E';this.style.borderBottomColor='#1E1E1E'"
+                  style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#1E1E1E;border-bottom:1px solid #1E1E1E;padding-bottom:2px;display:inline-block;cursor:pointer;transition:color 0.2s ease,border-color 0.2s ease;">
+                  VER PROYECTO →
+                </div>
+              </div>
+            </div>`;
+
+          L.marker([p.lat, p.lng], { icon: pinIcon })
+            .bindPopup(popupHtml, { maxWidth: 260, minWidth: 260 })
+            .addTo(map);
+        });
+
+        return () => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.remove();
+            mapInstanceRef.current = null;
+          }
+        };
+      }, []);
+
+      return (
+        <section style={{ padding: '96px 0 120px' }}>
+          <div style={{ padding: '0 56px', marginBottom: 48 }}>
+            <SectionLabel>Ubicaciones</SectionLabel>
+            <h2 style={{
+              fontSize: 40, fontWeight: 700, letterSpacing: '-0.015em',
+              color: t.ink, lineHeight: 1,
+            }}>
+              Dónde construimos
+            </h2>
+          </div>
+          <div style={{ padding: '0 56px' }}>
+            <div ref={mapRef} style={{ height: 480, width: '100%' }} />
+          </div>
+        </section>
+      );
+    }
+
+    // ── CONTACTO SECTION ──────────────────────────────────────────────
+    function ContactoSection() {
+      const [hovSubmit, setHovSubmit] = useState(false);
+      const fieldStyle = {
+        width: '100%', padding: '13px 16px',
+        fontSize: 13, fontWeight: 400,
+        color: t.onDarkPrimary,
+        background: 'rgba(255,255,255,0.07)',
+        border: `1px solid ${t.onDarkLine}`,
+        borderRadius: 2, appearance: 'none',
+      };
+      const labelStyle = {
+        display: 'block', fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: t.onDarkTertiary, marginBottom: 8,
+      };
+      return (
+        <section style={{ background: t.ink, padding: '120px 56px' }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
+            <SectionLabel dark>Contacto</SectionLabel>
+            <h2 style={{
+              fontSize: 66, fontWeight: 300, letterSpacing: '-0.03em',
+              color: t.onDarkPrimary, lineHeight: 1.05, marginBottom: 52,
+            }}>
+              Encontrá tu<br />
+              próxima{' '}
+              <em style={{ fontStyle: 'italic', fontWeight: 400, color: t.accent }}>
+                inversión
+              </em>
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Nombre completo</label>
+                  <input type="text" placeholder="Ej: María González" style={fieldStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Celular</label>
+                  <input type="text" placeholder="+54 11 ···· ····" style={fieldStyle} />
+                </div>
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input type="email" placeholder="nombre@email.com" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Proyecto de interés</label>
+                <select style={{ ...fieldStyle, color: t.onDarkSecondary }} defaultValue="">
+                  <option value="" disabled style={{ background: t.inkElevated }}>Seleccioná un proyecto</option>
+                  <option value="cosquin"    style={{ background: t.inkElevated }}>Cosquín 1534</option>
+                  <option value="larrazabal" style={{ background: t.inkElevated }}>Av. Larrazábal 1255</option>
+                  <option value="zelada"     style={{ background: t.inkElevated }}>Zelada 6171</option>
+                  <option value="otro"       style={{ background: t.inkElevated }}>Otro / No sé aún</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Mensaje</label>
+                <textarea
+                  placeholder="Contanos qué información necesitás..."
+                  rows={3}
+                  style={{ ...fieldStyle, resize: 'none', overflow: 'hidden' }}
+                  onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                />
+              </div>
+              <button
+                onMouseEnter={() => setHovSubmit(true)}
+                onMouseLeave={() => setHovSubmit(false)}
+                style={{
+                  width: '100%', padding: '15px 24px',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
+                  background: hovSubmit ? t.accent : t.onDarkPrimary, color: t.ink,
+                  border: 'none', cursor: 'pointer', borderRadius: 2, marginTop: 4,
+                  transition: 'background 0.2s ease',
+                }}>
+                ENVIAR CONSULTA
+              </button>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── FOOTER ────────────────────────────────────────────────────────
+    function Footer() {
+      return (
+        <footer style={{ background: t.ink, borderTop: `1px solid ${t.onDarkLine}`, padding: '60px 56px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+            <div>
+              <div style={{ marginBottom: 24 }}><Logo size={44} color="rgba(255,255,255,0.85)" /></div>
+              <p style={{ fontSize: 13, fontWeight: 300, lineHeight: 2, color: t.onDarkSecondary, marginBottom: 16 }}>
+                Guardia Nacional 739, PB<br />Ciudad de Buenos Aires
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.9, color: t.onDarkSecondary }}>
+                Rigmagrupo@gmail.com<br />+54 11 6596 2401
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Proyectos</div>
+              {['Cosquín 1534', 'Av. Larrazábal 1255', 'Zelada 6171'].map(p => (
+                <div key={p} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{p}</div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Empresa</div>
+              {['Inicio', 'Nosotros', 'Proyectos', 'Contacto'].map(l => (
+                <div key={l} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{l}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{
+            paddingTop: 24, borderTop: `1px solid ${t.onDarkLine}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 400, color: t.onDarkTertiary, letterSpacing: '0.06em' }}>
+              © 2026 Rigma Group · Todos los derechos reservados
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: t.accent }}>
+              Viví diferente, viví RIGMA
+            </span>
+          </div>
+        </footer>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────────────────────
+    function App() {
+      const [filter, setFilter] = useState('todos');
+      const visible = filterProjects(ALL_PROJECTS, filter);
+
+      return (
+        <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
+          <NavBar />
+          <PageHeader />
+          <FilterTabs active={filter} onChange={setFilter} />
+          <section key={filter} className="grid-fade-in" style={{ padding: '48px 56px 80px' }}>
+            <ProyectosGrid projects={visible} filter={filter} />
+          </section>
+          <MapaSection />
+          <ContactoSection />
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
