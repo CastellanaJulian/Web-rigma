@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosquín 1534 — Rigma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: #d0d0d0; -webkit-font-smoothing: antialiased; }
+    #root { max-width: 1440px; margin: 0 auto; background: #FBFBFB; box-shadow: 0 0 80px rgba(0,0,0,0.16); }
+    input, textarea, select { font-family: 'Montserrat', sans-serif; outline: none; }
+    button { font-family: 'Montserrat', sans-serif; }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.30); }
+    select option { background: #353631; color: #ffffff; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── DESIGN TOKENS ─────────────────────────────────────────────────
+    const t = {
+      bg:            '#FBFBFB',
+      bgWarm:        '#E3E3E3',
+      surface:       '#E9E9E9',
+      surfaceWarm:   '#CFC5BC',
+      accent:        '#B59969',
+      ink:           '#1E1E1E',
+      inkElevated:   '#353631',
+      textPrimary:   '#1E1E1E',
+      textSecondary: 'rgba(30,30,30,0.65)',
+      textTertiary:  'rgba(30,30,30,0.45)',
+      line:          '#E9E9E9',
+      onDarkPrimary:   '#FFFFFF',
+      onDarkSecondary: 'rgba(255,255,255,0.65)',
+      onDarkTertiary:  'rgba(255,255,255,0.45)',
+      onDarkLine:      'rgba(255,255,255,0.15)',
+    };
+
+    // ── IMÁGENES ──────────────────────────────────────────────────────
+    const IMGS = {
+      hero:  './assets/img-1.jpg',
+      gal1:  './assets/img-1.jpg',
+      gal2:  './assets/img-2.jpg',
+      gal3:  './assets/img-3.jpg',
+      gal4:  './assets/img-4.jpg',
+      gal5:  './assets/img-5.jpg',
+      plano: './assets/img-plano.jpg',
+      next:  './assets/img-obra2.jpg',
+    };
+
+    // ── IMG CON FALLBACK ──────────────────────────────────────────────
+    function Img({ src, alt = '', style = {} }) {
+      const [err, setErr] = useState(false);
+      if (err) return <Placeholder label={alt} style={style} />;
+      return (
+        <img src={src} alt={alt} onError={() => setErr(true)}
+          style={{ objectFit: 'cover', display: 'block', ...style }} />
+      );
+    }
+
+    // ── PLACEHOLDER ───────────────────────────────────────────────────
+    function Placeholder({ label, style = {} }) {
+      return (
+        <div style={{
+          background: `repeating-linear-gradient(135deg, ${t.surface} 0 14px, #d0d0d0 14px 15px)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...style,
+        }}>
+          {label && (
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              color: t.textTertiary, background: 'rgba(255,255,255,0.88)',
+              padding: '5px 14px', borderRadius: 2, textAlign: 'center', maxWidth: '80%',
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // ── SECTION LABEL ─────────────────────────────────────────────────
+    function SectionLabel({ children, dark = false }) {
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: dark ? t.onDarkSecondary : t.textSecondary,
+          marginBottom: 36,
+        }}>
+          <span style={{ width: 20, height: 1, background: t.accent, flexShrink: 0 }} />
+          {children}
+        </div>
+      );
+    }
+
+    // ── STATUS PILL ───────────────────────────────────────────────────
+    function StatusPill({ status, dark = false }) {
+      const isActive = status === 'EN EJECUCIÓN';
+      return (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '5px 12px',
+          border: dark ? `1px solid ${t.onDarkLine}` : `1px solid ${t.line}`,
+          background: dark ? 'rgba(255,255,255,0.10)' : 'transparent',
+          color: dark ? t.onDarkPrimary : t.textPrimary,
+          borderRadius: 2,
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: isActive ? t.accent : (dark ? t.onDarkTertiary : t.textTertiary),
+            flexShrink: 0,
+          }} />
+          {status}
+        </span>
+      );
+    }
+
+    // ── LOGO ──────────────────────────────────────────────────────────
+    function Logo({ size = 40, color = t.ink }) {
+      const border = Math.round(size * 0.055);
+      const fs     = Math.round(size * 0.4);
+      const pad    = Math.round(size * 0.12);
+      return (
+        <div style={{
+          width: size, height: size, flexShrink: 0,
+          border: `${border}px solid ${color}`,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: `0 ${pad}px`, lineHeight: 1.05,
+        }}>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>RIG</div>
+          <div style={{ fontSize: fs, fontWeight: 500, letterSpacing: '-0.01em', color }}>MA</div>
+        </div>
+      );
+    }
+
+    // ── ICON ──────────────────────────────────────────────────────────
+    function Icon({ children, dark = false }) {
+      return (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke={dark ? t.onDarkSecondary : t.ink}
+          strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          {children}
+        </svg>
+      );
+    }
+
+    // ── NAVBAR ────────────────────────────────────────────────────────
+    function NavBar() {
+      return (
+        <nav style={{
+          position: 'sticky', top: 0, zIndex: 100,
+          height: 64,
+          background: 'rgba(251,251,251,0.92)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderBottom: `1px solid ${t.line}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 56px',
+        }}>
+          <Logo size={40} color={t.ink} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+            {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
+              <span key={link} style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: link === 'PROYECTOS' ? t.ink : t.textSecondary,
+                cursor: 'pointer',
+                borderBottom: link === 'PROYECTOS' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
+                paddingBottom: 3,
+              }}>
+                {link}
+              </span>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ── HERO ──────────────────────────────────────────────────────────
+    function Hero() {
+      const [hovCta, setHovCta] = useState(false);
+      return (
+        <section style={{ position: 'relative', height: '86vh', minHeight: 580, overflow: 'hidden' }}>
+          <Img src={IMGS.hero} alt="Cosquín 1534"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(30,30,30,0.88) 0%, rgba(30,30,30,0.22) 55%, transparent 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '0 56px 56px',
+          }}>
+            <StatusPill status="EN EJECUCIÓN" dark />
+            <h1 style={{
+              marginTop: 18, marginBottom: 32,
+              fontSize: 58, fontWeight: 700, letterSpacing: '0.01em',
+              textTransform: 'uppercase', color: t.onDarkPrimary, lineHeight: 1,
+            }}>
+              Cosquín 1534
+            </h1>
+            <a href="#contacto"
+              onMouseEnter={() => setHovCta(true)}
+              onMouseLeave={() => setHovCta(false)}
+              style={{
+                display: 'inline-block',
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                background: hovCta ? t.accent : t.onDarkPrimary,
+                color: t.ink,
+                padding: '11px 22px', borderRadius: 2,
+                textDecoration: 'none', cursor: 'pointer',
+                transition: 'background 0.2s ease',
+              }}
+            >
+              CONTACTANOS
+            </a>
+          </div>
+        </section>
+      );
+    }
+
+    // ── KEY DATA STRIP ────────────────────────────────────────────────
+    function KeyDataStrip() {
+      const data = [
+        { label: 'Ubicación',            value: 'Mataderos, CABA', bar: false },
+        { label: 'Entrega estimada',     value: 'Diciembre 2026',  bar: false },
+        { label: 'Unidades disponibles', value: '4 de 8',          bar: false },
+        { label: 'Avance de obra',       value: '60%',             bar: true,  pct: 60 },
+      ];
+      return (
+        <div style={{
+          display: 'flex',
+          borderTop: `1px solid ${t.line}`,
+          borderBottom: `1px solid ${t.line}`,
+          background: t.bg,
+        }}>
+          {data.map((d, i) => (
+            <div key={i} style={{
+              flex: 1, padding: '26px 32px',
+              borderLeft: i > 0 ? `1px solid ${t.line}` : 'none',
+            }}>
+              <div style={{
+                fontSize: 9, fontWeight: 600, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: t.textTertiary, marginBottom: 8,
+              }}>
+                {d.label}
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: t.textPrimary, marginBottom: d.bar ? 10 : 0 }}>
+                {d.value}
+              </div>
+              {d.bar && (
+                <div style={{ height: 3, background: t.line, borderRadius: 2 }}>
+                  <div style={{
+                    height: '100%', width: `${d.pct}%`,
+                    background: t.accent, borderRadius: 2,
+                  }} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // ── DESCRIPCIÓN ───────────────────────────────────────────────────
+    function DatoIcon({ path, path2 }) {
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke={t.accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          style={{ flexShrink: 0 }}>
+          <path d={path} />
+          {path2 && <path d={path2} />}
+        </svg>
+      );
+    }
+
+    function DescriptionSection() {
+      const [visible, setVisible] = useState(false);
+      const gridRef = useRef(null);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+        }, { threshold: 0.15 });
+        if (gridRef.current) observer.observe(gridRef.current);
+        return () => observer.disconnect();
+      }, []);
+
+      const datosCard = [
+        {
+          icon: <DatoIcon path="M3 4h18v2H3zM3 10h18v2H3zM3 16h10v2H3z" />,
+          label: 'Inicio de obra',
+          value: 'Julio 2025',
+        },
+        {
+          icon: <DatoIcon path="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />,
+          label: 'M² construibles',
+          value: '1.800 m²',
+        },
+        {
+          icon: <DatoIcon path="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" path2="M9 22V12h6v10" />,
+          label: 'Total unidades',
+          value: '8 departamentos',
+        },
+        {
+          icon: <DatoIcon path="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />,
+          label: 'Tipologías',
+          value: '2, 3 y 4 ambientes',
+        },
+      ];
+
+      const highlights = [
+        {
+          icon: <Icon><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></Icon>,
+          titulo: 'Terminaciones premium',
+          texto: 'Porcelanato importado, mesadas de mármol y grifería Peirano línea Wave en cada unidad.',
+        },
+        {
+          icon: <Icon><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></Icon>,
+          titulo: 'Confort integral',
+          texto: 'Piso radiante, caldera dual individual, cocina integrada y lavadero propio.',
+        },
+        {
+          icon: <Icon><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></Icon>,
+          titulo: 'Seguridad total',
+          texto: 'Cámaras, cerco eléctrico y portero eléctrico con acceso controlado.',
+        },
+        {
+          icon: <Icon><path d="M12 22V12"/><path d="M20.3 8.7c1.6 2 2.1 4.4 1.4 6.7-.7 2.3-2.6 4.1-4.9 4.8-2.3.7-4.7.2-6.7-1.4L20.3 8.7z"/><path d="M2 22l9-9"/></Icon>,
+          titulo: 'Terrazas verdes',
+          texto: 'Espacios al aire libre disponibles como complemento de algunas unidades.',
+        },
+        {
+          icon: <Icon><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></Icon>,
+          titulo: 'Cocheras',
+          texto: 'Cocheras cubiertas disponibles por separado para cada unidad.',
+        },
+        {
+          icon: <Icon><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></Icon>,
+          titulo: 'Equipamiento completo',
+          texto: 'Anafe y horno a gas, lavadero propio y placares embutidos en dormitorios.',
+        },
+      ];
+
+      return (
+        <section style={{ padding: '80px 56px', background: t.bg }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 72, marginBottom: 64 }}>
+            <div>
+              <SectionLabel>Descripción</SectionLabel>
+              <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary, marginBottom: 20 }}>
+                Cosquín 1534 es un edificio residencial de ocho departamentos de cuatro ambientes ubicado en el corazón de Mataderos. Diseñado con foco en la funcionalidad y el confort, cada unidad incorpora materiales de primera calidad y terminaciones que marcan la diferencia.
+              </p>
+              <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary, marginBottom: 20 }}>
+                El proyecto contempla cocinas abiertas integradas al living-comedor, dormitorios con placar embutido y baños completos. Terrazas verdes y cocheras disponibles como unidades complementarias.
+              </p>
+              <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary }}>
+                Financiación a consultar. Inicio de obra julio 2025, con entrega proyectada para diciembre 2026.
+              </p>
+            </div>
+            <div>
+              <div style={{ background: t.surface, padding: '28px 28px 20px' }}>
+                <div style={{
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+                  textTransform: 'uppercase', color: t.textPrimary, marginBottom: 24,
+                }}>
+                  Datos del proyecto
+                </div>
+                {datosCard.map((h, i) => (
+                  <div key={i} style={{
+                    paddingBottom: 14, marginBottom: 14,
+                    borderBottom: i < datosCard.length - 1 ? `1px solid rgba(30,30,30,0.10)` : 'none',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
+                      {h.icon}
+                      <div style={{
+                        fontSize: 9, fontWeight: 600, letterSpacing: '0.12em',
+                        textTransform: 'uppercase', color: t.textTertiary,
+                      }}>
+                        {h.label}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary, paddingLeft: 21 }}>
+                      {h.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div ref={gridRef} style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+            gap: 48, paddingTop: 56, borderTop: `1px solid ${t.line}`,
+          }}>
+            {highlights.map((h, i) => (
+              <div key={i} style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? 'translateY(0)' : 'translateY(22px)',
+                transition: 'opacity 0.75s ease, transform 0.75s ease',
+                transitionDelay: visible ? `${i * 90}ms` : '0ms',
+              }}>
+                <div style={{ marginBottom: 16 }}>{h.icon}</div>
+                <div style={{
+                  fontSize: 13, fontWeight: 700, letterSpacing: '0.01em',
+                  color: t.textPrimary, marginBottom: 8,
+                }}>
+                  {h.titulo}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.7, color: t.textSecondary }}>
+                  {h.texto}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    // ── GALERÍA ───────────────────────────────────────────────────────
+    function GaleriaAsimetrica() {
+      return (
+        <section style={{ background: t.surface, padding: '80px 0' }}>
+          <div style={{ padding: '0 56px', marginBottom: 28 }}>
+            <SectionLabel>Galería</SectionLabel>
+          </div>
+          <div style={{ padding: '0 56px' }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '340px 200px',
+              gap: 6,
+            }}>
+              <Img src={IMGS.gal1} alt="render · fachada principal"
+                style={{ gridRow: 'span 2', width: '100%', height: '100%' }} />
+              <Img src={IMGS.gal2} alt="render · living / comedor"
+                style={{ width: '100%', height: '100%' }} />
+              <Img src={IMGS.gal3} alt="render · cocina integrada"
+                style={{ width: '100%', height: '100%' }} />
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr',
+              gap: 6, marginTop: 6,
+            }}>
+              <Img src={IMGS.gal4} alt="render · dormitorio principal"
+                style={{ width: '100%', height: 188 }} />
+              <Img src={IMGS.gal5} alt="render · terraza"
+                style={{ width: '100%', height: 188 }} />
+              <div style={{
+                height: 188, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: `1px solid rgba(30,30,30,0.12)`,
+                flexDirection: 'column', gap: 8, background: t.bg, cursor: 'pointer',
+              }}>
+                <span style={{ fontSize: 22, color: t.textTertiary, fontWeight: 300 }}>+</span>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+                  textTransform: 'uppercase', color: t.textSecondary,
+                }}>
+                  Ver galería completa
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── PLANOS ────────────────────────────────────────────────────────
+    function PlanosList() {
+      const [openGroup, setOpenGroup] = useState('4amb');
+      const [modal, setModal] = useState(null);
+
+      const grupos = [
+        {
+          id: '4amb',
+          titulo: '4 ambientes',
+          sublabel: '8 unidades · desde 112 m²',
+          planos: [
+            { id: '4a-1', label: 'Unidad A', sublabel: '112 m²' },
+            { id: '4a-2', label: 'Unidad B', sublabel: '113 m² + 9 m² terraza' },
+            { id: '4a-3', label: 'Unidad C', sublabel: '120 m²' },
+          ],
+        },
+      ];
+
+      return (
+        <section style={{ padding: '80px 56px', borderTop: `1px solid ${t.line}`, background: t.bg }}>
+          <SectionLabel>Planos</SectionLabel>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {grupos.map((g, gi) => {
+              const isOpen = openGroup === g.id;
+              return (
+                <div key={g.id} style={{ borderTop: gi === 0 ? `1px solid ${t.line}` : 'none' }}>
+                  <div
+                    onClick={() => setOpenGroup(isOpen ? null : g.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '22px 0', borderBottom: `1px solid ${t.line}`,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary }}>{g.titulo}</span>
+                      <span style={{ fontSize: 12, fontWeight: 400, color: t.textTertiary }}>{g.sublabel}</span>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                      style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}>
+                      <path d="M3 6l5 5 5-5" stroke={t.textTertiary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+
+                  {isOpen && (
+                    <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px' }}>
+                      {g.planos.map(p => (
+                        <div key={p.id} onClick={() => setModal(p)}
+                          style={{ width: 200, cursor: 'zoom-in' }}>
+                          <Img src={IMGS.plano} alt={`plano · ${p.label}`}
+                            style={{ width: '100%', height: 140, marginBottom: 10, border: `1px solid ${t.line}` }} />
+                          <div style={{ fontSize: 12, fontWeight: 600, color: t.textPrimary, marginBottom: 2 }}>{p.label}</div>
+                          <div style={{ fontSize: 11, fontWeight: 400, color: t.textTertiary }}>{p.sublabel}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {modal && (
+            <div
+              onClick={() => setModal(null)}
+              style={{
+                position: 'fixed', inset: 0, zIndex: 300,
+                background: 'rgba(30,30,30,0.82)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <div
+                onClick={e => e.stopPropagation()}
+                style={{ background: t.bg, padding: 48, maxWidth: 680, width: '90%', position: 'relative' }}
+              >
+                <button
+                  onClick={() => setModal(null)}
+                  style={{
+                    position: 'absolute', top: 16, right: 16,
+                    width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'none', border: `1px solid ${t.line}`, cursor: 'pointer',
+                    fontSize: 16, color: t.textTertiary, lineHeight: 1,
+                  }}
+                >
+                  ×
+                </button>
+                <div style={{
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+                  textTransform: 'uppercase', color: t.textTertiary, marginBottom: 20,
+                }}>
+                  PLANO DETALLADO
+                </div>
+                <Img src={IMGS.plano} alt={`plano · ${modal.label.toLowerCase()}`}
+                  style={{ width: '100%', height: 420, marginBottom: 24 }} />
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: t.textPrimary, marginBottom: 4 }}>{modal.label}</div>
+                  <div style={{ fontSize: 12, color: t.textTertiary }}>{modal.sublabel}</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    // ── UBICACIÓN ─────────────────────────────────────────────────────
+    function LocationBlock() {
+      const puntos = [
+        {
+          icon: <Icon><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/><line x1="2" y1="12" x2="22" y2="12"/></Icon>,
+          texto: 'FF.CC. Belgrano Sur a 5 min a pie — Estación Mataderos',
+        },
+        {
+          icon: <Icon><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></Icon>,
+          texto: 'Hospital Santojanni a 10 min en auto',
+        },
+        {
+          icon: <Icon><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></Icon>,
+          texto: 'Escuelas e institutos en radio de 3 cuadras',
+        },
+        {
+          icon: <Icon><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></Icon>,
+          texto: 'Comercios y supermercados cerca',
+        },
+      ];
+      return (
+        <section style={{ background: t.surface, padding: '80px 56px', borderTop: `1px solid ${t.line}` }}>
+          <SectionLabel>Ubicación</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 64 }}>
+            <Placeholder
+              label="mapa · cosquín 1534, mataderos, caba"
+              style={{ aspectRatio: '4/3', borderRadius: 2, border: `1px solid rgba(30,30,30,0.10)` }}
+            />
+            <div style={{ paddingTop: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: t.textPrimary, marginBottom: 6 }}>
+                Mataderos, Ciudad de Buenos Aires
+              </div>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary, marginBottom: 32 }}>
+                Cosquín 1534 se ubica en uno de los barrios con mayor tradición de la Ciudad, con excelente conectividad y todos los servicios al alcance.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {puntos.map((p, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+                    <div style={{ flexShrink: 0, marginTop: 2 }}>{p.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 400, color: t.textSecondary, lineHeight: 1.6 }}>
+                      {p.texto}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── CONTACTO CTA (dark, editorial) ────────────────────────────────
+    function ContactCTA() {
+      const [hovSubmit, setHovSubmit] = useState(false);
+      const fieldStyle = {
+        width: '100%', padding: '13px 16px',
+        fontSize: 13, fontWeight: 400,
+        color: t.onDarkPrimary,
+        background: 'rgba(255,255,255,0.07)',
+        border: `1px solid ${t.onDarkLine}`,
+        borderRadius: 2, appearance: 'none',
+      };
+      const labelStyle = {
+        display: 'block', fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: t.onDarkTertiary, marginBottom: 8,
+      };
+      return (
+        <section id="contacto" style={{ background: t.ink, padding: '120px 56px' }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
+            <SectionLabel dark>¿Te interesa este proyecto?</SectionLabel>
+            <h2 style={{
+              fontSize: 56, fontWeight: 300, letterSpacing: '-0.03em',
+              color: t.onDarkPrimary, lineHeight: 1.05, marginBottom: 52,
+            }}>
+              Consultá por{' '}
+              <em style={{ fontStyle: 'italic', fontWeight: 400, color: t.accent }}>
+                Cosquín
+              </em>
+              {' '}1534
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Nombre completo</label>
+                  <input type="text" placeholder="Ej: María González" style={fieldStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Celular</label>
+                  <input type="text" placeholder="+54 11 ···· ····" style={fieldStyle} />
+                </div>
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input type="email" placeholder="nombre@email.com" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Proyecto de interés</label>
+                <select style={{ ...fieldStyle, color: t.onDarkSecondary }} defaultValue="cosquin">
+                  <option value="" disabled>Seleccioná un proyecto</option>
+                  <option value="cosquin">Cosquín 1534</option>
+                  <option value="larrazabal">Av. Larrazábal 1255</option>
+                  <option value="zelada">Zelada 6171</option>
+                  <option value="otro">Otro / No sé aún</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Mensaje</label>
+                <textarea
+                  placeholder="Contanos qué información necesitás..."
+                  rows={3}
+                  style={{ ...fieldStyle, resize: 'none' }}
+                  onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                />
+              </div>
+              <button
+                onMouseEnter={() => setHovSubmit(true)}
+                onMouseLeave={() => setHovSubmit(false)}
+                style={{
+                  width: '100%', padding: '15px 24px',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
+                  background: hovSubmit ? t.accent : t.onDarkPrimary,
+                  color: t.ink,
+                  border: 'none', cursor: 'pointer', borderRadius: 2, marginTop: 4,
+                  transition: 'background 0.2s ease',
+                }}
+              >
+                ENVIAR CONSULTA
+              </button>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── SIGUIENTE PROYECTO ────────────────────────────────────────────
+    function NextProjectCard() {
+      const [hov, setHov] = useState(false);
+      return (
+        <section
+          style={{ position: 'relative', height: 320, overflow: 'hidden' }}
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+        >
+          <Img src={IMGS.next} alt="Av. Larrazábal 1255"
+            style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              transform: hov ? 'scale(1.04)' : 'scale(1)',
+              transition: 'transform 0.7s ease',
+            }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to right, rgba(30,30,30,0.82) 0%, rgba(30,30,30,0.35) 55%, transparent 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            padding: '0 80px',
+          }}>
+            <div style={{
+              fontSize: 9, fontWeight: 700, letterSpacing: '0.2em',
+              textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 14,
+            }}>
+              Siguiente proyecto
+            </div>
+            <StatusPill status="EN EJECUCIÓN" dark />
+            <h2 style={{
+              marginTop: 14, marginBottom: 8,
+              fontSize: 34, fontWeight: 700, letterSpacing: '0.01em',
+              textTransform: 'uppercase', color: t.onDarkPrimary, lineHeight: 1,
+            }}>
+              Av. Larrazábal 1255
+            </h2>
+            <p style={{
+              fontSize: 11, fontWeight: 400, letterSpacing: '0.08em',
+              textTransform: 'uppercase', color: t.onDarkSecondary, marginBottom: 24,
+            }}>
+              Mataderos, Buenos Aires
+            </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center',
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: hov ? t.accent : t.onDarkPrimary,
+              borderBottom: `1px solid ${hov ? t.accent : 'rgba(255,255,255,0.35)'}`,
+              paddingBottom: 2, width: 'fit-content', cursor: 'pointer',
+              transition: 'color 0.25s ease, border-color 0.25s ease',
+            }}>
+              VER PROYECTO →
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── FOOTER ────────────────────────────────────────────────────────
+    function Footer() {
+      return (
+        <footer style={{ background: t.ink, borderTop: `1px solid ${t.onDarkLine}`, padding: '60px 56px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+            <div>
+              <div style={{ marginBottom: 24 }}><Logo size={44} color="rgba(255,255,255,0.85)" /></div>
+              <p style={{ fontSize: 13, fontWeight: 300, lineHeight: 2, color: t.onDarkSecondary, marginBottom: 16 }}>
+                Guardia Nacional 739, PB<br />Ciudad de Buenos Aires
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.9, color: t.onDarkSecondary }}>
+                Rigmagrupo@gmail.com<br />+54 11 6596 2401
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Proyectos</div>
+              {['Cosquín 1534', 'Av. Larrazábal 1255', 'Zelada 6171'].map(p => (
+                <div key={p} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{p}</div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 22 }}>Empresa</div>
+              {['Inicio', 'Nosotros', 'Proyectos', 'Contacto'].map(l => (
+                <div key={l} style={{ fontSize: 12, fontWeight: 400, color: t.onDarkSecondary, marginBottom: 12, cursor: 'pointer' }}>{l}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{
+            paddingTop: 24, borderTop: `1px solid ${t.onDarkLine}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 400, color: t.onDarkTertiary, letterSpacing: '0.06em' }}>
+              © 2026 Rigma Group · Todos los derechos reservados
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: t.accent }}>
+              Viví diferente, viví RIGMA
+            </span>
+          </div>
+        </footer>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────────────────────
+    function App() {
+      return (
+        <div style={{ fontFamily: "'Montserrat', sans-serif", background: t.bg }}>
+          <NavBar />
+          <Hero />
+          <KeyDataStrip />
+          <DescriptionSection />
+          <GaleriaAsimetrica />
+          <PlanosList />
+          <LocationBlock />
+          <ContactCTA />
+          <NextProjectCard />
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

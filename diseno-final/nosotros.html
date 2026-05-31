@@ -191,7 +191,6 @@
     function PageHeader() {
       return (
         <section style={{ padding: '80px 56px 64px' }}>
-          <SectionLabel>Nosotros</SectionLabel>
           <h1 style={{
             fontSize: 56, fontWeight: 700, lineHeight: 1.05,
             letterSpacing: '-0.025em', color: t.ink,
@@ -214,8 +213,6 @@
     function HistoriaSection() {
       return (
         <section style={{ padding: '48px 56px 120px', borderBottom: `1px solid ${t.line}` }}>
-          <SectionLabel>Historia</SectionLabel>
-
           <Img
             src="./assets/img-obra.jpg"
             alt="foto · equipo / obra / empresa"
@@ -226,6 +223,7 @@
 
             {/* Columna izquierda: copy historia */}
             <div>
+              <SectionLabel>Historia</SectionLabel>
               <p style={{ fontSize: 16, fontWeight: 400, lineHeight: 1.75, color: t.textSecondary, marginBottom: 24 }}>
                 Somos una empresa constructora familiar con una sólida trayectoria que se remonta a tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma de trabajo basada en la responsabilidad, el compromiso y la mejora continua. Este recorrido nos permite combinar la tradición constructiva con una mirada actual, adaptada a las nuevas necesidades del mercado.
               </p>
