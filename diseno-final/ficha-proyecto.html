@@ -8,6 +8,8 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -17,6 +19,44 @@
     button { font-family: 'Montserrat', sans-serif; }
     input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.30); }
     select option { background: #353631; color: #ffffff; }
+    .leaflet-container { font-family: 'Montserrat', sans-serif; }
+    .leaflet-popup-content-wrapper {
+      padding: 0 !important; border-radius: 2px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14) !important;
+      overflow: hidden; border: none !important;
+    }
+    .leaflet-popup-content { margin: 0 !important; }
+    .leaflet-popup-tip { background: #FBFBFB !important; }
+    .leaflet-popup-close-button {
+      width: 24px !important; height: 24px !important; line-height: 24px !important;
+      text-align: center !important; background: rgba(255,255,255,0.92) !important;
+      color: #1E1E1E !important; font-size: 14px !important;
+      top: 8px !important; right: 8px !important;
+      border-radius: 2px !important; z-index: 10 !important;
+    }
+    .rigma-marker {
+      width: 36px; height: 36px; background: #B59969; border-radius: 2px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .rigma-marker:hover { background: #1E1E1E; transform: translateY(-3px); }
+    .poi-marker {
+      width: 28px; height: 28px; background: #FBFBFB;
+      border: 1.5px solid #E9E9E9; border-radius: 2px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .poi-marker:hover, .poi-marker.active {
+      border-color: #1E1E1E;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      transform: translateY(-2px);
+    }
+    @keyframes accordionDown {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -52,8 +92,8 @@
       gal3:  './assets/img-3.jpg',
       gal4:  './assets/img-4.jpg',
       gal5:  './assets/img-5.jpg',
-      plano: './assets/img-plano.jpg',
-      next:  './assets/img-obra2.jpg',
+      plano: './assets/plano-1.png',
+      next:  './assets/img-2.jpg',
     };
 
     // ── IMG CON FALLBACK ──────────────────────────────────────────────
@@ -379,20 +419,28 @@
                 </div>
                 {datosCard.map((h, i) => (
                   <div key={i} style={{
-                    paddingBottom: 14, marginBottom: 14,
+                    display: 'flex', alignItems: 'flex-start', gap: 14,
+                    paddingBottom: 16, marginBottom: i < datosCard.length - 1 ? 16 : 0,
                     borderBottom: i < datosCard.length - 1 ? `1px solid rgba(30,30,30,0.10)` : 'none',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
+                    <div style={{
+                      flexShrink: 0, width: 30, height: 30,
+                      background: 'rgba(181,153,105,0.12)', borderRadius: 2,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginTop: 2,
+                    }}>
                       {h.icon}
+                    </div>
+                    <div>
                       <div style={{
                         fontSize: 9, fontWeight: 600, letterSpacing: '0.12em',
-                        textTransform: 'uppercase', color: t.textTertiary,
+                        textTransform: 'uppercase', color: t.textTertiary, marginBottom: 4,
                       }}>
                         {h.label}
                       </div>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary, paddingLeft: 21 }}>
-                      {h.value}
+                      <div style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary }}>
+                        {h.value}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -430,8 +478,9 @@
 
     // ── GALERÍA ───────────────────────────────────────────────────────
     function GaleriaAsimetrica() {
+      const [hovGal, setHovGal] = useState(false);
       return (
-        <section style={{ background: t.surface, padding: '80px 0' }}>
+        <section style={{ background: t.bg, padding: '80px 0' }}>
           <div style={{ padding: '0 56px', marginBottom: 28 }}>
             <SectionLabel>Galería</SectionLabel>
           </div>
@@ -451,25 +500,30 @@
             </div>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
+              gridTemplateColumns: '1fr 1fr',
               gap: 6, marginTop: 6,
             }}>
               <Img src={IMGS.gal4} alt="render · dormitorio principal"
-                style={{ width: '100%', height: 188 }} />
+                style={{ width: '100%', height: 200 }} />
               <Img src={IMGS.gal5} alt="render · terraza"
-                style={{ width: '100%', height: 188 }} />
-              <div style={{
-                height: 188, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: `1px solid rgba(30,30,30,0.12)`,
-                flexDirection: 'column', gap: 8, background: t.bg, cursor: 'pointer',
-              }}>
-                <span style={{ fontSize: 22, color: t.textTertiary, fontWeight: 300 }}>+</span>
-                <span style={{
-                  fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+                style={{ width: '100%', height: 200 }} />
+            </div>
+            <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center' }}>
+              <div
+                onMouseEnter={() => setHovGal(true)}
+                onMouseLeave={() => setHovGal(false)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '11px 32px',
+                  border: `1px solid ${t.line}`,
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
                   textTransform: 'uppercase', color: t.textSecondary,
-                }}>
-                  Ver galería completa
-                </span>
+                  cursor: 'pointer',
+                  background: hovGal ? 'rgba(30,30,30,0.05)' : 'transparent',
+                  transition: 'background 0.2s ease',
+                }}
+              >
+                VER GALERÍA COMPLETA
               </div>
             </div>
           </div>
@@ -481,6 +535,28 @@
     function PlanosList() {
       const [openGroup, setOpenGroup] = useState('4amb');
       const [modal, setModal] = useState(null);
+
+      useEffect(() => {
+        if (modal) {
+          const y = window.scrollY;
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${y}px`;
+          document.body.style.width = '100%';
+        } else {
+          const y = parseInt(document.body.style.top || '0') * -1;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          if (y) window.scrollTo(0, y);
+        }
+        return () => {
+          const y = parseInt(document.body.style.top || '0') * -1;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          if (y) window.scrollTo(0, y);
+        };
+      }, [modal]);
 
       const grupos = [
         {
@@ -523,7 +599,7 @@
                   </div>
 
                   {isOpen && (
-                    <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px' }}>
+                    <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px', animation: 'accordionDown 0.4s ease' }}>
                       {g.planos.map(p => (
                         <div key={p.id} onClick={() => setModal(p)}
                           style={{ width: 200, cursor: 'zoom-in' }}>
@@ -544,7 +620,7 @@
             <div
               onClick={() => setModal(null)}
               style={{
-                position: 'fixed', inset: 0, zIndex: 300,
+                position: 'fixed', inset: 0, zIndex: 2000,
                 background: 'rgba(30,30,30,0.82)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -585,45 +661,163 @@
 
     // ── UBICACIÓN ─────────────────────────────────────────────────────
     function LocationBlock() {
-      const puntos = [
+      const mapRef         = useRef(null);
+      const mapInstanceRef = useRef(null);
+      const markersRef     = useRef([]);
+      const [activeIdx, setActiveIdx] = useState(null);
+
+      const pois = [
         {
+          lat: -34.6522, lng: -58.4983,
+          category: 'Transporte', name: 'Estación Mataderos', detail: '5 min a pie · FF.CC. Belgrano Sur',
+          mapSvg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/><line x1="2" y1="12" x2="22" y2="12"/>',
           icon: <Icon><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/><line x1="2" y1="12" x2="22" y2="12"/></Icon>,
-          texto: 'FF.CC. Belgrano Sur a 5 min a pie — Estación Mataderos',
         },
         {
+          lat: -34.6468, lng: -58.4952,
+          category: 'Salud', name: 'Hospital Santojanni', detail: '10 min en auto',
+          mapSvg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
           icon: <Icon><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></Icon>,
-          texto: 'Hospital Santojanni a 10 min en auto',
         },
         {
+          lat: -34.6538, lng: -58.5042,
+          category: 'Educación', name: 'Escuelas e institutos', detail: 'En radio de 3 cuadras',
+          mapSvg: '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>',
           icon: <Icon><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></Icon>,
-          texto: 'Escuelas e institutos en radio de 3 cuadras',
         },
         {
+          lat: -34.6555, lng: -58.5005,
+          category: 'Comercio', name: 'Comercios y supermercados', detail: 'A pocas cuadras',
+          mapSvg: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>',
           icon: <Icon><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></Icon>,
-          texto: 'Comercios y supermercados cerca',
         },
       ];
+
+      useEffect(() => {
+        if (!mapRef.current || mapInstanceRef.current) return;
+
+        const map = L.map(mapRef.current, { scrollWheelZoom: false, attributionControl: false });
+        mapInstanceRef.current = map;
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '© OpenStreetMap © CARTO', maxZoom: 19,
+        }).addTo(map);
+
+        // Contorno del barrio
+        fetch('https://nominatim.openstreetmap.org/search?q=Mataderos,Buenos+Aires,Argentina&format=geojson&polygon_geojson=1&limit=1')
+          .then(r => r.json())
+          .then(data => {
+            const feature = data.features?.[0];
+            if (!feature || feature.geometry.type === 'Point') return;
+            L.geoJSON(feature, {
+              style: { color: '#B59969', weight: 1.5, fillColor: '#B59969', fillOpacity: 0.08, dashArray: '5 5' }
+            }).addTo(map);
+          })
+          .catch(() => {});
+
+        // Pin del proyecto (accent) — ícono de edificio + hover abre popup
+        const projectIcon = L.divIcon({
+          html: `<div class="rigma-marker">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/>
+            </svg>
+          </div>`,
+          className: '', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -22],
+        });
+
+        const projectMarker = L.marker([-34.6540, -58.5015], { icon: projectIcon });
+        projectMarker
+          .on('mouseover', () => projectMarker.openPopup())
+          .on('mouseout',  () => projectMarker.closePopup())
+          .bindPopup(`<div style="padding:16px 18px 18px;font-family:'Montserrat',sans-serif;min-width:200px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(30,30,30,0.45);margin-bottom:6px;">EN EJECUCIÓN</div>
+            <div style="font-size:15px;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#1E1E1E;line-height:1.1;margin-bottom:4px;">Cosquín 1534</div>
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:rgba(30,30,30,0.55);">Mataderos, CABA</div>
+          </div>`, { maxWidth: 220, minWidth: 220 })
+          .addTo(map);
+
+        // Pins de POI (light) — mismo ícono que la lista
+        pois.forEach((poi, i) => {
+          const poiIcon = L.divIcon({
+            html: `<div class="poi-marker">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                ${poi.mapSvg}
+              </svg>
+            </div>`,
+            className: '', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -18],
+          });
+
+          const marker = L.marker([poi.lat, poi.lng], { icon: poiIcon });
+          marker
+            .on('mouseover', () => { setActiveIdx(i); marker.openPopup(); })
+            .on('mouseout',  () => { setActiveIdx(null); })
+            .bindPopup(`<div style="padding:14px 16px;font-family:'Montserrat',sans-serif;min-width:180px;">
+              <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(30,30,30,0.45);margin-bottom:5px;">${poi.category}</div>
+              <div style="font-size:13px;font-weight:600;color:#1E1E1E;margin-bottom:3px;">${poi.name}</div>
+              <div style="font-size:11px;color:rgba(30,30,30,0.55);">${poi.detail}</div>
+            </div>`, { maxWidth: 200 })
+            .addTo(map);
+
+          markersRef.current[i] = marker;
+        });
+
+        // Ajustar bounds para mostrar proyecto + todos los POIs
+        const allCoords = [[-34.6540, -58.5015], ...pois.map(p => [p.lat, p.lng])];
+        map.fitBounds(L.latLngBounds(allCoords), { padding: [40, 40] });
+
+        return () => {
+          if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; }
+        };
+      }, []);
+
+      // Sincronizar activeIdx con clase CSS de los markers
+      useEffect(() => {
+        markersRef.current.forEach((marker, i) => {
+          if (!marker) return;
+          const el = marker.getElement();
+          if (!el) return;
+          const inner = el.querySelector('.poi-marker');
+          if (inner) inner.classList.toggle('active', i === activeIdx);
+        });
+      }, [activeIdx]);
+
       return (
         <section style={{ background: t.surface, padding: '80px 56px', borderTop: `1px solid ${t.line}` }}>
           <SectionLabel>Ubicación</SectionLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 64 }}>
-            <Placeholder
-              label="mapa · cosquín 1534, mataderos, caba"
-              style={{ aspectRatio: '4/3', borderRadius: 2, border: `1px solid rgba(30,30,30,0.10)` }}
-            />
+            <div ref={mapRef} style={{ height: 440 }} />
             <div style={{ paddingTop: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: t.textPrimary, marginBottom: 6 }}>
                 Mataderos, Ciudad de Buenos Aires
               </div>
-              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary, marginBottom: 32 }}>
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.8, color: t.textSecondary, marginBottom: 24 }}>
                 Cosquín 1534 se ubica en uno de los barrios con mayor tradición de la Ciudad, con excelente conectividad y todos los servicios al alcance.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {puntos.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-                    <div style={{ flexShrink: 0, marginTop: 2 }}>{p.icon}</div>
-                    <div style={{ fontSize: 13, fontWeight: 400, color: t.textSecondary, lineHeight: 1.6 }}>
-                      {p.texto}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {pois.map((poi, i) => (
+                  <div key={i}
+                    onMouseEnter={() => { setActiveIdx(i); if (markersRef.current[i]) markersRef.current[i].openPopup(); }}
+                    onMouseLeave={() => { setActiveIdx(null); if (markersRef.current[i]) markersRef.current[i].closePopup(); }}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 14,
+                      padding: '12px 14px', cursor: 'pointer', borderRadius: 2,
+                      background: activeIdx === i ? 'rgba(181,153,105,0.08)' : 'transparent',
+                      border: `1px solid ${activeIdx === i ? 'rgba(181,153,105,0.22)' : 'transparent'}`,
+                      transition: 'background 0.2s ease, border-color 0.2s ease',
+                    }}
+                  >
+                    <div style={{ flexShrink: 0, marginTop: 2 }}>{poi.icon}</div>
+                    <div>
+                      <div style={{
+                        fontSize: 12, fontWeight: 600, marginBottom: 2,
+                        color: activeIdx === i ? t.accent : t.textPrimary,
+                        transition: 'color 0.2s ease',
+                      }}>
+                        {poi.name}
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 400, color: t.textTertiary, lineHeight: 1.5 }}>
+                        {poi.detail}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -660,9 +854,8 @@
             }}>
               Consultá por{' '}
               <em style={{ fontStyle: 'italic', fontWeight: 400, color: t.accent }}>
-                Cosquín
+                Cosquín 1534
               </em>
-              {' '}1534
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -738,28 +931,33 @@
             position: 'absolute', inset: 0,
             background: 'linear-gradient(to right, rgba(30,30,30,0.82) 0%, rgba(30,30,30,0.35) 55%, transparent 100%)',
           }} />
+          {/* Label fijo arriba — con línea accent */}
           <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            padding: '0 80px',
+            position: 'absolute', top: 28, left: 80,
+            display: 'flex', alignItems: 'center', gap: 12,
+            fontSize: 10, fontWeight: 600, letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: t.onDarkSecondary,
           }}>
-            <div style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: '0.2em',
-              textTransform: 'uppercase', color: t.onDarkTertiary, marginBottom: 14,
-            }}>
-              Siguiente proyecto
+            <span style={{ width: 20, height: 1, background: t.accent, flexShrink: 0 }} />
+            Siguiente proyecto
+          </div>
+          {/* Contenido anclado al fondo — igual que ProjectCard */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '0 80px 32px',
+          }}>
+            <div style={{ marginBottom: 14 }}>
+              <StatusPill status="EN EJECUCIÓN" dark />
             </div>
-            <StatusPill status="EN EJECUCIÓN" dark />
             <h2 style={{
-              marginTop: 14, marginBottom: 8,
-              fontSize: 34, fontWeight: 700, letterSpacing: '0.01em',
+              marginBottom: 8, fontSize: 34, fontWeight: 700, letterSpacing: '0.01em',
               textTransform: 'uppercase', color: t.onDarkPrimary, lineHeight: 1,
             }}>
               Av. Larrazábal 1255
             </h2>
             <p style={{
               fontSize: 11, fontWeight: 400, letterSpacing: '0.08em',
-              textTransform: 'uppercase', color: t.onDarkSecondary, marginBottom: 24,
+              textTransform: 'uppercase', color: t.onDarkSecondary, marginBottom: 20,
             }}>
               Mataderos, Buenos Aires
             </p>
@@ -768,7 +966,7 @@
               fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
               color: hov ? t.accent : t.onDarkPrimary,
               borderBottom: `1px solid ${hov ? t.accent : 'rgba(255,255,255,0.35)'}`,
-              paddingBottom: 2, width: 'fit-content', cursor: 'pointer',
+              paddingBottom: 2, cursor: 'pointer',
               transition: 'color 0.25s ease, border-color 0.25s ease',
             }}>
               VER PROYECTO →
