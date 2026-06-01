@@ -335,6 +335,11 @@
         return () => clearTimeout(timer);
       }, []);
 
+      useEffect(() => {
+        const timer = setInterval(() => setActive(a => (a + 1) % total), 6000);
+        return () => clearInterval(timer);
+      }, [total]);
+
       const fadeUp = (delay) => ({
         opacity: mounted ? 1 : 0,
         transform: mounted ? 'translateY(0)' : 'translateY(20px)',
