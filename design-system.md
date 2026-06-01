@@ -88,6 +88,24 @@ Sobre fondo claro, los titulares van en peso 700 + `ink` (sin italic, sin accent
 
 ---
 
+## Jerarquía de CTAs y uso de flecha `→`
+
+Tres niveles de acción, regla única sobre el uso de `→`:
+
+| Nivel | Descripción | Estilo | Flecha `→` |
+|-------|-------------|--------|------------|
+| **Primario** | Acción principal de la sección. Solid background (blanco sobre oscuro, acento en hover). | `background: onDarkPrimary · color: ink · hover: accent` | **No** |
+| **Secundario** | Acción alternativa de peso similar. Ghost/outline (borde semitransparente, sin relleno). | `border: onDarkLine · background: transparent · hover: rgba` | **No** |
+| **Terciario** | Links de navegación o acciones de menor jerarquía. Solo texto con underline. | `color: textSecondary · border-bottom · hover: accent` | **Sí →** |
+
+**Regla mnemotécnica:** la flecha pertenece al texto, no al botón. Cuando hay caja (primario / secundario) no hay flecha. Cuando es solo texto (terciario / HoverLink) siempre lleva `→`.
+
+**Ejemplos confirmados:**
+- `ENVIAR CONSULTA` · `VER PROYECTOS` · `CONTACTANOS` → sin flecha (primario/secundario)
+- `Ver galería completa →` · `VER PROYECTO →` · `Ver todos los proyectos →` · `Contactarnos →` → con flecha (terciario)
+
+---
+
 ## Lo que se hereda de `wireframes-system.md`
 
 Sin cambios:

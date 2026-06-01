@@ -199,7 +199,7 @@
     function NavBar() {
       return (
         <nav style={{
-          position: 'sticky', top: 0, zIndex: 100,
+          position: 'sticky', top: 0, zIndex: 1100,
           height: 64,
           background: 'rgba(251,251,251,0.92)',
           backdropFilter: 'blur(14px)',
@@ -318,7 +318,7 @@
     function DatoIcon({ path, path2 }) {
       return (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke={t.accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          stroke={t.ink} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
           style={{ flexShrink: 0 }}>
           <path d={path} />
           {path2 && <path d={path2} />}
@@ -333,7 +333,7 @@
       useEffect(() => {
         const observer = new IntersectionObserver(([entry]) => {
           if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
-        }, { threshold: 0.15 });
+        }, { threshold: 0.4 });
         if (gridRef.current) observer.observe(gridRef.current);
         return () => observer.disconnect();
       }, []);
@@ -423,14 +423,7 @@
                     paddingBottom: 16, marginBottom: i < datosCard.length - 1 ? 16 : 0,
                     borderBottom: i < datosCard.length - 1 ? `1px solid rgba(30,30,30,0.10)` : 'none',
                   }}>
-                    <div style={{
-                      flexShrink: 0, width: 30, height: 30,
-                      background: 'rgba(181,153,105,0.12)', borderRadius: 2,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      marginTop: 2,
-                    }}>
-                      {h.icon}
-                    </div>
+                    <div style={{ flexShrink: 0, marginTop: 4 }}>{h.icon}</div>
                     <div>
                       <div style={{
                         fontSize: 9, fontWeight: 600, letterSpacing: '0.12em',
@@ -476,6 +469,32 @@
       );
     }
 
+    // ── GALLERY IMG (hover interactivo) ──────────────────────────────
+    function GalleryImg({ src, alt, containerStyle = {} }) {
+      const [hov, setHov] = useState(false);
+      return (
+        <div
+          style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in', ...containerStyle }}
+          onMouseEnter={() => setHov(true)}
+          onMouseLeave={() => setHov(false)}
+        >
+          <Img src={src} alt={alt}
+            style={{
+              width: '100%', height: '100%',
+              transform: hov ? 'scale(1.04)' : 'scale(1)',
+              transition: 'transform 0.5s ease',
+            }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: `rgba(30,30,30,${hov ? '0.15' : '0'})`,
+            transition: 'background 0.3s ease',
+            pointerEvents: 'none',
+          }} />
+        </div>
+      );
+    }
+
     // ── GALERÍA ───────────────────────────────────────────────────────
     function GaleriaAsimetrica() {
       const [hovGal, setHovGal] = useState(false);
@@ -491,40 +510,35 @@
               gridTemplateRows: '340px 200px',
               gap: 6,
             }}>
-              <Img src={IMGS.gal1} alt="render · fachada principal"
-                style={{ gridRow: 'span 2', width: '100%', height: '100%' }} />
-              <Img src={IMGS.gal2} alt="render · living / comedor"
-                style={{ width: '100%', height: '100%' }} />
-              <Img src={IMGS.gal3} alt="render · cocina integrada"
-                style={{ width: '100%', height: '100%' }} />
+              <GalleryImg src={IMGS.gal1} alt="render · fachada principal"
+                containerStyle={{ gridRow: 'span 2' }} />
+              <GalleryImg src={IMGS.gal2} alt="render · living / comedor" />
+              <GalleryImg src={IMGS.gal3} alt="render · cocina integrada" />
             </div>
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: 6, marginTop: 6,
             }}>
-              <Img src={IMGS.gal4} alt="render · dormitorio principal"
-                style={{ width: '100%', height: 200 }} />
-              <Img src={IMGS.gal5} alt="render · terraza"
-                style={{ width: '100%', height: 200 }} />
+              <GalleryImg src={IMGS.gal4} alt="render · dormitorio principal"
+                containerStyle={{ height: 200 }} />
+              <GalleryImg src={IMGS.gal5} alt="render · terraza"
+                containerStyle={{ height: 200 }} />
             </div>
             <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center' }}>
-              <div
+              <span
                 onMouseEnter={() => setHovGal(true)}
                 onMouseLeave={() => setHovGal(false)}
                 style={{
-                  display: 'inline-flex', alignItems: 'center',
-                  padding: '11px 32px',
-                  border: `1px solid ${t.line}`,
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-                  textTransform: 'uppercase', color: t.textSecondary,
-                  cursor: 'pointer',
-                  background: hovGal ? 'rgba(30,30,30,0.05)' : 'transparent',
-                  transition: 'background 0.2s ease',
+                  fontSize: 12, fontWeight: 600, letterSpacing: '0.04em',
+                  color: hovGal ? t.accent : t.textSecondary,
+                  borderBottom: `1px solid ${hovGal ? t.accent : 'rgba(30,30,30,0.25)'}`,
+                  paddingBottom: 2, cursor: 'pointer',
+                  transition: 'color 0.2s ease, border-color 0.2s ease',
                 }}
               >
-                VER GALERÍA COMPLETA
-              </div>
+                Ver galería completa →
+              </span>
             </div>
           </div>
         </section>
@@ -537,28 +551,35 @@
       const [modal, setModal] = useState(null);
 
       useEffect(() => {
-        if (modal) {
-          const y = window.scrollY;
-          document.body.style.position = 'fixed';
-          document.body.style.top = `-${y}px`;
-          document.body.style.width = '100%';
-        } else {
-          const y = parseInt(document.body.style.top || '0') * -1;
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.width = '';
-          if (y) window.scrollTo(0, y);
-        }
+        if (!modal) return;
+        const sb = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = `${sb}px`;
         return () => {
-          const y = parseInt(document.body.style.top || '0') * -1;
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.width = '';
-          if (y) window.scrollTo(0, y);
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
         };
       }, [modal]);
 
       const grupos = [
+        {
+          id: '2amb',
+          titulo: '2 ambientes',
+          sublabel: '3 unidades · desde 58 m²',
+          planos: [
+            { id: '2a-1', label: 'Unidad D', sublabel: '58 m²' },
+            { id: '2a-2', label: 'Unidad E', sublabel: '62 m² + balcón' },
+          ],
+        },
+        {
+          id: '3amb',
+          titulo: '3 ambientes',
+          sublabel: '2 unidades · desde 80 m²',
+          planos: [
+            { id: '3a-1', label: 'Unidad F', sublabel: '80 m²' },
+            { id: '3a-2', label: 'Unidad G', sublabel: '88 m²' },
+          ],
+        },
         {
           id: '4amb',
           titulo: '4 ambientes',
@@ -599,7 +620,7 @@
                   </div>
 
                   {isOpen && (
-                    <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px', animation: 'accordionDown 0.4s ease' }}>
+                    <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px', animation: 'accordionDown 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                       {g.planos.map(p => (
                         <div key={p.id} onClick={() => setModal(p)}
                           style={{ width: 200, cursor: 'zoom-in' }}>
@@ -698,6 +719,7 @@
 
         const map = L.map(mapRef.current, { scrollWheelZoom: false, attributionControl: false });
         mapInstanceRef.current = map;
+        map.setView([-34.6540, -58.5015], 15);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '© OpenStreetMap © CARTO', maxZoom: 19,
@@ -761,9 +783,7 @@
           markersRef.current[i] = marker;
         });
 
-        // Ajustar bounds para mostrar proyecto + todos los POIs
-        const allCoords = [[-34.6540, -58.5015], ...pois.map(p => [p.lat, p.lng])];
-        map.fitBounds(L.latLngBounds(allCoords), { padding: [40, 40] });
+        // Vista fija en el edificio — zoom 15 igual que proyectos.html
 
         return () => {
           if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; }
@@ -915,6 +935,7 @@
     // ── SIGUIENTE PROYECTO ────────────────────────────────────────────
     function NextProjectCard() {
       const [hov, setHov] = useState(false);
+      const [hovLink, setHovLink] = useState(false);
       return (
         <section
           style={{ position: 'relative', height: 320, overflow: 'hidden' }}
@@ -961,14 +982,18 @@
             }}>
               Mataderos, Buenos Aires
             </p>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center',
-              fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: hov ? t.accent : t.onDarkPrimary,
-              borderBottom: `1px solid ${hov ? t.accent : 'rgba(255,255,255,0.35)'}`,
-              paddingBottom: 2, cursor: 'pointer',
-              transition: 'color 0.25s ease, border-color 0.25s ease',
-            }}>
+            <div
+              onMouseEnter={() => setHovLink(true)}
+              onMouseLeave={() => setHovLink(false)}
+              style={{
+                display: 'inline-flex', alignItems: 'center',
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                color: hovLink ? t.accent : t.onDarkPrimary,
+                borderBottom: `1px solid ${hovLink ? t.accent : 'rgba(255,255,255,0.35)'}`,
+                paddingBottom: 2, cursor: 'pointer',
+                transition: 'color 0.25s ease, border-color 0.25s ease',
+              }}
+            >
               VER PROYECTO →
             </div>
           </div>
