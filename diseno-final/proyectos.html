@@ -261,6 +261,7 @@
 
     // ── NAVBAR ────────────────────────────────────────────────────────
     function NavBar() {
+      const NAV_HREF = { INICIO: './index.html', PROYECTOS: './proyectos.html', NOSOTROS: './nosotros.html', CONTACTO: './contacto.html' };
       return (
         <nav style={{
           position: 'sticky', top: 0, zIndex: 100,
@@ -275,16 +276,16 @@
           <Logo size={40} color={t.ink} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
-              <span key={link} style={{
+              <a key={link} href={NAV_HREF[link]} style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: link === 'PROYECTOS' ? t.ink : t.textSecondary,
                 cursor: 'pointer',
                 borderBottom: link === 'PROYECTOS' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
-                paddingBottom: 3,
+                paddingBottom: 3, textDecoration: 'none',
               }}>
                 {link}
-              </span>
+              </a>
             ))}
           </div>
         </nav>
@@ -383,12 +384,15 @@
 
       return (
         // Wrapper: maneja grid placement + animación de entrada
-        <div style={{
-          gridColumn: `span ${span}`,
-          height: 460,
-          animation: 'cardSlideUp 0.5s ease-out both',
-          animationDelay: `${index * 40}ms`,
-        }}>
+        <div
+          onClick={project.id === 'cosquin' ? () => window.open('./ficha-proyecto.html', '_blank') : undefined}
+          style={{
+            gridColumn: `span ${span}`,
+            height: 460,
+            animation: 'cardSlideUp 0.5s ease-out both',
+            animationDelay: `${index * 40}ms`,
+          }}
+        >
           {/* Inner: maneja hover scale — separado para no conflictar con animation transform */}
           <div
             onMouseEnter={() => setHovered(true)}

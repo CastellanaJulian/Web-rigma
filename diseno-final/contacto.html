@@ -129,6 +129,7 @@
 
     // ── NAVBAR ────────────────────────────────────────────────────────
     function NavBar() {
+      const NAV_HREF = { INICIO: './index.html', PROYECTOS: './proyectos.html', NOSOTROS: './nosotros.html', CONTACTO: './contacto.html' };
       return (
         <nav style={{
           position: 'sticky', top: 0, zIndex: 100,
@@ -143,16 +144,16 @@
           <Logo size={40} color={t.ink} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
-              <span key={link} style={{
+              <a key={link} href={NAV_HREF[link]} style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: link === 'CONTACTO' ? t.ink : t.textSecondary,
                 cursor: 'pointer',
                 borderBottom: link === 'CONTACTO' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
-                paddingBottom: 3,
+                paddingBottom: 3, textDecoration: 'none',
               }}>
                 {link}
-              </span>
+              </a>
             ))}
           </div>
         </nav>

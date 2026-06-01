@@ -129,6 +129,7 @@
 
     // ── NAVBAR ────────────────────────────────────────────────────────
     function NavBar() {
+      const NAV_HREF = { INICIO: './index.html', PROYECTOS: './proyectos.html', NOSOTROS: './nosotros.html', CONTACTO: './contacto.html' };
       return (
         <nav style={{
           position: 'sticky', top: 0, zIndex: 100,
@@ -143,16 +144,16 @@
           <Logo size={40} color={t.ink} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
-              <span key={link} style={{
+              <a key={link} href={NAV_HREF[link]} style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: link === 'NOSOTROS' ? t.ink : t.textSecondary,
                 cursor: 'pointer',
                 borderBottom: link === 'NOSOTROS' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
-                paddingBottom: 3,
+                paddingBottom: 3, textDecoration: 'none',
               }}>
                 {link}
-              </span>
+              </a>
             ))}
           </div>
         </nav>
@@ -433,26 +434,30 @@
               Cada obra tiene su historia. Visitá el portfolio para ver disponibilidad y detalle de cada proyecto, o escribinos para consultas personalizadas.
             </p>
             <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-              <button
-                onMouseEnter={() => setHovBtn(true)}
-                onMouseLeave={() => setHovBtn(false)}
-                style={{
-                  padding: '14px 28px',
-                  fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                  background: hovBtn ? t.accent : t.onDarkPrimary,
-                  color: t.ink,
-                  border: 'none', cursor: 'pointer', borderRadius: 2,
-                  transition: 'background 0.2s ease',
-                }}>
-                VER PROYECTOS
-              </button>
-              <HoverLink
-                baseColor={t.onDarkPrimary}
-                baseBorder={t.onDarkSecondary}
-                style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em', paddingBottom: 2 }}
-              >
-                Contactarnos →
-              </HoverLink>
+              <a href="./proyectos.html" style={{ textDecoration: 'none' }}>
+                <button
+                  onMouseEnter={() => setHovBtn(true)}
+                  onMouseLeave={() => setHovBtn(false)}
+                  style={{
+                    padding: '14px 28px',
+                    fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                    background: hovBtn ? t.accent : t.onDarkPrimary,
+                    color: t.ink,
+                    border: 'none', cursor: 'pointer', borderRadius: 2,
+                    transition: 'background 0.2s ease',
+                  }}>
+                  VER PROYECTOS
+                </button>
+              </a>
+              <a href="./contacto.html" style={{ textDecoration: 'none' }}>
+                <HoverLink
+                  baseColor={t.onDarkPrimary}
+                  baseBorder={t.onDarkSecondary}
+                  style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em', paddingBottom: 2 }}
+                >
+                  Contactarnos →
+                </HoverLink>
+              </a>
             </div>
           </div>
 

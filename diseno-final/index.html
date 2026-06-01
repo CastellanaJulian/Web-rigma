@@ -236,6 +236,7 @@
 
     // ── NAVBAR ────────────────────────────────────────────────────────
     function NavBar() {
+      const NAV_HREF = { INICIO: './index.html', PROYECTOS: './proyectos.html', NOSOTROS: './nosotros.html', CONTACTO: './contacto.html' };
       return (
         <nav style={{
           position: 'sticky', top: 0, zIndex: 100,
@@ -250,16 +251,16 @@
           <Logo size={40} color={t.ink} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
-              <span key={link} style={{
+              <a key={link} href={NAV_HREF[link]} style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: link === 'INICIO' ? t.ink : t.textSecondary,
                 cursor: 'pointer',
                 borderBottom: link === 'INICIO' ? `1.5px solid ${t.accent}` : '1.5px solid transparent',
-                paddingBottom: 3,
+                paddingBottom: 3, textDecoration: 'none',
               }}>
                 {link}
-              </span>
+              </a>
             ))}
           </div>
         </nav>
@@ -274,6 +275,7 @@
         <div
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
+          onClick={project.id === 'cosquin' ? () => window.open('./ficha-proyecto.html', '_blank') : undefined}
           style={{
             position: 'relative', cursor: 'pointer', overflow: 'hidden',
             gridColumn: `span ${span}`, height,
@@ -384,18 +386,22 @@
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', ...fadeUp(300) }}>
               <div style={{ display: 'flex', gap: 14 }}>
-                <Btn variant="primary" style={{
-                  fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
-                  textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
-                }}>
-                  VER PROYECTOS
-                </Btn>
-                <Btn variant="secondary" style={{
-                  fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
-                  textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
-                }}>
-                  CONTACTANOS
-                </Btn>
+                <a href="./proyectos.html" style={{ textDecoration: 'none' }}>
+                  <Btn variant="primary" style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+                    textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
+                  }}>
+                    VER PROYECTOS
+                  </Btn>
+                </a>
+                <a href="./contacto.html" style={{ textDecoration: 'none' }}>
+                  <Btn variant="secondary" style={{
+                    fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
+                    textTransform: 'uppercase', padding: '13px 28px', borderRadius: 2,
+                  }}>
+                    CONTACTANOS
+                  </Btn>
+                </a>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -431,13 +437,15 @@
                 Nuestros desarrollos
               </h2>
             </div>
-            <HoverLink
-              baseColor={t.textSecondary}
-              baseBorder="rgba(30,30,30,0.25)"
-              style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
-            >
-              Ver todos los proyectos →
-            </HoverLink>
+            <a href="./proyectos.html" style={{ textDecoration: 'none' }}>
+              <HoverLink
+                baseColor={t.textSecondary}
+                baseBorder="rgba(30,30,30,0.25)"
+                style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
+              >
+                Ver todos los proyectos →
+              </HoverLink>
+            </a>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
             {featured.map(p => <ProjectCard key={p.id} project={p} span={3} height={460} />)}
@@ -515,13 +523,15 @@
                 ))}
               </div>
 
-              <HoverLink
-                baseColor={t.ink}
-                baseBorder={t.ink}
-                style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
-              >
-                Conocer más sobre Rigma →
-              </HoverLink>
+              <a href="./nosotros.html" style={{ textDecoration: 'none' }}>
+                <HoverLink
+                  baseColor={t.ink}
+                  baseBorder={t.ink}
+                  style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', paddingBottom: 2 }}
+                >
+                  Conocer más sobre Rigma →
+                </HoverLink>
+              </a>
             </div>
 
             <Img src={IMGS.nosotros} alt="Interior · equipo / obra"
