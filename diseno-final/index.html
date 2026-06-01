@@ -248,7 +248,7 @@
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 56px',
         }}>
-          <Logo size={40} color={t.ink} />
+          <a href="./index.html" style={{ textDecoration: 'none' }}><Logo size={40} color={t.ink} /></a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             {['INICIO', 'PROYECTOS', 'NOSOTROS', 'CONTACTO'].map(link => (
               <a key={link} href={NAV_HREF[link]} style={{
