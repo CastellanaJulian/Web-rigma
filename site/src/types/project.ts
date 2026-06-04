@@ -1,3 +1,12 @@
+export type POI = {
+  lat: number
+  lng: number
+  category: string
+  name: string
+  detail: string
+  iconType: 'transport' | 'health' | 'education' | 'commerce'
+}
+
 export type Project = {
   id: string
   slug: string
@@ -5,6 +14,7 @@ export type Project = {
   location: string
   neighborhood?: string
   status: 'En Ejecución' | 'Terminado'
+  priority?: number
   progress?: number
   coverImage: string
   images: string[]
@@ -27,4 +37,5 @@ export type Project = {
     lng: number
   }
   relatedProject?: string
+  pointsOfInterest?: POI[]
 }

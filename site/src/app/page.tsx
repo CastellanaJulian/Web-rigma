@@ -1,24 +1,17 @@
-import ContactCTA from '@/components/shared/ContactCTA'
+import HeroCarousel from '@/components/sections/home/HeroCarousel'
+import ProyectosDestacados from '@/components/sections/home/ProyectosDestacados'
+import NosotrosSnippet from '@/components/sections/home/NosotrosSnippet'
+import PorQueSection from '@/components/sections/home/PorQueSection'
+import ContactSectionHome from '@/components/sections/home/ContactSectionHome'
 
 export default function Home() {
   return (
     <>
-      {/* Hero */}
-      <section>{/* Hero — diseño pendiente */}</section>
-
-      {/* Proyectos destacados */}
-      <section>{/* Proyectos destacados — diseño pendiente */}</section>
-
-      {/* Nosotros */}
-      <section>{/* Nosotros snippet — diseño pendiente */}</section>
-
-      {/* Por qué elegirnos */}
-      <section>{/* Por qué elegirnos — diseño pendiente */}</section>
-
-      {/* Testimonios */}
-      <section>{/* Testimonios — contenido pendiente */}</section>
-
-      <ContactCTA />
+      <HeroCarousel />
+      <ProyectosDestacados />
+      <NosotrosSnippet />
+      <PorQueSection />
+      <ContactSectionHome />
     </>
   )
 }

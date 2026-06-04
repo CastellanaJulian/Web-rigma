@@ -43,13 +43,17 @@
 
 | Tecnología   | Rol                        | Notas |
 |--------------|---------------------------|-------|
-| Next.js 14+  | Framework (App Router)    | Con directorio `src/` |
+| Next.js 16   | Framework (App Router)    | Con directorio `src/`, alias `@/*` |
 | TypeScript   | Tipado estático           | |
-| Tailwind CSS | Estilos                   | |
+| Tailwind CSS v4 | Estilos               | Tokens en `@theme` dentro de `globals.css` |
 | ESLint       | Linting                   | |
-| Sanity       | CMS headless              | Plan gratuito — Studio inicializado en `dev/` el 23/05/2026 |
-| Vercel       | Hosting                   | Plan gratuito — ya deployado con dominio rigma.com.ar |
-| Vercel Analytics | Analytics de tráfico  | Ya integrado en la landing |
+| Sanity       | CMS headless              | Plan gratuito — schemas migrados a `site/src/sanity/` |
+| Vercel       | Hosting                   | Plan gratuito — Root Directory: `site/` (antes `landing-en-construccion/v0`) |
+| Vercel Analytics | Analytics de tráfico  | Integrar en `site/` al momento del cutover |
+| react-leaflet + leaflet | Mapas          | OpenStreetMap — usado en `/proyectos` y ficha de proyecto |
+| embla-carousel-react | Carrusel      | Hero carousel y galería de imágenes |
+| react-hook-form + zod | Formularios  | Validación del formulario de contacto |
+| sharp        | Optimización de imágenes  | Requerido por `next/image` |
 
 **Import alias:** `@/*` → `src/*`
 
@@ -75,13 +79,14 @@
 - **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
 - **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local en `/Users/julian/web-rigma/rigma-qr.png` (no subido al repo)
 
-### Sitio nuevo en desarrollo (`dev/`)
-- **Ruta en repo:** `dev/`
+### Sitio nuevo en desarrollo (`site/`)
+- **Ruta en repo:** `site/`
 - **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + ESLint, App Router, `src/`, alias `@/*`
-- **Sanity Studio embebido:** ruta `/studio` (página split en `src/app/studio/[[...tool]]/page.tsx` server + `Studio.tsx` client)
-- **Schemas:** `src/sanity/schemas/{project,testimonial,siteSettings}.ts` — `siteSettings` es singleton vía `src/sanity/structure.ts`
-- **Config:** `sanity.config.ts` + `sanity.cli.ts` en la raíz de `dev/`
-- **Estado:** todavía no deployado a Vercel — corre solo en local con `cd dev && npm run dev` → `localhost:3000/studio`. La idea es que cuando el diseño esté listo, este proyecto reemplaza a `landing-en-construccion/` en producción.
+- **Sanity Studio embebido:** schemas en `src/sanity/schemas/` — Studio a integrar en Etapa 3
+- **Schemas Sanity:** `src/sanity/schemas/{project,homePage,team,siteSettings,testimonial}.ts`
+- **Config Sanity:** `sanity.config.ts` + `sanity.cli.ts` en la raíz de `site/`
+- **Correr en local:** `cd site && npm run dev` → `localhost:3000`
+- **Estado:** en desarrollo activo — reemplazará a `landing-en-construccion/` en producción al finalizar Etapa 2
 
 ### Sanity
 - **Project ID:** `0q5stz3o`
@@ -162,7 +167,9 @@
 | LinkedIn    | No                           | |
 
 ### Formulario de contacto
-- Destino: **Email** (Rigmagrupo@gmail.com) — Google Sheets como alternativa a evaluar
+- Destino: **Email** (Rigmagrupo@gmail.com) vía **Resend** (Etapa 3)
+- FROM: `noreply@rigma.com.ar` → TO: `Rigmagrupo@gmail.com`
+- Requiere: cuenta Resend (free tier), registros DNS en `rigma.com.ar` (TXT + CNAME de Resend), API key en Vercel env vars
 - Debe incluir selector de proyecto de interés para calificar el lead
 - Campos mínimos: nombre, teléfono, email, proyecto de interés, mensaje
 

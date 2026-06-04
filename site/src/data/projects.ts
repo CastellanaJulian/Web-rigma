@@ -1,4 +1,4 @@
-import { Project } from '@/types/project'
+import { Project, POI } from '@/types/project'
 
 export const projects: Project[] = [
   {
@@ -7,7 +7,8 @@ export const projects: Project[] = [
     title: 'Zelada 6171',
     location: 'Zelada 6171',
     status: 'Terminado',
-    coverImage: '/images/projects/zelada-6171/cover.jpg',
+    coverImage: '/images/img-3.jpg',
+    coordinates: { lat: -34.6568, lng: -58.5041 },
     images: [],
     description: 'Descripción pendiente de completar.',
     highlights: {
@@ -23,9 +24,24 @@ export const projects: Project[] = [
     location: 'Cosquín 1534',
     neighborhood: 'Mataderos',
     status: 'En Ejecución',
+    priority: 1,
     progress: 60,
-    coverImage: '/images/projects/cosquin-1534/cover.jpg',
-    images: [],
+    coverImage: '/images/img-1.jpg',
+    coordinates: { lat: -34.6540, lng: -58.5015 },
+    images: [
+      '/images/img-1.jpg',
+      '/images/img-2.jpg',
+      '/images/img-3.jpg',
+      '/images/img-4.jpg',
+      '/images/img-5.jpg',
+    ],
+    plans: ['/images/img-plano.jpg'],
+    pointsOfInterest: [
+      { lat: -34.6522, lng: -58.4983, category: 'Transporte', name: 'Estación Mataderos', detail: '5 min a pie · FF.CC. Belgrano Sur', iconType: 'transport' },
+      { lat: -34.6468, lng: -58.4952, category: 'Salud', name: 'Hospital Santojanni', detail: '10 min en auto', iconType: 'health' },
+      { lat: -34.6538, lng: -58.5042, category: 'Educación', name: 'Escuelas e institutos', detail: 'En radio de 3 cuadras', iconType: 'education' },
+      { lat: -34.6555, lng: -58.5005, category: 'Comercio', name: 'Comercios y supermercados', detail: 'A pocas cuadras', iconType: 'commerce' },
+    ] satisfies POI[],
     description: 'Edificio de 8 departamentos de 4 ambientes en el barrio de Mataderos. Unidades de alta calidad con amenities premium.',
     highlights: {
       totalSurface: '1.800 m²',
@@ -55,7 +71,9 @@ export const projects: Project[] = [
     location: 'Av. Larrazábal 1255',
     neighborhood: 'Mataderos',
     status: 'En Ejecución',
-    coverImage: '/images/projects/larrazabal-1255/cover.jpg',
+    priority: 2,
+    coverImage: '/images/img-2.jpg',
+    coordinates: { lat: -34.6595, lng: -58.5065 },
     images: [],
     description: 'Edificio de 17 unidades funcionales con SUM, patio, subsuelo con cochera y 16 cocheras en planta baja.',
     highlights: {
