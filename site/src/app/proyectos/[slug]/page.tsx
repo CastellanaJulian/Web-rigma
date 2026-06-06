@@ -5,7 +5,7 @@ import DescriptionSection from '@/components/sections/ficha/DescriptionSection'
 import GaleriaSection from '@/components/sections/ficha/GaleriaSection'
 import PlanosSection from '@/components/sections/ficha/PlanosSection'
 import LocationSection from '@/components/sections/ficha/LocationSection'
-import ProjectCard from '@/components/shared/ProjectCard'
+import SiguienteProyecto from '@/components/sections/ficha/SiguienteProyecto'
 import ContactSectionHome from '@/components/sections/home/ContactSectionHome'
 
 export function generateStaticParams() {
@@ -58,17 +58,7 @@ function KeyDataStrip({ project }: { project: ReturnType<typeof getProjectBySlug
 function ProyectoRelacionado({ slug }: { slug: string }) {
   const related = getProjectBySlug(slug)
   if (!related) return null
-
-  return (
-    <section style={{ padding: '80px clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9' }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 24 }}>
-        También te puede interesar
-      </div>
-      <div style={{ height: 460 }}>
-        <ProjectCard project={related} size="lg" className="h-full" />
-      </div>
-    </section>
-  )
+  return <SiguienteProyecto project={related} />
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -97,17 +87,19 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
           coordinates={project.coordinates}
           projectName={project.title}
           projectStatus={project.status}
+          locationTitle={`${project.neighborhood ?? project.location}, CABA`}
+          locationDescription={project.locationDescription}
           pois={project.pointsOfInterest ?? []}
         />
-      )}
-
-      {project.relatedProject && (
-        <ProyectoRelacionado slug={project.relatedProject} />
       )}
 
       <div id="contacto">
         <ContactSectionHome />
       </div>
+
+      {project.relatedProject && (
+        <ProyectoRelacionado slug={project.relatedProject} />
+      )}
     </>
   )
 }

@@ -74,17 +74,28 @@ const pilares = [
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function NosotrosPage() {
-  const [pilaresRef, pilaresVisible] = useInView(0.3)
-  const [hovBtn, setHovBtn] = useState(false)
+  const [pilaresRef, pilaresVisible]         = useInView(0.3)
+  const [headerRef, headerVisible]           = useInView(0.05)
+  const [historiaRef, historiaVisible]       = useInView(0.15)
+  const [filosofiaImgRef, filosofiaImgVisible] = useInView(0.2)
+  const [ctaRef, ctaVisible]                 = useInView(0.15)
+  const [hovBtn, setHovBtn]   = useState(false)
   const [hovSection, setHovSection] = useState(false)
+
+  const fadeUp = (visible: boolean, delay = 0) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(24px)',
+    transition: 'opacity 0.8s ease, transform 0.8s ease',
+    transitionDelay: visible ? `${delay}ms` : '0ms',
+  })
 
   return (
     <>
       {/* 01 · PAGE HEADER */}
       <section
+        ref={headerRef as React.RefObject<HTMLElement>}
         style={{
-          padding:
-            'clamp(48px, 7vw, 80px) clamp(20px, 5vw, 56px) clamp(40px, 5vw, 64px)',
+          padding: 'clamp(48px, 7vw, 80px) clamp(20px, 5vw, 56px) clamp(24px, 3vw, 40px)',
         }}
       >
         <h1
@@ -96,6 +107,7 @@ export default function NosotrosPage() {
             color: '#1E1E1E',
             maxWidth: 680,
             marginBottom: 24,
+            ...fadeUp(headerVisible, 0),
           }}
         >
           Tres generaciones.
@@ -109,6 +121,7 @@ export default function NosotrosPage() {
             lineHeight: 1.7,
             color: 'rgba(30,30,30,0.65)',
             maxWidth: 540,
+            ...fadeUp(headerVisible, 120),
           }}
         >
           Empresa constructora familiar fundada en 2016, con trayectoria de tres
@@ -119,15 +132,16 @@ export default function NosotrosPage() {
 
       {/* 02 · HISTORIA */}
       <section
+        ref={historiaRef as React.RefObject<HTMLElement>}
         style={{
-          padding: '48px clamp(20px, 5vw, 56px) 120px',
+          padding: 'clamp(24px, 3vw, 40px) clamp(20px, 5vw, 56px) 80px',
           borderBottom: '1px solid #E9E9E9',
         }}
       >
         {/* Imagen panorámica */}
         <div
           className="relative overflow-hidden w-full"
-          style={{ aspectRatio: '16/6', marginBottom: 64 }}
+          style={{ aspectRatio: '21/6', marginBottom: 36, ...fadeUp(historiaVisible, 0) }}
         >
           <Image
             src="/images/img-obra.jpg"
@@ -144,7 +158,7 @@ export default function NosotrosPage() {
           className="grid grid-cols-1 md:grid-cols-2"
           style={{ gap: 80, alignItems: 'start' }}
         >
-          <div>
+          <div style={fadeUp(historiaVisible, 100)}>
             <SectionLabel>Historia</SectionLabel>
             <p
               style={{
@@ -178,7 +192,7 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          <div>
+          <div style={fadeUp(historiaVisible, 200)}>
             <div style={{ paddingBottom: 48, borderBottom: '1px solid #E9E9E9' }}>
               <div
                 style={{
@@ -247,7 +261,11 @@ export default function NosotrosPage() {
           style={{ gap: 80, alignItems: 'stretch', marginTop: 20 }}
         >
           {/* Imagen */}
-          <div className="relative overflow-hidden order-1" style={{ minHeight: 400 }}>
+          <div
+            ref={filosofiaImgRef as React.RefObject<HTMLDivElement>}
+            className="relative overflow-hidden order-1"
+            style={{ minHeight: 400, ...fadeUp(filosofiaImgVisible, 0) }}
+          >
             <Image
               src="/images/img-plano.jpg"
               alt="Rigma — planificación"
@@ -336,13 +354,16 @@ export default function NosotrosPage() {
           }}
         />
         <div
+          ref={ctaRef as React.RefObject<HTMLDivElement>}
           className="absolute bottom-0 left-0 right-0"
           style={{
             padding: '0 clamp(20px, 5vw, 56px) clamp(40px, 6vw, 80px)',
             zIndex: 2,
           }}
         >
-          <SectionLabel dark>Más sobre nosotros</SectionLabel>
+          <div style={fadeUp(ctaVisible, 0)}>
+            <SectionLabel dark>Más sobre nosotros</SectionLabel>
+          </div>
           <h2
             style={{
               fontSize: 'clamp(28px, 3.5vw, 48px)',
@@ -352,6 +373,7 @@ export default function NosotrosPage() {
               color: '#FFFFFF',
               marginBottom: 20,
               maxWidth: 620,
+              ...fadeUp(ctaVisible, 100),
             }}
           >
             Conocé nuestros proyectos o escribinos directamente.
@@ -364,6 +386,7 @@ export default function NosotrosPage() {
               color: 'rgba(255,255,255,0.65)',
               marginBottom: 40,
               maxWidth: 520,
+              ...fadeUp(ctaVisible, 180),
             }}
           >
             Cada obra tiene su historia. Visitá el portfolio para ver
@@ -376,6 +399,7 @@ export default function NosotrosPage() {
               gap: 32,
               alignItems: 'center',
               flexWrap: 'wrap',
+              ...fadeUp(ctaVisible, 260),
             }}
           >
             <Link

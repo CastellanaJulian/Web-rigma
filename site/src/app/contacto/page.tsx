@@ -2,30 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-
-const fieldStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '13px 16px',
-  fontSize: 13,
-  fontWeight: 400,
-  color: '#1E1E1E',
-  background: 'transparent',
-  border: '1px solid #E9E9E9',
-  borderRadius: 2,
-  appearance: 'none',
-  fontFamily: 'inherit',
-  outline: 'none',
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 9,
-  fontWeight: 700,
-  letterSpacing: '0.16em',
-  textTransform: 'uppercase',
-  color: 'rgba(30,30,30,0.45)',
-  marginBottom: 8,
-}
+import ContactForm from '@/components/shared/ContactForm'
+import { useInView } from '@/hooks/useInView'
 
 const channels = [
   {
@@ -85,8 +63,19 @@ const channels = [
   },
 ]
 
+const columnPadding = 'clamp(32px, 5vw, 48px) clamp(20px, 5vw, 64px) clamp(32px, 5vw, 48px) clamp(20px, 5vw, 56px)'
+
 export default function ContactoPage() {
-  const [hovSubmit, setHovSubmit] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [leftRef, leftVisible]   = useInView(0.05)
+  const [rightRef, rightVisible] = useInView(0.05)
+
+  const fadeUp = (visible: boolean, delay = 0) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(22px)',
+    transition: 'opacity 0.8s ease, transform 0.8s ease',
+    transitionDelay: visible ? `${delay}ms` : '0ms',
+  })
 
   return (
     <section style={{ borderTop: '1px solid #E9E9E9' }}>
@@ -94,104 +83,95 @@ export default function ContactoPage() {
         className="grid grid-cols-1 md:grid-cols-2"
         style={{ minHeight: 'calc(100vh - 64px)' }}
       >
-        {/* ── Columna izquierda: formulario ── */}
+        {/* ── Columna izquierda ── */}
         <div
+          ref={leftRef as React.RefObject<HTMLDivElement>}
           className="order-2 md:order-1 flex flex-col"
-          style={{
-            padding: 'clamp(32px, 5vw, 48px) clamp(20px, 5vw, 64px) clamp(32px, 5vw, 48px) clamp(20px, 5vw, 56px)',
-            background: '#FBFBFB',
-          }}
+          style={{ padding: columnPadding, background: '#FBFBFB' }}
         >
-          <h1
-            style={{
-              fontSize: 'clamp(40px, 5vw, 66px)',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              color: '#1E1E1E',
-              lineHeight: 1,
-              marginBottom: 14,
-            }}
-          >
-            Hablemos.
-          </h1>
-          <p
-            style={{
-              fontSize: 14,
-              fontWeight: 300,
-              lineHeight: 1.65,
-              color: 'rgba(30,30,30,0.65)',
-              marginBottom: 40,
-              maxWidth: 460,
-            }}
-          >
-            Escribinos para consultar sobre proyectos, coordinar una visita o pedir información personalizada.
-          </p>
-
-          {/* Formulario */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label style={labelStyle}>Nombre completo</label>
-                <input type="text" placeholder="Ej: María González" style={fieldStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Celular</label>
-                <input type="text" placeholder="+54 11 ···· ····" style={fieldStyle} />
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Email</label>
-              <input type="email" placeholder="nombre@email.com" style={fieldStyle} />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Proyecto de interés</label>
-              <select style={{ ...fieldStyle, color: 'rgba(30,30,30,0.65)' }} defaultValue="">
-                <option value="" disabled>Seleccioná un proyecto</option>
-                <option value="cosquin">Cosquín 1534</option>
-                <option value="larrazabal">Av. Larrazábal 1255</option>
-                <option value="zelada">Zelada 6171</option>
-                <option value="otro">Otro / No sé aún</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Mensaje</label>
-              <textarea
-                placeholder="Contanos qué información necesitás..."
-                rows={4}
-                style={{ ...fieldStyle, resize: 'none', overflow: 'hidden' }}
-                onInput={(e) => {
-                  const el = e.currentTarget
-                  el.style.height = 'auto'
-                  el.style.height = el.scrollHeight + 'px'
+          {success ? (
+            /* ── Estado de éxito ── */
+            <div className="flex flex-col justify-center" style={{ flex: 1, gap: 16 }}>
+              <div
+                style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: '50%',
+                  background: '#B59969',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 8,
                 }}
-              />
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <polyline
+                    points="4,12 9,17 20,7"
+                    stroke="#FFFFFF"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <h2
+                style={{
+                  fontSize: 'clamp(32px, 4vw, 52px)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.02em',
+                  color: '#1E1E1E',
+                  lineHeight: 1,
+                  marginBottom: 12,
+                }}
+              >
+                ¡Mensaje enviado!
+              </h2>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 300,
+                  lineHeight: 1.65,
+                  color: 'rgba(30,30,30,0.65)',
+                  maxWidth: 400,
+                }}
+              >
+                Recibimos tu consulta. Te respondemos a la brevedad.
+              </p>
             </div>
+          ) : (
+            <>
+              <h1
+                style={{
+                  fontSize: 'clamp(40px, 5vw, 66px)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.02em',
+                  color: '#1E1E1E',
+                  lineHeight: 1,
+                  marginBottom: 14,
+                  ...fadeUp(leftVisible, 0),
+                }}
+              >
+                Hablemos.
+              </h1>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 300,
+                  lineHeight: 1.65,
+                  color: 'rgba(30,30,30,0.65)',
+                  marginBottom: 40,
+                  maxWidth: 460,
+                  ...fadeUp(leftVisible, 100),
+                }}
+              >
+                Escribinos para consultar sobre proyectos, coordinar una visita o pedir información personalizada.
+              </p>
 
-            <button
-              onMouseEnter={() => setHovSubmit(true)}
-              onMouseLeave={() => setHovSubmit(false)}
-              style={{
-                width: '100%',
-                padding: '15px 24px',
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                background: hovSubmit ? '#B59969' : '#1E1E1E',
-                color: '#FFFFFF',
-                border: 'none',
-                cursor: 'pointer',
-                borderRadius: 2,
-                fontFamily: 'inherit',
-                transition: 'background 0.2s ease',
-              }}
-            >
-              ENVIAR CONSULTA →
-            </button>
-          </div>
+              <div style={fadeUp(leftVisible, 180)}>
+                <ContactForm theme="light" onSuccess={() => setSuccess(true)} />
+              </div>
+            </>
+          )}
 
           {/* Canales de contacto */}
           <div
@@ -204,13 +184,16 @@ export default function ContactoPage() {
               gap: 24,
             }}
           >
-            {channels.map((ch) => (
+            {channels.map((ch, i) => (
               <a
                 key={ch.label}
                 href={ch.href}
                 target={ch.label === 'WhatsApp' ? '_blank' : undefined}
                 rel={ch.label === 'WhatsApp' ? 'noopener noreferrer' : undefined}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, textDecoration: 'none' }}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10, textDecoration: 'none',
+                  ...fadeUp(leftVisible, 280 + i * 80),
+                }}
               >
                 <div style={{ flexShrink: 0, marginTop: 1 }}>{ch.icon}</div>
                 <div>
@@ -235,14 +218,18 @@ export default function ContactoPage() {
           </div>
         </div>
 
-        {/* ── Columna derecha: imagen con margen ── */}
+        {/* ── Columna derecha: imagen ── */}
         <div
+          ref={rightRef as React.RefObject<HTMLDivElement>}
           className="order-1 md:order-2 h-[280px] md:h-full"
           style={{
             paddingTop: 'clamp(0px, 3.3vw, 48px)',
             paddingRight: 'clamp(0px, 3.9vw, 56px)',
             paddingBottom: 'clamp(0px, 3.3vw, 48px)',
             paddingLeft: 0,
+            opacity: rightVisible ? 1 : 0,
+            transition: 'opacity 1s ease',
+            transitionDelay: rightVisible ? '150ms' : '0ms',
           }}
         >
           <div className="relative overflow-hidden h-full">

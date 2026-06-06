@@ -15,10 +15,12 @@ type Props = {
   coordinates: { lat: number; lng: number }
   projectName: string
   projectStatus: string
+  locationTitle: string
+  locationDescription?: string
   pois: POI[]
 }
 
-export default function LocationSection({ coordinates, projectName, projectStatus, pois }: Props) {
+export default function LocationSection({ coordinates, projectName, projectStatus, locationTitle, locationDescription, pois }: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
   const markersRef = useRef<unknown[]>([])
@@ -31,10 +33,43 @@ export default function LocationSection({ coordinates, projectName, projectStatu
 
     import('leaflet').then((L) => {
       if (cancelled || !mapRef.current || mapInstanceRef.current) return
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      document.head.appendChild(link)
+      if (!document.getElementById('leaflet-css')) {
+        const link = document.createElement('link')
+        link.id = 'leaflet-css'
+        link.rel = 'stylesheet'
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+        document.head.appendChild(link)
+      }
+
+      // Inject popup overrides after Leaflet CSS so they always win
+      if (!document.getElementById('leaflet-overrides')) {
+        const style = document.createElement('style')
+        style.id = 'leaflet-overrides'
+        style.textContent = `
+          .leaflet-popup-content-wrapper {
+            padding: 0 !important;
+            border-radius: 2px !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.14) !important;
+            overflow: hidden !important;
+            border: none !important;
+          }
+          .leaflet-popup-content { margin: 0 !important; }
+          .leaflet-popup-tip { background: #FBFBFB !important; }
+          .leaflet-popup-close-button {
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 24px !important;
+            text-align: center !important;
+            top: 8px !important;
+            right: 8px !important;
+            font-size: 14px !important;
+            color: #1E1E1E !important;
+            background: rgba(255,255,255,0.92) !important;
+            border-radius: 2px !important;
+          }
+        `
+        document.head.appendChild(style)
+      }
 
       const map = L.map(mapRef.current!, { scrollWheelZoom: false, attributionControl: false })
         .setView([coordinates.lat, coordinates.lng], 15)
@@ -65,17 +100,20 @@ export default function LocationSection({ coordinates, projectName, projectStatu
 
       const projectMarker = L.marker([coordinates.lat, coordinates.lng], { icon: projectIcon })
       projectMarker
-        .bindPopup(`<div style="padding:14px 16px;font-family:'Montserrat',sans-serif;min-width:180px;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(30,30,30,0.45);margin-bottom:5px;">${projectStatus.toUpperCase()}</div>
-          <div style="font-size:15px;font-weight:700;text-transform:uppercase;color:#1E1E1E;">${projectName}</div>
-        </div>`, { maxWidth: 200 })
+        .on('mouseover', () => projectMarker.openPopup())
+        .on('mouseout', () => projectMarker.closePopup())
+        .bindPopup(`<div style="padding:16px 18px 18px;font-family:'Montserrat',sans-serif;min-width:200px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(30,30,30,0.45);margin-bottom:6px;">${projectStatus.toUpperCase()}</div>
+          <div style="font-size:15px;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#1E1E1E;line-height:1.1;margin-bottom:4px;">${projectName}</div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:rgba(30,30,30,0.55);">${locationTitle}</div>
+        </div>`, { maxWidth: 220, minWidth: 220 })
         .addTo(map)
 
       // POI markers
       pois.forEach((poi, i) => {
         const svg = POI_SVGS[poi.iconType] ?? POI_SVGS.commerce
         const poiIcon = L.divIcon({
-          html: `<div style="width:28px;height:28px;background:#FBFBFB;border:1px solid #E9E9E9;border-radius:2px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);">
+          html: `<div style="width:28px;height:28px;background:#FBFBFB;border:1.5px solid #E9E9E9;border-radius:2px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.10);transition:border-color 0.2s ease,transform 0.2s ease;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svg}</svg>
           </div>`,
           className: '', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -18],
@@ -83,8 +121,8 @@ export default function LocationSection({ coordinates, projectName, projectStatu
 
         const marker = L.marker([poi.lat, poi.lng], { icon: poiIcon })
         marker
-          .on('click', () => setActiveIdx(i))
-          .on('popupclose', () => setActiveIdx(null))
+          .on('mouseover', () => { setActiveIdx(i); marker.openPopup() })
+          .on('mouseout', () => { setActiveIdx(null) })
           .bindPopup(`<div style="padding:14px 16px;font-family:'Montserrat',sans-serif;min-width:180px;">
             <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(30,30,30,0.45);margin-bottom:5px;">${poi.category}</div>
             <div style="font-size:13px;font-weight:600;color:#1E1E1E;margin-bottom:3px;">${poi.name}</div>
@@ -105,55 +143,99 @@ export default function LocationSection({ coordinates, projectName, projectStatu
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handlePoiHover = (idx: number) => setActiveIdx(idx)
-  const handlePoiLeave = () => setActiveIdx(null)
+  // Sync activeIdx → CSS class on marker DOM elements
+  useEffect(() => {
+    markersRef.current.forEach((marker, i) => {
+      if (!marker) return
+      const m = marker as { getElement?: () => HTMLElement | undefined }
+      const el = m.getElement?.()
+      if (!el) return
+      const inner = el.querySelector<HTMLElement>('div')
+      if (!inner) return
+      if (i === activeIdx) {
+        inner.style.borderColor = '#1E1E1E'
+        inner.style.transform = 'translateY(-2px)'
+        inner.style.boxShadow = '0 4px 12px rgba(0,0,0,0.18)'
+      } else {
+        inner.style.borderColor = '#E9E9E9'
+        inner.style.transform = 'translateY(0)'
+        inner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.10)'
+      }
+    })
+  }, [activeIdx])
+
+  const handlePoiHover = (i: number) => {
+    setActiveIdx(i)
+    const marker = markersRef.current[i] as { openPopup?: () => void } | undefined
+    marker?.openPopup?.()
+  }
+  const handlePoiLeave = (i: number) => {
+    setActiveIdx(null)
+    const marker = markersRef.current[i] as { closePopup?: () => void } | undefined
+    marker?.closePopup?.()
+  }
 
   return (
-    <section style={{ padding: '80px clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9' }}>
+    <section style={{ padding: '80px clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9', background: '#E3E3E3' }}>
       <SectionLabel>Ubicación</SectionLabel>
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.015em', color: '#1E1E1E', lineHeight: 1, marginBottom: 48 }}>
-        Dónde está el proyecto
-      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_300px]" style={{ gap: 48 }}>
-        <div ref={mapRef} style={{ height: 480, background: '#E9E9E9' }} />
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_380px]" style={{ gap: 64 }}>
+        <div ref={mapRef} style={{ height: 440 }} />
 
-        {pois.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 20 }}>
-              Puntos de interés
-            </div>
-            {pois.map((poi, i) => {
-              const svg = POI_SVGS[poi.iconType] ?? POI_SVGS.commerce
-              const isActive = activeIdx === i
-              return (
-                <div
-                  key={i}
-                  onMouseEnter={() => handlePoiHover(i)}
-                  onMouseLeave={handlePoiLeave}
-                  style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    padding: '16px 0',
-                    borderBottom: '1px solid #E9E9E9',
-                    cursor: 'default',
-                    background: isActive ? 'rgba(181,153,105,0.06)' : 'transparent',
-                    transition: 'background 0.2s ease',
-                  }}
-                >
-                  <div style={{ width: 32, height: 32, background: isActive ? '#B59969' : '#E9E9E9', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.2s ease' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isActive ? 'white' : '#1E1E1E'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-                      dangerouslySetInnerHTML={{ __html: svg }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 3 }}>{poi.category}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1E1E1E', marginBottom: 2 }}>{poi.name}</div>
-                    <div style={{ fontSize: 11, color: 'rgba(30,30,30,0.55)' }}>{poi.detail}</div>
-                  </div>
-                </div>
-              )
-            })}
+        <div style={{ paddingTop: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#1E1E1E', marginBottom: locationDescription ? 6 : 24 }}>
+            {locationTitle}
           </div>
-        )}
+          {locationDescription && (
+            <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.8, color: 'rgba(30,30,30,0.65)', marginBottom: 24 }}>
+              {locationDescription}
+            </p>
+          )}
+
+          {pois.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {pois.map((poi, i) => {
+                const svg = POI_SVGS[poi.iconType] ?? POI_SVGS.commerce
+                const isActive = activeIdx === i
+                return (
+                  <div
+                    key={i}
+                    onMouseEnter={() => handlePoiHover(i)}
+                    onMouseLeave={() => handlePoiLeave(i)}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 14,
+                      padding: '12px 14px', cursor: 'pointer', borderRadius: 2,
+                      background: isActive ? 'rgba(181,153,105,0.08)' : 'transparent',
+                      border: `1px solid ${isActive ? 'rgba(181,153,105,0.22)' : 'transparent'}`,
+                      transition: 'background 0.2s ease, border-color 0.2s ease',
+                    }}
+                  >
+                    <div style={{ flexShrink: 0, marginTop: 2 }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke={isActive ? '#B59969' : 'rgba(30,30,30,0.65)'}
+                        strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transition: 'stroke 0.2s ease' }}
+                        dangerouslySetInnerHTML={{ __html: svg }}
+                      />
+                    </div>
+                    <div>
+                      <div style={{
+                        fontSize: 12, fontWeight: 600, marginBottom: 2,
+                        color: isActive ? '#B59969' : '#1E1E1E',
+                        transition: 'color 0.2s ease',
+                      }}>
+                        {poi.name}
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 400, color: 'rgba(30,30,30,0.45)', lineHeight: 1.5 }}>
+                        {poi.detail}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

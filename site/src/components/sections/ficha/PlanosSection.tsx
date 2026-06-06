@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import SectionLabel from '@/components/shared/SectionLabel'
+import { Plan } from '@/types/project'
 
 type Props = {
-  plans: string[]
+  plans: Plan[]
   typologies?: string[]
 }
 
-type ModalData = { src: string; label: string } | null
+type ModalData = { src: string; label: string; description: string } | null
 
 export default function PlanosSection({ plans, typologies }: Props) {
   const [openGroup, setOpenGroup] = useState<string | null>('grupo-0')
@@ -26,19 +27,22 @@ export default function PlanosSection({ plans, typologies }: Props) {
     }
   }, [modal])
 
-  // Group plans by typology or put all in one group
+  // Group plans by typology header, or put all in one group
   const grupos = typologies && typologies.length > 0
-    ? typologies.map((typ, i) => ({
-        id: `grupo-${i}`,
-        titulo: typ,
-        sublabel: '',
-        planos: plans.slice(0, 1).map((src, j) => ({ src, label: `Plano ${j + 1}`, sublabel: typ })),
-      }))
+    ? typologies.map((typ, i) => {
+        const plan = plans[i] ?? plans[0]
+        return {
+          id: `grupo-${i}`,
+          titulo: typ,
+          sublabel: '',
+          planos: [{ src: plan.src, label: `Plano ${i + 1}`, description: plan.description }],
+        }
+      })
     : [{
         id: 'grupo-0',
         titulo: 'Planos del proyecto',
         sublabel: `${plans.length} plano${plans.length !== 1 ? 's' : ''}`,
-        planos: plans.map((src, i) => ({ src, label: `Plano ${i + 1}`, sublabel: '' })),
+        planos: plans.map((p, i) => ({ src: p.src, label: `Plano ${i + 1}`, description: p.description })),
       }]
 
   return (
@@ -68,18 +72,18 @@ export default function PlanosSection({ plans, typologies }: Props) {
               </div>
 
               {isOpen && (
-                <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 16, padding: '28px 0 32px', flexWrap: 'wrap', animation: 'accordionDown 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                   {g.planos.map((p, i) => (
                     <div
                       key={i}
-                      onClick={() => setModal({ src: p.src, label: p.label })}
+                      onClick={() => setModal({ src: p.src, label: p.label, description: p.description })}
                       style={{ width: 200, cursor: 'zoom-in' }}
                     >
                       <div style={{ position: 'relative', width: 200, height: 140, marginBottom: 10, border: '1px solid #E9E9E9' }}>
                         <Image src={p.src} alt={`plano · ${p.label}`} fill className="object-contain" sizes="200px" />
                       </div>
                       <div style={{ fontSize: 12, fontWeight: 600, color: '#1E1E1E', marginBottom: 2 }}>{p.label}</div>
-                      {p.sublabel && <div style={{ fontSize: 11, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{p.sublabel}</div>}
+                      <div style={{ fontSize: 11, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{p.description}</div>
                     </div>
                   ))}
                 </div>
@@ -120,7 +124,8 @@ export default function PlanosSection({ plans, typologies }: Props) {
             <div style={{ position: 'relative', width: '100%', height: 420, marginBottom: 24 }}>
               <Image src={modal.src} alt={modal.label} fill className="object-contain" sizes="680px" />
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#1E1E1E' }}>{modal.label}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1E1E1E', marginBottom: 4 }}>{modal.label}</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{modal.description}</div>
           </div>
         </div>
       )}

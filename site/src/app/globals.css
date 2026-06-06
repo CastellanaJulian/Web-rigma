@@ -49,6 +49,39 @@ video {
   to   { transform: translateY(0);    opacity: 1; }
 }
 
+@keyframes accordionDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Leaflet popup overrides — alinear al sistema de diseño */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 2px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14) !important;
+  overflow: hidden;
+  border: none !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+.leaflet-popup-tip {
+  background: #FBFBFB !important;
+}
+.leaflet-popup-close-button {
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  text-align: center !important;
+  top: 8px !important;
+  right: 8px !important;
+  font-size: 14px !important;
+  color: #1E1E1E !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-radius: 2px !important;
+  z-index: 10 !important;
+}
+
 /* Hover link that transitions to accent color */
 .hover-accent-link {
   color: rgba(30, 30, 30, 0.65);

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useInView } from '@/hooks/useInView'
 import { projects } from '@/data/projects'
 import { Project } from '@/types/project'
 import ProjectCard from '@/components/shared/ProjectCard'
@@ -156,11 +157,22 @@ function ProyectosGrid({ list, filter }: { list: Project[]; filter: Filter }) {
 export default function ProyectosPage() {
   const [filter, setFilter] = useState<Filter>('todos')
   const filtered = filterProjects(projects, filter)
+  const [headerRef, headerVisible] = useInView(0.05)
+
+  const fadeUp = (delay = 0) => ({
+    opacity: headerVisible ? 1 : 0,
+    transform: headerVisible ? 'translateY(0)' : 'translateY(22px)',
+    transition: 'opacity 0.8s ease, transform 0.8s ease',
+    transitionDelay: headerVisible ? `${delay}ms` : '0ms',
+  })
 
   return (
     <>
       {/* 01 · PAGE HEADER */}
-      <section style={{ padding: '80px clamp(20px, 5vw, 56px) 64px' }}>
+      <section
+        ref={headerRef as React.RefObject<HTMLElement>}
+        style={{ padding: '80px clamp(20px, 5vw, 56px) 64px' }}
+      >
         <h1
           style={{
             fontSize: 56,
@@ -169,6 +181,7 @@ export default function ProyectosPage() {
             color: '#1E1E1E',
             lineHeight: 1,
             marginBottom: 20,
+            ...fadeUp(0),
           }}
         >
           Nuestros proyectos
@@ -180,6 +193,7 @@ export default function ProyectosPage() {
             lineHeight: 1.6,
             color: 'rgba(30,30,30,0.65)',
             maxWidth: 520,
+            ...fadeUp(120),
           }}
         >
           Lo que estamos construyendo y lo que ya entregamos.
@@ -192,6 +206,7 @@ export default function ProyectosPage() {
         style={{
           padding: '0 clamp(20px, 5vw, 56px)',
           borderBottom: '1px solid #E9E9E9',
+          ...fadeUp(200),
         }}
       >
         <div style={{ display: 'flex', gap: 40 }}>

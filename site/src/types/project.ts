@@ -1,3 +1,8 @@
+export type Plan = {
+  src: string
+  description: string
+}
+
 export type POI = {
   lat: number
   lng: number
@@ -18,7 +23,7 @@ export type Project = {
   progress?: number
   coverImage: string
   images: string[]
-  plans?: string[]
+  plans?: Plan[]
   description: string
   highlights: {
     totalSurface?: string
@@ -36,6 +41,7 @@ export type Project = {
     lat: number
     lng: number
   }
+  locationDescription?: string
   relatedProject?: string
   pointsOfInterest?: POI[]
 }

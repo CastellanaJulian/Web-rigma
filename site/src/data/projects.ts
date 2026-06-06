@@ -1,4 +1,4 @@
-import { Project, POI } from '@/types/project'
+import { Project, POI, Plan } from '@/types/project'
 
 export const projects: Project[] = [
   {
@@ -35,7 +35,12 @@ export const projects: Project[] = [
       '/images/img-4.jpg',
       '/images/img-5.jpg',
     ],
-    plans: ['/images/img-plano.jpg'],
+    locationDescription: 'Cosquín 1534 se ubica en uno de los barrios con mayor tradición de la Ciudad, con excelente conectividad y todos los servicios al alcance.',
+    plans: [
+      { src: '/images/img-plano.jpg', description: '4 ambientes 112 m²' },
+      { src: '/images/img-plano.jpg', description: '4 ambientes 120 m²' },
+      { src: '/images/img-plano.jpg', description: '4 ambientes 113 m² + 9 m² terraza' },
+    ] satisfies Plan[],
     pointsOfInterest: [
       { lat: -34.6522, lng: -58.4983, category: 'Transporte', name: 'Estación Mataderos', detail: '5 min a pie · FF.CC. Belgrano Sur', iconType: 'transport' },
       { lat: -34.6468, lng: -58.4952, category: 'Salud', name: 'Hospital Santojanni', detail: '10 min en auto', iconType: 'health' },
