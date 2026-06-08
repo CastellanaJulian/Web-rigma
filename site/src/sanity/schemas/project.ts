@@ -60,15 +60,17 @@ export const project = defineType({
     defineField({
       name: 'images',
       title: 'Galería (renders y obra)',
-      description: 'Arrastrá para reordenar.',
+      description: 'Arrastrá varias imágenes a la vez para subirlas juntas. Arrastrá para reordenar.',
       type: 'array',
+      options: { layout: 'grid' },
       of: [{ type: 'image', options: { hotspot: true } }],
     }),
     defineField({
       name: 'plans',
       title: 'Planos',
-      description: 'Se muestran en sección separada de la ficha del proyecto.',
+      description: 'Arrastrá varios archivos a la vez para subirlos juntos. Se muestran en sección separada de la ficha del proyecto.',
       type: 'array',
+      options: { layout: 'grid' },
       of: [{ type: 'image' }],
     }),
     defineField({
