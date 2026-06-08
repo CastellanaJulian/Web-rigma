@@ -1,0 +1,626 @@
+[
+  {
+    "fields": [
+      {
+        "description": "Grilla de proyectos que aparece en la página de Inicio. Arrastrá para reordenar.",
+        "of": [
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "description": "El proyecto al que va a redirigir el card. La imagen se toma del proyecto.",
+                "to": [
+                  {
+                    "type": "project"
+                  }
+                ],
+                "name": "project",
+                "type": "reference",
+                "title": "Proyecto"
+              }
+            ],
+            "type": "object",
+            "name": "featuredSlot",
+            "title": "Slot destacado"
+          }
+        ],
+        "name": "featuredProjects",
+        "type": "array",
+        "title": "Proyectos destacados"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Recomendado: 4:3, mínimo 1000px de ancho. Aparece en el snippet de Nosotros en el Inicio. Usá el punto focal para ajustar el recorte.",
+        "name": "imagenNosotros",
+        "type": "image",
+        "title": "Imagen — Snippet Nosotros"
+      }
+    ],
+    "name": "homePage",
+    "type": "document",
+    "title": "Inicio"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Nombre"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Se genera automático. No tocar.",
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "En Ejecución",
+              "value": "En Ejecución"
+            },
+            {
+              "title": "Terminado",
+              "value": "Terminado"
+            }
+          ],
+          "layout": "radio"
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "En Ejecución",
+                  "Terminado"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "status",
+        "type": "string",
+        "title": "Estado"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              },
+              {
+                "flag": "max",
+                "constraint": 100
+              }
+            ]
+          }
+        ],
+        "description": "Solo si el estado es \"En Ejecución\"",
+        "hidden": "conditional",
+        "name": "progress",
+        "type": "number",
+        "title": "Avance de obra (%)"
+      },
+      {
+        "name": "location",
+        "type": "string",
+        "title": "Dirección"
+      },
+      {
+        "name": "neighborhood",
+        "type": "string",
+        "title": "Barrio"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Recomendado: 16:9, mínimo 1200px de ancho. Usá el punto focal para ajustar el recorte.",
+        "name": "coverImage",
+        "type": "image",
+        "title": "Imagen de portada"
+      },
+      {
+        "description": "Arrastrá para reordenar.",
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "type": "image"
+          }
+        ],
+        "name": "images",
+        "type": "array",
+        "title": "Galería (renders y obra)"
+      },
+      {
+        "description": "Se muestran en sección separada de la ficha del proyecto.",
+        "of": [
+          {
+            "type": "image"
+          }
+        ],
+        "name": "plans",
+        "type": "array",
+        "title": "Planos"
+      },
+      {
+        "of": [
+          {
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "level": "error",
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "of": [],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "type": "block"
+          }
+        ],
+        "name": "description",
+        "type": "array",
+        "title": "Descripción"
+      },
+      {
+        "rows": 3,
+        "name": "locationDescription",
+        "type": "text",
+        "title": "Descripción de la zona"
+      },
+      {
+        "fields": [
+          {
+            "name": "totalSurface",
+            "type": "string",
+            "title": "M² totales"
+          },
+          {
+            "name": "unitSurface",
+            "type": "string",
+            "title": "M² por unidad"
+          },
+          {
+            "name": "totalUnits",
+            "type": "number",
+            "title": "Total de unidades"
+          },
+          {
+            "name": "availableUnits",
+            "type": "number",
+            "title": "Unidades disponibles"
+          },
+          {
+            "name": "floors",
+            "type": "number",
+            "title": "Pisos"
+          },
+          {
+            "description": "Ej: \"Diciembre 2026\"",
+            "name": "delivery",
+            "type": "string",
+            "title": "Entrega"
+          },
+          {
+            "name": "startDate",
+            "type": "string",
+            "title": "Inicio de obra"
+          }
+        ],
+        "name": "highlights",
+        "type": "object",
+        "title": "Datos destacados"
+      },
+      {
+        "description": "Ej: \"4 ambientes 112 m²\"",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "typologies",
+        "type": "array",
+        "title": "Tipologías"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "amenities",
+        "type": "array",
+        "title": "Amenities y terminaciones"
+      },
+      {
+        "rows": 3,
+        "name": "financing",
+        "type": "text",
+        "title": "Financiación"
+      },
+      {
+        "description": "Buscá la dirección y soltá el pin.",
+        "name": "coordinates",
+        "type": "geopoint",
+        "title": "Ubicación en el mapa"
+      },
+      {
+        "description": "Lugares destacados cerca del proyecto. Ej: transporte, salud, educación.",
+        "of": [
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "description": "Ej: \"Estación Mataderos\", \"Hospital Santojanni\"",
+                "name": "name",
+                "type": "string",
+                "title": "Nombre"
+              },
+              {
+                "options": {
+                  "list": [
+                    {
+                      "title": "Transporte",
+                      "value": "Transporte"
+                    },
+                    {
+                      "title": "Salud",
+                      "value": "Salud"
+                    },
+                    {
+                      "title": "Educación",
+                      "value": "Educación"
+                    },
+                    {
+                      "title": "Comercio",
+                      "value": "Comercio"
+                    }
+                  ],
+                  "layout": "radio"
+                },
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "valid",
+                        "constraint": [
+                          "Transporte",
+                          "Salud",
+                          "Educación",
+                          "Comercio"
+                        ]
+                      },
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "name": "category",
+                "type": "string",
+                "title": "Categoría"
+              },
+              {
+                "description": "Ej: \"5 min a pie\", \"10 min en auto\"",
+                "name": "detail",
+                "type": "string",
+                "title": "Detalle"
+              },
+              {
+                "description": "Buscá el lugar en el mapa y soltá el pin.",
+                "name": "coordinates",
+                "type": "geopoint",
+                "title": "Ubicación"
+              }
+            ],
+            "type": "object",
+            "name": "poi",
+            "title": "Punto de interés"
+          }
+        ],
+        "name": "pointsOfInterest",
+        "type": "array",
+        "title": "Puntos de interés cercanos"
+      },
+      {
+        "description": "Proyecto sugerido al pie de la ficha.",
+        "to": [
+          {
+            "type": "project"
+          }
+        ],
+        "name": "relatedProject",
+        "type": "reference",
+        "title": "Proyecto relacionado"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ]
+          }
+        ],
+        "description": "1 aparece primero, 2 segundo, etc.",
+        "name": "order",
+        "type": "number",
+        "title": "Orden manual"
+      }
+    ],
+    "name": "project",
+    "type": "document",
+    "title": "Proyecto"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Recomendado: 16:9, mínimo 1200px de ancho. Usá el punto focal para ajustar el recorte.",
+        "name": "imagenHistoria",
+        "type": "image",
+        "title": "Imagen — Historia"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Recomendado: 1:1, mínimo 800px. Usá el punto focal para ajustar el recorte.",
+        "name": "imagenFilosofia",
+        "type": "image",
+        "title": "Imagen — Filosofía"
+      }
+    ],
+    "name": "nosotrosPage",
+    "type": "document",
+    "title": "Nosotros"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Recomendado: vertical 3:4, mínimo 800px de ancho. Usá el punto focal para ajustar el recorte.",
+        "name": "imagen",
+        "type": "image",
+        "title": "Imagen institucional"
+      }
+    ],
+    "name": "contactoPage",
+    "type": "document",
+    "title": "Contacto"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Número con código de país. Ej: +54 11 6596 2401",
+        "name": "whatsapp",
+        "type": "string",
+        "title": "Teléfono / WhatsApp"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "name": "email",
+        "type": "string",
+        "title": "Email de contacto"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Aparece en el footer y en la página de Contacto.",
+        "name": "direccion",
+        "type": "string",
+        "title": "Dirección de la oficina"
+      }
+    ],
+    "name": "siteSettings",
+    "type": "document",
+    "title": "Configuración del sitio"
+  }
+]
