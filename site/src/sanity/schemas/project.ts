@@ -119,8 +119,12 @@ export const project = defineType({
     defineField({
       name: 'coordinates',
       title: 'Ubicación en el mapa',
-      description: 'Buscá la dirección y soltá el pin.',
-      type: 'geopoint',
+      description: 'Abrí Google Maps, click derecho sobre el edificio → copiá los dos números que aparecen (ej: -34.6540, -58.5015).',
+      type: 'object',
+      fields: [
+        { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6540' },
+        { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.5015' },
+      ],
     }),
     defineField({
       name: 'pointsOfInterest',
@@ -164,8 +168,12 @@ export const project = defineType({
             defineField({
               name: 'coordinates',
               title: 'Ubicación',
-              description: 'Buscá el lugar en el mapa y soltá el pin.',
-              type: 'geopoint',
+              description: 'Abrí Google Maps, click derecho sobre el lugar → copiá los dos números (ej: -34.6522, -58.4983).',
+              type: 'object',
+              fields: [
+                { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6522' },
+                { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.4983' },
+              ],
             }),
           ],
           preview: {
