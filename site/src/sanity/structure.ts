@@ -1,16 +1,9 @@
 import type { StructureResolver } from 'sanity/structure'
 
-/**
- * Menú lateral del Studio organizado por PÁGINAS del sitio público.
- *
- * Las páginas sin contenido dinámico (Nosotros, Contacto) no aparecen acá —
- * su copy vive en el código.
- */
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Contenido del sitio')
     .items([
-      // ─────── 🏠 INICIO (singleton) ───────
       S.listItem()
         .title('🏠 Inicio')
         .id('homePage')
@@ -21,13 +14,44 @@ export const structure: StructureResolver = (S) =>
             .title('Inicio')
         ),
 
-      S.divider(),
-
-      // ─────── 🏗️ PROYECTOS ───────
       S.listItem()
         .title('🏗️  Proyectos')
         .schemaType('project')
         .child(
           S.documentTypeList('project').title('Todos los proyectos')
+        ),
+
+      S.divider(),
+
+      S.listItem()
+        .title('👥 Nosotros')
+        .id('nosotrosPage')
+        .child(
+          S.document()
+            .schemaType('nosotrosPage')
+            .documentId('nosotrosPage')
+            .title('Nosotros')
+        ),
+
+      S.listItem()
+        .title('📬 Contacto')
+        .id('contactoPage')
+        .child(
+          S.document()
+            .schemaType('contactoPage')
+            .documentId('contactoPage')
+            .title('Contacto')
+        ),
+
+      S.divider(),
+
+      S.listItem()
+        .title('⚙️  Configuración')
+        .id('siteSettings')
+        .child(
+          S.document()
+            .schemaType('siteSettings')
+            .documentId('siteSettings')
+            .title('Configuración del sitio')
         ),
     ])

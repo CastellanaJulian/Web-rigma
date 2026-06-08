@@ -14,6 +14,7 @@ export const project = defineType({
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'Se genera automático. No tocar.',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
       validation: (r) => r.required(),
@@ -52,19 +53,21 @@ export const project = defineType({
     defineField({
       name: 'coverImage',
       title: 'Imagen de portada',
+      description: 'Recomendado: 16:9, mínimo 1200px de ancho. Usá el punto focal para ajustar el recorte.',
       type: 'image',
       options: { hotspot: true },
     }),
     defineField({
       name: 'images',
       title: 'Galería (renders y obra)',
+      description: 'Arrastrá para reordenar.',
       type: 'array',
       of: [{ type: 'image', options: { hotspot: true } }],
     }),
     defineField({
       name: 'plans',
       title: 'Planos',
-      description: 'Plantas del edificio y por unidad',
+      description: 'Se muestran en sección separada de la ficha del proyecto.',
       type: 'array',
       of: [{ type: 'image' }],
     }),
@@ -73,6 +76,12 @@ export const project = defineType({
       title: 'Descripción',
       type: 'array',
       of: [{ type: 'block' }],
+    }),
+    defineField({
+      name: 'locationDescription',
+      title: 'Descripción de la zona',
+      type: 'text',
+      rows: 3,
     }),
     defineField({
       name: 'highlights',
@@ -109,27 +118,78 @@ export const project = defineType({
     }),
     defineField({
       name: 'coordinates',
-      title: 'Coordenadas',
+      title: 'Ubicación en el mapa',
+      description: 'Buscá la dirección y soltá el pin.',
       type: 'geopoint',
     }),
     defineField({
-      name: 'nearbyPoints',
-      title: 'Puntos cercanos',
-      description: 'Lugares de interés cerca del proyecto. Ej: "Subte línea A a 200m", "Plaza de los Mataderos a 3 cuadras"',
+      name: 'pointsOfInterest',
+      title: 'Puntos de interés cercanos',
+      description: 'Lugares destacados cerca del proyecto. Ej: transporte, salud, educación.',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [
+        {
+          type: 'object',
+          name: 'poi',
+          title: 'Punto de interés',
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Nombre',
+              description: 'Ej: "Estación Mataderos", "Hospital Santojanni"',
+              type: 'string',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'category',
+              title: 'Categoría',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Transporte', value: 'Transporte' },
+                  { title: 'Salud', value: 'Salud' },
+                  { title: 'Educación', value: 'Educación' },
+                  { title: 'Comercio', value: 'Comercio' },
+                ],
+                layout: 'radio',
+              },
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'detail',
+              title: 'Detalle',
+              description: 'Ej: "5 min a pie", "10 min en auto"',
+              type: 'string',
+            }),
+            defineField({
+              name: 'coordinates',
+              title: 'Ubicación',
+              description: 'Buscá el lugar en el mapa y soltá el pin.',
+              type: 'geopoint',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'name',
+              subtitle: 'category',
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'relatedProject',
       title: 'Proyecto relacionado',
+      description: 'Proyecto sugerido al pie de la ficha.',
       type: 'reference',
       to: [{ type: 'project' }],
     }),
     defineField({
       name: 'order',
       title: 'Orden manual',
-      description: 'Menor = aparece antes en la grilla de Proyectos.',
+      description: '1 aparece primero, 2 segundo, etc.',
       type: 'number',
+      validation: (r) => r.min(1),
     }),
   ],
   orderings: [

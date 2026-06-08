@@ -1,10 +1,5 @@
 import { defineField, defineType, defineArrayMember } from 'sanity'
 
-/**
- * Singleton: documento único que representa la configuración
- * de la página de Inicio. Solo se permite UN documento de este tipo
- * (se fuerza vía structure.ts con documentId fijo).
- */
 export const homePage = defineType({
   name: 'homePage',
   title: 'Inicio',
@@ -14,7 +9,7 @@ export const homePage = defineType({
       name: 'featuredProjects',
       title: 'Proyectos destacados',
       description:
-        'Grilla de proyectos que aparece en la página de Inicio. Arrastrá para reordenar. Cada slot tiene su propia imagen de portada (puede ser distinta de la imagen del proyecto).',
+        'Grilla de proyectos que aparece en la página de Inicio. Arrastrá para reordenar.',
       type: 'array',
       of: [
         defineArrayMember({
@@ -25,18 +20,9 @@ export const homePage = defineType({
             defineField({
               name: 'project',
               title: 'Proyecto',
-              description: 'El proyecto al que va a redirigir el card.',
+              description: 'El proyecto al que va a redirigir el card. La imagen se toma del proyecto.',
               type: 'reference',
               to: [{ type: 'project' }],
-              validation: (r) => r.required(),
-            }),
-            defineField({
-              name: 'coverImage',
-              title: 'Imagen de portada',
-              description:
-                'Imagen que se muestra en la grilla del Inicio. Puede ser distinta de la imagen principal del proyecto.',
-              type: 'image',
-              options: { hotspot: true },
               validation: (r) => r.required(),
             }),
           ],
@@ -44,7 +30,7 @@ export const homePage = defineType({
             select: {
               title: 'project.title',
               subtitle: 'project.status',
-              media: 'coverImage',
+              media: 'project.coverImage',
             },
             prepare({ title, subtitle, media }) {
               return {
@@ -56,6 +42,13 @@ export const homePage = defineType({
           },
         }),
       ],
+    }),
+    defineField({
+      name: 'imagenNosotros',
+      title: 'Imagen — Snippet Nosotros',
+      description: 'Recomendado: 4:3, mínimo 1000px de ancho. Aparece en el snippet de Nosotros en el Inicio. Usá el punto focal para ajustar el recorte.',
+      type: 'image',
+      options: { hotspot: true },
     }),
   ],
   preview: {
