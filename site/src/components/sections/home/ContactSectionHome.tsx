@@ -8,8 +8,8 @@ export default function ContactSectionHome() {
   const [success, setSuccess] = useState(false)
 
   return (
-    <section style={{ background: '#1E1E1E', padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 56px)' }}>
-      <div style={{ maxWidth: 640, margin: '0 auto' }}>
+    <section style={{ background: '#1E1E1E', padding: 'clamp(48px, 9vw, 120px) clamp(20px, 5vw, 56px)' }}>
+      <div data-contact-scroll style={{ maxWidth: 640, margin: '0 auto' }}>
         <SectionLabel dark>Contacto</SectionLabel>
 
         {success ? (

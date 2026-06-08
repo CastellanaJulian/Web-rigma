@@ -23,7 +23,7 @@ export default function MapaSection({ projects }: Props) {
     let localMap: LeafletMap | null = null
 
     function initMap() {
-      import('leaflet').then((L) => {
+      import('leaflet').then(async (L) => {
         if (cancelled || !mapRef.current) return
 
         // Leaflet CSS (una sola vez)
@@ -35,6 +35,27 @@ export default function MapaSection({ projects }: Props) {
           document.head.appendChild(link)
         }
 
+        // Gesture handling CSS inline (una sola vez)
+        if (!document.getElementById('leaflet-gesture-css')) {
+          const style = document.createElement('style')
+          style.id = 'leaflet-gesture-css'
+          style.textContent = `
+            @keyframes leaflet-gestures-fadein { 0% { opacity: 0; } 100% { opacity: 1; } }
+            .leaflet-container:after {
+              animation: leaflet-gestures-fadein 0.8s backwards;
+              color: #fff; font-family: 'Montserrat', sans-serif; font-size: 15px;
+              justify-content: center; display: flex; align-items: center;
+              padding: 20px; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+              background: rgba(0,0,0,0.52); z-index: 461; pointer-events: none;
+            }
+            .leaflet-gesture-handling-touch-warning:after,
+            .leaflet-gesture-handling-scroll-warning:after { animation: leaflet-gestures-fadein 0.8s forwards; }
+            .leaflet-gesture-handling-touch-warning:after { content: attr(data-gesture-handling-touch-content); }
+            .leaflet-gesture-handling-scroll-warning:after { content: attr(data-gesture-handling-scroll-content); }
+          `
+          document.head.appendChild(style)
+        }
+
         // CSS hover del popup (una sola vez)
         if (!document.getElementById('rigma-map-styles')) {
           const style = document.createElement('style')
@@ -42,6 +63,18 @@ export default function MapaSection({ projects }: Props) {
           style.textContent = `.rigma-popup-link:hover { color: #B59969 !important; border-color: #B59969 !important; }`
           document.head.appendChild(style)
         }
+
+        // Registrar gesture handling (una sola vez, defensivo)
+        try {
+          const ghModule = await import('leaflet-gesture-handling')
+          const GH = (ghModule as any).GestureHandling ?? (ghModule as any).default
+          if (GH && !(L.Map as any).__gestureHandlingRegistered) {
+            L.Map.addInitHook('addHandler', 'gestureHandling', GH)
+            ;(L.Map as any).__gestureHandlingRegistered = true
+          }
+        } catch (_) { /* gesture handling no disponible, continuar sin él */ }
+
+        if (cancelled || !mapRef.current) return
 
         // Si el container ya tiene una instancia Leaflet previa (Router Cache sin desmontar),
         // se destruye para poder reinicializar limpio
@@ -56,7 +89,15 @@ export default function MapaSection({ projects }: Props) {
         localMap = L.map(container, {
           scrollWheelZoom: false,
           attributionControl: false,
-        }).setView([-34.657, -58.504], 15)
+          gestureHandling: true,
+          gestureHandlingOptions: {
+            text: {
+              touch: 'Usá dos dedos para mover el mapa',
+              scroll: 'Usá Ctrl + scroll para hacer zoom',
+              scrollMac: 'Usá ⌘ + scroll para hacer zoom',
+            },
+          },
+        } as any).setView([-34.657, -58.504], 15)
 
         mapInstanceRef.current = localMap
 
@@ -125,7 +166,7 @@ export default function MapaSection({ projects }: Props) {
                 </div>
                 <div style="font-size:15px;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#1E1E1E;line-height:1.1;margin-bottom:5px;">${p.title}</div>
                 <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(30,30,30,0.55);margin-bottom:14px;">${p.neighborhood ?? p.location}</div>
-                <a href="/proyectos/${p.slug}" class="rigma-popup-link" target="_blank" rel="noopener noreferrer"
+                <a href="/proyectos/${p.slug}" class="rigma-popup-link"
                   style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#1E1E1E;border-bottom:1px solid #1E1E1E;padding-bottom:2px;display:inline-block;cursor:pointer;text-decoration:none;transition:color 0.2s,border-color 0.2s;">
                   VER PROYECTO →
                 </a>
@@ -172,8 +213,8 @@ export default function MapaSection({ projects }: Props) {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section style={{ padding: '96px 0 120px' }}>
-      <div style={{ padding: '0 clamp(20px, 5vw, 56px)', marginBottom: 48 }}>
+    <section style={{ padding: 'clamp(48px, 8vw, 96px) 0 clamp(56px, 9vw, 120px)' }}>
+      <div style={{ padding: '0 clamp(20px, 5vw, 56px)', marginBottom: 'clamp(28px, 4vw, 48px)' }}>
         <SectionLabel>Ubicaciones</SectionLabel>
         <h2
           style={{

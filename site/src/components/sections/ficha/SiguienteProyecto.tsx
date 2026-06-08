@@ -5,12 +5,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import StatusPill from '@/components/shared/StatusPill'
 import { Project } from '@/types/project'
+import { useCanHover } from '@/hooks/useCanHover'
 
 type Props = {
   project: Project
 }
 
 export default function SiguienteProyecto({ project }: Props) {
+  const canHover = useCanHover()
   const [hovSection, setHovSection] = useState(false)
   const [hovLink, setHovLink] = useState(false)
 
@@ -21,7 +23,7 @@ export default function SiguienteProyecto({ project }: Props) {
   return (
     <section
       style={{ position: 'relative', height: 320, overflow: 'hidden' }}
-      onMouseEnter={() => setHovSection(true)}
+      onMouseEnter={() => canHover && setHovSection(true)}
       onMouseLeave={() => setHovSection(false)}
     >
       {/* Imagen de fondo con zoom */}
@@ -80,7 +82,7 @@ export default function SiguienteProyecto({ project }: Props) {
         </p>
         <Link
           href={`/proyectos/${project.slug}`}
-          onMouseEnter={() => setHovLink(true)}
+          onMouseEnter={() => canHover && setHovLink(true)}
           onMouseLeave={() => setHovLink(false)}
           style={{
             display: 'inline-flex', alignItems: 'center',

@@ -93,7 +93,7 @@ export default function PorQueSection() {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       style={{
-        padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 56px)',
+        padding: 'clamp(48px, 9vw, 120px) clamp(20px, 5vw, 56px)',
         background: '#E3E3E3',
       }}
     >
@@ -105,7 +105,7 @@ export default function PorQueSection() {
           letterSpacing: '-0.02em',
           color: '#1E1E1E',
           lineHeight: 1,
-          marginBottom: 80,
+          marginBottom: 'clamp(32px, 5vw, 80px)',
           maxWidth: 440,
         }}
       >

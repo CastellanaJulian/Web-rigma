@@ -43,11 +43,11 @@ export default function DescriptionSection({ project }: Props) {
   ].filter(Boolean) as { svg: string; label: string; value: string }[]
 
   return (
-    <section style={{ padding: '80px clamp(20px, 5vw, 56px)', background: '#FBFBFB' }}>
+    <section style={{ padding: 'clamp(48px, 8vw, 80px) clamp(20px, 5vw, 56px)', background: '#FBFBFB' }}>
       {/* Descripción + card datos */}
       <div
-        className="grid grid-cols-1 md:grid-cols-[1fr_300px]"
-        style={{ gap: 72, marginBottom: 64 }}
+        className="grid grid-cols-1 lg:grid-cols-[1fr_300px]"
+        style={{ gap: 'clamp(32px, 5vw, 72px)', marginBottom: 'clamp(40px, 5vw, 64px)' }}
       >
         <div>
           <SectionLabel>Descripción</SectionLabel>
@@ -94,7 +94,7 @@ export default function DescriptionSection({ project }: Props) {
       <div
         ref={highlightsRef as React.RefObject<HTMLDivElement>}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        style={{ gap: 48, paddingTop: 56, borderTop: '1px solid #E9E9E9' }}
+        style={{ gap: 'clamp(28px, 4vw, 48px)', paddingTop: 'clamp(36px, 5vw, 56px)', borderTop: '1px solid #E9E9E9' }}
       >
         {HIGHLIGHTS.map((h, i) => (
           <div

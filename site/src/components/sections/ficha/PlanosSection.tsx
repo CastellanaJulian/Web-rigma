@@ -46,7 +46,7 @@ export default function PlanosSection({ plans, typologies }: Props) {
       }]
 
   return (
-    <section style={{ padding: '80px clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9', background: '#FBFBFB' }}>
+    <section style={{ padding: 'clamp(48px, 8vw, 80px) clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9', background: '#FBFBFB' }}>
       <SectionLabel>Planos</SectionLabel>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -105,24 +105,33 @@ export default function PlanosSection({ plans, typologies }: Props) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ background: '#FBFBFB', padding: 48, maxWidth: 680, width: '90%', position: 'relative' }}
+            style={{
+              background: '#FBFBFB',
+              padding: 'clamp(20px, 5vw, 48px)',
+              maxWidth: 680, width: '95%',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
           >
             <button
               onClick={() => setModal(null)}
               style={{
-                position: 'absolute', top: 16, right: 16,
+                position: 'absolute', top: 12, right: 12,
                 width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'none', border: '1px solid #E9E9E9', cursor: 'pointer',
-                fontSize: 18, color: 'rgba(30,30,30,0.45)', lineHeight: 1,
+                color: 'rgba(30,30,30,0.45)', borderRadius: 2,
               }}
             >
-              ×
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 20 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 16, paddingRight: 40 }}>
               PLANO DETALLADO
             </div>
-            <div style={{ position: 'relative', width: '100%', height: 420, marginBottom: 24 }}>
-              <Image src={modal.src} alt={modal.label} fill className="object-contain" sizes="680px" />
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', marginBottom: 16 }}>
+              <Image src={modal.src} alt={modal.label} fill className="object-contain" sizes="(max-width: 768px) 95vw, 680px" />
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1E1E1E', marginBottom: 4 }}>{modal.label}</div>
             <div style={{ fontSize: 12, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{modal.description}</div>

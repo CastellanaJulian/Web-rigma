@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useCanHover } from '@/hooks/useCanHover'
 
 const slides = [
   { src: '/images/img-2.jpg', alt: 'Av. Larrazábal 1255' },
@@ -13,11 +14,12 @@ const slides = [
 ]
 
 function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
+  const canHover = useCanHover()
   const [hov, setHov] = useState(false)
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHov(true)}
+      onMouseEnter={() => canHover && setHov(true)}
       onMouseLeave={() => setHov(false)}
       aria-label={dir === 'left' ? 'Slide anterior' : 'Slide siguiente'}
       style={{
@@ -59,6 +61,7 @@ function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void
 }
 
 export default function HeroCarousel() {
+  const canHover = useCanHover()
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
   const [active, setActive] = useState(0)
   const [mounted, setMounted] = useState(false)
@@ -96,6 +99,7 @@ export default function HeroCarousel() {
 
   return (
     <section
+      className="hero-section"
       style={{
         height: '100vh',
         minHeight: 640,
@@ -137,8 +141,8 @@ export default function HeroCarousel() {
         }}
       />
 
-      {/* Navigation arrows */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
+      {/* Navigation arrows — solo desktop ancho (xl); en mobile/tablet se pisan con el texto, usan swipe */}
+      <div className="hidden xl:block" style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
         <div style={{ pointerEvents: 'all' }}>
           <ArrowBtn dir="left" onClick={prev} />
           <ArrowBtn dir="right" onClick={next} />
@@ -217,7 +221,7 @@ export default function HeroCarousel() {
                 display: 'inline-block',
                 transition: 'background 0.2s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#B59969')}
+              onMouseEnter={(e) => { if (canHover) e.currentTarget.style.background = '#B59969' }}
               onMouseLeave={(e) => (e.currentTarget.style.background = '#FFFFFF')}
             >
               VER PROYECTOS
@@ -238,7 +242,7 @@ export default function HeroCarousel() {
                 display: 'inline-block',
                 transition: 'background 0.2s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={(e) => { if (canHover) e.currentTarget.style.background = 'rgba(255,255,255,0.10)' }}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               CONTACTANOS

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useInView } from '@/hooks/useInView'
+import { useCanHover } from '@/hooks/useCanHover'
 import SectionLabel from '@/components/shared/SectionLabel'
 
 // ── CountUp ──────────────────────────────────────────────────────────────────
@@ -79,6 +80,7 @@ export default function NosotrosPage() {
   const [historiaRef, historiaVisible]       = useInView(0.15)
   const [filosofiaImgRef, filosofiaImgVisible] = useInView(0.2)
   const [ctaRef, ctaVisible]                 = useInView(0.15)
+  const canHover = useCanHover()
   const [hovBtn, setHovBtn]   = useState(false)
   const [hovSection, setHovSection] = useState(false)
 
@@ -134,13 +136,13 @@ export default function NosotrosPage() {
       <section
         ref={historiaRef as React.RefObject<HTMLElement>}
         style={{
-          padding: 'clamp(24px, 3vw, 40px) clamp(20px, 5vw, 56px) 80px',
+          padding: 'clamp(24px, 3vw, 40px) clamp(20px, 5vw, 56px) clamp(48px, 8vw, 80px)',
           borderBottom: '1px solid #E9E9E9',
         }}
       >
         {/* Imagen panorámica */}
         <div
-          className="relative overflow-hidden w-full"
+          className="relative overflow-hidden w-full historia-img"
           style={{ aspectRatio: '21/6', marginBottom: 36, ...fadeUp(historiaVisible, 0) }}
         >
           <Image
@@ -155,8 +157,8 @@ export default function NosotrosPage() {
 
         {/* Copy + métricas */}
         <div
-          className="grid grid-cols-1 md:grid-cols-2"
-          style={{ gap: 80, alignItems: 'start' }}
+          className="grid grid-cols-1 lg:grid-cols-2"
+          style={{ gap: 'clamp(36px, 5vw, 80px)', alignItems: 'start' }}
         >
           <div style={fadeUp(historiaVisible, 100)}>
             <SectionLabel>Historia</SectionLabel>
@@ -251,14 +253,14 @@ export default function NosotrosPage() {
       <section
         style={{
           background: '#E3E3E3',
-          padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 56px)',
+          padding: 'clamp(48px, 9vw, 120px) clamp(20px, 5vw, 56px)',
         }}
       >
         <SectionLabel>Filosofía de trabajo</SectionLabel>
 
         <div
-          className="grid grid-cols-1 md:grid-cols-2"
-          style={{ gap: 80, alignItems: 'stretch', marginTop: 20 }}
+          className="grid grid-cols-1 lg:grid-cols-2"
+          style={{ gap: 'clamp(32px, 5vw, 80px)', alignItems: 'stretch', marginTop: 20 }}
         >
           {/* Imagen */}
           <div
@@ -328,7 +330,7 @@ export default function NosotrosPage() {
       <section
         className="relative overflow-hidden"
         style={{ minHeight: 580, background: '#1E1E1E' }}
-        onMouseEnter={() => setHovSection(true)}
+        onMouseEnter={() => canHover && setHovSection(true)}
         onMouseLeave={() => setHovSection(false)}
       >
         <div
@@ -404,7 +406,7 @@ export default function NosotrosPage() {
           >
             <Link
               href="/proyectos"
-              onMouseEnter={() => setHovBtn(true)}
+              onMouseEnter={() => canHover && setHovBtn(true)}
               onMouseLeave={() => setHovBtn(false)}
               style={{
                 padding: '14px 28px',

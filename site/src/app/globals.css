@@ -90,9 +90,69 @@ video {
   text-decoration: none;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
-.hover-accent-link:hover {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .hover-accent-link:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
+}
+
+/* Hero mobile height */
+@media (max-width: 767px) {
+  /* Nosotros snippet: menos espacio encima en mobile (transición fluida desde Proyectos) */
+  .nosotros-snippet {
+    padding-top: 32px !important;
+  }
+
+  .hero-section {
+    height: min(85svh, 100vh) !important;
+    min-height: 560px !important;
+  }
+
+  /* Historia image: taller on mobile */
+  .historia-img {
+    aspect-ratio: 4/3 !important;
+  }
+
+}
+
+/* Contacto image column: symmetric padding mientras el split está apilado
+   (mobile + tablet vertical, hasta que entra el layout 2-col en lg) */
+@media (max-width: 1023px) {
+  .contacto-img-col {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 16px !important;
+  }
+}
+
+/* NosotrosSnippet stats: en el layout 2-col (lg+) quedan en una sola fila estable,
+   evitando el parpadeo horizontal/vertical mientras el contador anima.
+   Debajo de lg mantienen flex-wrap (vertical en mobile, horizontal en tablet vertical). */
+@media (min-width: 1024px) {
+  .snippet-stats {
+    flex-wrap: nowrap;
+  }
+}
+
+/* POI list: no interactivo en touch */
+@media (pointer: coarse) {
+  .poi-item {
+    cursor: default !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ProjectCard hover: solo en dispositivos con hover real (no touch) */
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: scale(1.015);
+    transition: transform 0.5s ease;
+  }
+  .project-card:hover .project-card-cta {
+    color: #B59969;
+    border-bottom-color: #B59969;
+  }
 }
 
 /* Hover link on dark bg */
@@ -103,7 +163,9 @@ video {
   text-decoration: none;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
-.hover-accent-link-dark:hover {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .hover-accent-link-dark:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
 }

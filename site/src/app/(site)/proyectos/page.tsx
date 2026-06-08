@@ -144,7 +144,7 @@ function ProyectosGrid({ list, filter }: { list: Project[]; filter: Filter }) {
             animation: 'cardSlideUp 0.5s ease-out both',
             animationDelay: `${index * 40}ms`,
           }}
-          className="max-md:!col-span-6"
+          className="max-md:!col-span-6 md:max-lg:!col-span-3"
         >
           <ProjectCard project={project} size={size} className="h-full" />
         </div>
@@ -171,11 +171,11 @@ export default function ProyectosPage() {
       {/* 01 · PAGE HEADER */}
       <section
         ref={headerRef as React.RefObject<HTMLElement>}
-        style={{ padding: '80px clamp(20px, 5vw, 56px) 64px' }}
+        style={{ padding: 'clamp(48px, 8vw, 80px) clamp(20px, 5vw, 56px) clamp(36px, 5vw, 64px)' }}
       >
         <h1
           style={{
-            fontSize: 56,
+            fontSize: 'clamp(38px, 7vw, 56px)',
             fontWeight: 700,
             letterSpacing: '-0.02em',
             color: '#1E1E1E',

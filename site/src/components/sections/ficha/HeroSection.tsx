@@ -1,14 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Project } from '@/types/project'
 import StatusPill from '@/components/shared/StatusPill'
+import { useCanHover } from '@/hooks/useCanHover'
 
 type Props = { project: Project }
 
 export default function HeroSection({ project }: Props) {
+  const canHover = useCanHover()
   const [hovCta, setHovCta] = useState(false)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <section style={{ position: 'relative', height: '86vh', minHeight: 580, overflow: 'hidden' }}>
@@ -26,6 +33,29 @@ export default function HeroSection({ project }: Props) {
           background: 'linear-gradient(to top, rgba(30,30,30,0.88) 0%, rgba(30,30,30,0.22) 55%, transparent 100%)',
         }}
       />
+
+      {/* Botón volver — solo mobile/tablet */}
+      <div className="block lg:hidden" style={{ position: 'absolute', top: 'clamp(16px, 4vw, 24px)', left: 'clamp(20px, 5vw, 56px)' }}>
+        <Link
+          href="/proyectos"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.85)',
+            textDecoration: 'none',
+            borderBottom: '1px solid rgba(255,255,255,0.35)',
+            paddingBottom: 2,
+          }}
+        >
+          ← Volver a proyectos
+        </Link>
+      </div>
+
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 'clamp(24px, 5vw, 56px) clamp(20px, 5vw, 56px) clamp(32px, 5vw, 56px)' }}>
         <StatusPill status={project.status} dark />
         <h1
@@ -40,7 +70,7 @@ export default function HeroSection({ project }: Props) {
         </h1>
         <a
           href="#contacto"
-          onMouseEnter={() => setHovCta(true)}
+          onMouseEnter={() => canHover && setHovCta(true)}
           onMouseLeave={() => setHovCta(false)}
           style={{
             display: 'inline-block',

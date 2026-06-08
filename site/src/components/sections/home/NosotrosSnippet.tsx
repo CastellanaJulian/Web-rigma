@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useInView } from '@/hooks/useInView'
+import { useCanHover } from '@/hooks/useCanHover'
 import SectionLabel from '@/components/shared/SectionLabel'
 
 function formatNumber(n: number): string {
@@ -53,10 +54,26 @@ function CountUp({
   }, [target])
 
   const display = format ? format(value) : String(value)
+  const finalDisplay = format ? format(target) : String(target)
   return (
-    <span ref={ref}>
-      {prefix}
-      {display}
+    <span
+      ref={ref}
+      style={{
+        position: 'relative',
+        display: 'inline-block',
+        fontVariantNumeric: 'tabular-nums',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {/* Fantasma: reserva el ancho del valor final para que el layout no salte
+          mientras el contador anima. Invisible pero ocupa espacio. */}
+      <span aria-hidden="true" style={{ visibility: 'hidden' }}>
+        {prefix}{finalDisplay}
+      </span>
+      {/* Valor animado, superpuesto y alineado a la izquierda */}
+      <span style={{ position: 'absolute', left: 0, top: 0 }}>
+        {prefix}{display}
+      </span>
     </span>
   )
 }
@@ -77,16 +94,18 @@ const stats = [
 ]
 
 export default function NosotrosSnippet() {
+  const canHover = useCanHover()
   const [sectionRef, inView] = useInView(0.3)
 
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      style={{ padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 56px)' }}
+      className="nosotros-snippet"
+      style={{ padding: 'clamp(48px, 9vw, 120px) clamp(20px, 5vw, 56px)' }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-start">
-        {/* Left: text column — order 2 on mobile, 1 on desktop */}
-        <div className="order-2 md:order-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+        {/* Left: text column — apilado en mobile/tablet, 2 columnas en desktop */}
+        <div className="order-2 lg:order-1">
           <SectionLabel>Nosotros</SectionLabel>
           <h2
             style={{
@@ -95,11 +114,23 @@ export default function NosotrosSnippet() {
               letterSpacing: '-0.015em',
               color: '#1E1E1E',
               lineHeight: 1.2,
-              marginBottom: 32,
+              marginBottom: 24,
             }}
           >
             Tres generaciones construyendo en Buenos Aires
           </h2>
+
+          {/* Imagen mobile/tablet: aparece entre título y texto, oculta en desktop */}
+          <div className="block lg:hidden relative w-full" style={{ aspectRatio: '1/1', marginBottom: 40 }}>
+            <Image
+              src="/images/img-4.jpg"
+              alt="Rigma — equipo y obra"
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+          </div>
+
           <p
             style={{
               fontSize: 15,
@@ -128,27 +159,28 @@ export default function NosotrosSnippet() {
           </p>
 
           {/* Stats */}
-          <div style={{ display: 'flex', gap: 48, marginBottom: 48, flexWrap: 'wrap' }}>
+          <div className="snippet-stats" style={{ display: 'flex', gap: 48, marginBottom: 48, flexWrap: 'wrap' }}>
             {stats.map((s, i) => (
-              <div key={i}>
+              <div key={i} style={{ flexShrink: 0 }}>
                 <div
                   style={{
-                    fontSize: 'clamp(40px, 4vw, 56px)',
+                    fontSize: 'clamp(52px, 4vw, 56px)',
                     fontWeight: 700,
                     letterSpacing: '-0.02em',
                     color: '#B59969',
                     lineHeight: 1,
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   <CountUp target={s.target} prefix={s.prefix} format={s.format} />
                 </div>
                 <div
                   style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.14em',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    letterSpacing: '0.10em',
                     textTransform: 'uppercase',
-                    color: 'rgba(30,30,30,0.45)',
+                    color: 'rgba(30,30,30,0.65)',
                     marginTop: 10,
                   }}
                 >
@@ -171,6 +203,7 @@ export default function NosotrosSnippet() {
               transition: 'color 0.2s ease, border-color 0.2s ease',
             }}
             onMouseEnter={(e) => {
+              if (!canHover) return
               e.currentTarget.style.color = '#B59969'
               e.currentTarget.style.borderBottomColor = '#B59969'
             }}
@@ -183,8 +216,8 @@ export default function NosotrosSnippet() {
           </Link>
         </div>
 
-        {/* Right: image — order 1 on mobile (top), 2 on desktop */}
-        <div className="order-1 md:order-2 relative" style={{ aspectRatio: '4/5', minHeight: 320 }}>
+        {/* Right: image — solo visible en desktop */}
+        <div className="hidden lg:block order-1 lg:order-2 relative" style={{ aspectRatio: '4/5', minHeight: 320 }}>
           <Image
             src="/images/img-4.jpg"
             alt="Rigma — equipo y obra"

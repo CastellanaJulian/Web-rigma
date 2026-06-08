@@ -23,19 +23,25 @@ function KeyDataStrip({ project }: { project: ReturnType<typeof getProjectBySlug
 
   if (items.length === 0) return null
 
+  const n = items.length
+  // border classes per item — 2-col en mobile/tablet, 4-col en desktop (lg)
+  const cellClass = (i: number) => {
+    const classes: string[] = []
+    // right border: en 2-col para celdas pares; en 4-col (lg) para todas menos la última
+    if (i % 2 === 0) classes.push('border-r', 'border-[#E9E9E9]')
+    else if (i < n - 1) classes.push('lg:border-r', 'lg:border-[#E9E9E9]')
+    // bottom border: solo en 2-col, primera fila cuando hay segunda fila
+    if (n > 2 && i < 2) classes.push('border-b', 'border-[#E9E9E9]', 'lg:border-b-0')
+    return classes.join(' ')
+  }
+
   return (
-    <div style={{
-      display: 'flex',
-      borderBottom: '1px solid #E9E9E9',
-    }}>
+    <div className="grid grid-cols-2 lg:grid-cols-4" style={{ borderBottom: '1px solid #E9E9E9' }}>
       {items.map((item, i) => (
         <div
           key={i}
-          style={{
-            flex: 1,
-            padding: '20px clamp(16px, 3vw, 40px)',
-            borderRight: i < items.length - 1 ? '1px solid #E9E9E9' : undefined,
-          }}
+          className={cellClass(i)}
+          style={{ padding: '20px clamp(14px, 3vw, 40px)' }}
         >
           <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(30,30,30,0.45)', marginBottom: 6 }}>
             {item.label}

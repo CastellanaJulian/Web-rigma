@@ -80,13 +80,14 @@ export default function ContactoPage() {
   return (
     <section style={{ borderTop: '1px solid #E9E9E9' }}>
       <div
-        className="grid grid-cols-1 md:grid-cols-2"
+        className="grid grid-cols-1 lg:grid-cols-2"
         style={{ minHeight: 'calc(100vh - 64px)' }}
       >
         {/* ── Columna izquierda ── */}
         <div
           ref={leftRef as React.RefObject<HTMLDivElement>}
-          className="order-2 md:order-1 flex flex-col"
+          data-contact-scroll
+          className="order-2 lg:order-1 flex flex-col"
           style={{ padding: columnPadding, background: '#FBFBFB' }}
         >
           {success ? (
@@ -173,14 +174,15 @@ export default function ContactoPage() {
             </>
           )}
 
-          {/* Canales de contacto */}
+          {/* Canales de contacto — 3-col solo cuando hay ancho real:
+              full-width en tablet vertical (md) y desktop ancho (xl).
+              En el rango lg el split comprime la columna, así que van apilados. */}
           <div
+            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3"
             style={{
               marginTop: 32,
               paddingTop: 24,
               borderTop: '1px solid #E9E9E9',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
               gap: 24,
             }}
           >
@@ -196,7 +198,7 @@ export default function ContactoPage() {
                 }}
               >
                 <div style={{ flexShrink: 0, marginTop: 1 }}>{ch.icon}</div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div
                     style={{
                       fontSize: 9,
@@ -209,7 +211,7 @@ export default function ContactoPage() {
                   >
                     {ch.label}
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: '#1E1E1E', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: '#1E1E1E', lineHeight: 1.5, overflowWrap: 'anywhere' }}>
                     {ch.value}
                   </div>
                 </div>
@@ -221,7 +223,7 @@ export default function ContactoPage() {
         {/* ── Columna derecha: imagen ── */}
         <div
           ref={rightRef as React.RefObject<HTMLDivElement>}
-          className="order-1 md:order-2 h-[280px] md:h-full"
+          className="order-1 lg:order-2 h-[280px] lg:h-full contacto-img-col"
           style={{
             paddingTop: 'clamp(0px, 3.3vw, 48px)',
             paddingRight: 'clamp(0px, 3.9vw, 56px)',

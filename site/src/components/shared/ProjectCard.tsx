@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
 import { Project } from '@/types/project'
 import StatusPill from './StatusPill'
 
@@ -13,21 +12,12 @@ type Props = {
 }
 
 export default function ProjectCard({ project, size = 'lg', className = '' }: Props) {
-  const [hovered, setHovered] = useState(false)
   const isLg = size === 'lg'
 
   return (
     <Link
       href={`/proyectos/${project.slug}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`relative block overflow-hidden ${className}`}
-      style={{
-        transform: hovered ? 'scale(1.015)' : 'scale(1)',
-        transition: 'transform 0.5s ease',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={`project-card relative block overflow-hidden ${className}`}
     >
       <Image
         src={project.coverImage}
@@ -80,6 +70,7 @@ export default function ProjectCard({ project, size = 'lg', className = '' }: Pr
           {project.neighborhood ?? project.location}
         </p>
         <span
+          className="project-card-cta"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -88,8 +79,8 @@ export default function ProjectCard({ project, size = 'lg', className = '' }: Pr
             fontWeight: 700,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: hovered ? '#B59969' : '#FFFFFF',
-            borderBottom: `1px solid ${hovered ? '#B59969' : 'rgba(255,255,255,0.35)'}`,
+            color: '#FFFFFF',
+            borderBottom: '1px solid rgba(255,255,255,0.35)',
             paddingBottom: 2,
             transition: 'color 0.3s ease, border-color 0.3s ease',
           }}

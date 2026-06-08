@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import { useCanHover } from '@/hooks/useCanHover'
 
 type FormData = {
   nombre: string
@@ -18,9 +19,11 @@ interface ContactFormProps {
 
 export default function ContactForm({ theme = 'light', onSuccess }: ContactFormProps) {
   const dark = theme === 'dark'
+  const canHover = useCanHover()
   const [hovSubmit, setHovSubmit] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ mode: 'onBlur' })
 
@@ -30,7 +33,24 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
     try {
       // Simula envío — reemplazar con llamada real a API en Etapa 3
       await new Promise((resolve) => setTimeout(resolve, 1500))
+
+      // Capturamos el contenedor de scroll ANTES de que el form se desmonte.
+      // Es un ancestro estable (no se reemplaza al pasar a estado de éxito),
+      // por lo que su posición sigue siendo válida después del re-render.
+      const anchor = formRef.current?.closest('[data-contact-scroll]') as HTMLElement | null
+
       onSuccess?.()
+
+      // Dos rAF: el primero espera el commit de React, el segundo el paint.
+      // Recién entonces medimos la posición real y scrolleamos.
+      if (anchor) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const y = anchor.getBoundingClientRect().top + window.scrollY - 80
+            window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
+          })
+        })
+      }
     } catch {
       setSubmitError(true)
       setIsLoading(false)
@@ -93,6 +113,7 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit(onSubmit)}
       noValidate
       style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
@@ -213,7 +234,7 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
       <button
         type="submit"
         disabled={isLoading}
-        onMouseEnter={() => !isLoading && setHovSubmit(true)}
+        onMouseEnter={() => canHover && !isLoading && setHovSubmit(true)}
         onMouseLeave={() => setHovSubmit(false)}
         style={{
           width: '100%',
