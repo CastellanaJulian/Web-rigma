@@ -1,6 +1,5 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
-import { visionTool } from '@sanity/vision'
 import { esESLocale } from '@sanity/locale-es-es'
 import { apiVersion, dataset, projectId } from './src/sanity/env'
 import { schemaTypes } from './src/sanity/schemas'
@@ -15,7 +14,7 @@ export default defineConfig({
   schema: { types: schemaTypes },
   plugins: [
     structureTool({ structure }),
-    visionTool({ defaultApiVersion: apiVersion }),
     esESLocale(),
   ],
+  tools: (prev) => prev.filter((tool) => !['vision', 'releases'].includes(tool.name)),
 })
