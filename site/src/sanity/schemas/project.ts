@@ -153,8 +153,8 @@ export const project = defineType({
       description: 'Abrí Google Maps, click derecho sobre el edificio → copiá los dos números que aparecen (ej: -34.6540, -58.5015).',
       type: 'object',
       fields: [
-        { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6540' },
-        { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.5015' },
+        { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6540', validation: (r) => r.min(-90).max(90).error('La latitud debe estar entre -90 y 90. Revisá que el punto decimal esté bien.') },
+        { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.5015', validation: (r) => r.min(-180).max(180).error('La longitud debe estar entre -180 y 180. Revisá que el punto decimal esté bien.') },
       ],
     }),
     defineField({
@@ -202,8 +202,8 @@ export const project = defineType({
               description: 'Abrí Google Maps, click derecho sobre el lugar → copiá los dos números (ej: -34.6522, -58.4983).',
               type: 'object',
               fields: [
-                { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6522' },
-                { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.4983' },
+                { name: 'lat', title: 'Latitud', type: 'number', description: 'Primer número. Ej: -34.6522', validation: (r) => r.min(-90).max(90).error('La latitud debe estar entre -90 y 90. Revisá que el punto decimal esté bien.') },
+                { name: 'lng', title: 'Longitud', type: 'number', description: 'Segundo número. Ej: -58.4983', validation: (r) => r.min(-180).max(180).error('La longitud debe estar entre -180 y 180. Revisá que el punto decimal esté bien.') },
               ],
             }),
           ],
