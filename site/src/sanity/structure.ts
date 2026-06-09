@@ -35,23 +35,30 @@ export const structure: StructureResolver = (S) =>
 
       S.listItem()
         .title('📬 Contacto')
-        .id('contactoPage')
+        .id('contacto')
         .child(
-          S.document()
-            .schemaType('contactoPage')
-            .documentId('contactoPage')
+          S.list()
             .title('Contacto')
-        ),
+            .items([
+              S.listItem()
+                .title('📇 Datos de contacto')
+                .id('siteSettings')
+                .child(
+                  S.document()
+                    .schemaType('siteSettings')
+                    .documentId('siteSettings')
+                    .title('Datos de contacto')
+                ),
 
-      S.divider(),
-
-      S.listItem()
-        .title('⚙️  Configuración')
-        .id('siteSettings')
-        .child(
-          S.document()
-            .schemaType('siteSettings')
-            .documentId('siteSettings')
-            .title('Configuración del sitio')
+              S.listItem()
+                .title('🖼️  Imagen institucional')
+                .id('contactoPage')
+                .child(
+                  S.document()
+                    .schemaType('contactoPage')
+                    .documentId('contactoPage')
+                    .title('Imagen institucional')
+                ),
+            ])
         ),
     ])
