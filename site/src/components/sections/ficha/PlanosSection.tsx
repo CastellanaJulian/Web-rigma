@@ -10,7 +10,7 @@ type Props = {
   typologies?: string[]
 }
 
-type ModalData = { src: string; label: string; description: string } | null
+type ModalData = { src: string; label: string; description?: string } | null
 
 export default function PlanosSection({ plans, typologies }: Props) {
   const [openGroup, setOpenGroup] = useState<string | null>('grupo-0')

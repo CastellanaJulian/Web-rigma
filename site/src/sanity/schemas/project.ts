@@ -68,10 +68,39 @@ export const project = defineType({
     defineField({
       name: 'plans',
       title: 'Planos',
-      description: 'Arrastrá varios archivos a la vez para subirlos juntos. Se muestran en sección separada de la ficha del proyecto.',
+      description: 'Se muestran en sección separada de la ficha del proyecto. Cada plano puede llevar una leyenda de tipología (ej: "4 ambientes 112 m²").',
       type: 'array',
       options: { layout: 'grid' },
-      of: [{ type: 'image' }],
+      of: [
+        {
+          type: 'object',
+          name: 'plan',
+          title: 'Plano',
+          fields: [
+            defineField({
+              name: 'imagen',
+              title: 'Imagen del plano',
+              type: 'image',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'descripcion',
+              title: 'Descripción / tipología',
+              description: 'Ej: "4 ambientes 112 m²"',
+              type: 'string',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'descripcion',
+              media: 'imagen',
+            },
+            prepare({ title, media }) {
+              return { title: title ?? 'Plano sin descripción', media }
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'description',

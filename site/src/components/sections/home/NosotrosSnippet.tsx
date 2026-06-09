@@ -93,8 +93,9 @@ const stats = [
   },
 ]
 
-export default function NosotrosSnippet() {
+export default function NosotrosSnippet({ imagen }: { imagen?: string }) {
   const canHover = useCanHover()
+  const imgSrc = imagen || '/images/img-4.jpg'
   const [sectionRef, inView] = useInView(0.3)
 
   return (
@@ -123,7 +124,7 @@ export default function NosotrosSnippet() {
           {/* Imagen mobile/tablet: aparece entre título y texto, oculta en desktop */}
           <div className="block lg:hidden relative w-full" style={{ aspectRatio: '1/1', marginBottom: 40 }}>
             <Image
-              src="/images/img-4.jpg"
+              src={imgSrc}
               alt="Rigma — equipo y obra"
               fill
               className="object-cover"
@@ -219,7 +220,7 @@ export default function NosotrosSnippet() {
         {/* Right: image — solo visible en desktop */}
         <div className="hidden lg:block order-1 lg:order-2 relative" style={{ aspectRatio: '4/5', minHeight: 320 }}>
           <Image
-            src="/images/img-4.jpg"
+            src={imgSrc}
             alt="Rigma — equipo y obra"
             fill
             className="object-cover"

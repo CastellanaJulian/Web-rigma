@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Logo from '@/components/shared/Logo'
-import { projects } from '@/data/projects'
+import { getAllProjects, getSiteSettings } from '@/sanity/queries'
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -27,8 +27,21 @@ const headingStyle: React.CSSProperties = {
   marginBottom: 22,
 }
 
-export default function Footer() {
+// Valores institucionales por defecto — se usan si el singleton de Sanity aún no se cargó.
+const DEFAULTS = {
+  whatsapp: '+54 11 6596 2401',
+  email: 'Rigmagrupo@gmail.com',
+  direccion: 'Guardia Nacional 739, PB',
+}
+
+export default async function Footer() {
   const year = new Date().getFullYear()
+  const [projects, settings] = await Promise.all([getAllProjects(), getSiteSettings()])
+
+  const whatsapp = settings?.whatsapp ?? DEFAULTS.whatsapp
+  const email = settings?.email ?? DEFAULTS.email
+  const direccion = settings?.direccion ?? DEFAULTS.direccion
+  const telHref = `tel:+${whatsapp.replace(/[^\d]/g, '')}`
 
   return (
     <footer
@@ -56,20 +69,20 @@ export default function Footer() {
               marginBottom: 16,
             }}
           >
-            Guardia Nacional 739, PB
+            {direccion}
             <br />
             Ciudad de Buenos Aires
           </p>
           <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.9, color: 'rgba(255,255,255,0.65)' }}>
             <a
-              href="mailto:Rigmagrupo@gmail.com"
+              href={`mailto:${email}`}
               style={{ color: 'inherit', textDecoration: 'none' }}
             >
-              Rigmagrupo@gmail.com
+              {email}
             </a>
             <br />
-            <a href="tel:+541165962401" style={{ color: 'inherit', textDecoration: 'none' }}>
-              +54 11 6596 2401
+            <a href={telHref} style={{ color: 'inherit', textDecoration: 'none' }}>
+              {whatsapp}
             </a>
           </p>
         </div>

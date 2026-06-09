@@ -4,11 +4,11 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import StatusPill from '@/components/shared/StatusPill'
-import { Project } from '@/types/project'
+import { RelatedProject } from '@/types/project'
 import { useCanHover } from '@/hooks/useCanHover'
 
 type Props = {
-  project: Project
+  project: RelatedProject
 }
 
 export default function SiguienteProyecto({ project }: Props) {
@@ -27,17 +27,21 @@ export default function SiguienteProyecto({ project }: Props) {
       onMouseLeave={() => setHovSection(false)}
     >
       {/* Imagen de fondo con zoom */}
-      <Image
-        src={project.coverImage}
-        alt={project.title}
-        fill
-        sizes="100vw"
-        className="object-cover"
-        style={{
-          transform: hovSection ? 'scale(1.04)' : 'scale(1)',
-          transition: 'transform 0.7s ease',
-        }}
-      />
+      {project.coverImage ? (
+        <Image
+          src={project.coverImage}
+          alt={project.title}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{
+            transform: hovSection ? 'scale(1.04)' : 'scale(1)',
+            transition: 'transform 0.7s ease',
+          }}
+        />
+      ) : (
+        <div style={{ position: 'absolute', inset: 0, background: '#2A2A2A' }} />
+      )}
 
       {/* Gradient overlay */}
       <div style={{

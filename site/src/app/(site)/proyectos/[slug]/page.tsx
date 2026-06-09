@@ -1,5 +1,6 @@
-import { projects, getProjectBySlug } from '@/data/projects'
+import { getAllProjects, getProjectBySlug } from '@/sanity/queries'
 import { notFound } from 'next/navigation'
+import type { Project } from '@/types/project'
 import HeroSection from '@/components/sections/ficha/HeroSection'
 import DescriptionSection from '@/components/sections/ficha/DescriptionSection'
 import GaleriaSection from '@/components/sections/ficha/GaleriaSection'
@@ -8,12 +9,15 @@ import LocationSection from '@/components/sections/ficha/LocationSection'
 import SiguienteProyecto from '@/components/sections/ficha/SiguienteProyecto'
 import ContactSectionHome from '@/components/sections/home/ContactSectionHome'
 
-export function generateStaticParams() {
+export const revalidate = 60
+
+export async function generateStaticParams() {
+  const projects = await getAllProjects()
   return projects.map((p) => ({ slug: p.slug }))
 }
 
 // ── KeyDataStrip ──────────────────────────────────────────────────────────────
-function KeyDataStrip({ project }: { project: ReturnType<typeof getProjectBySlug> & {} }) {
+function KeyDataStrip({ project }: { project: Project }) {
   const items = [
     project!.location && { label: 'Ubicación', value: project!.neighborhood ?? project!.location },
     project!.highlights.delivery && { label: 'Entrega', value: project!.highlights.delivery },
@@ -60,17 +64,10 @@ function KeyDataStrip({ project }: { project: ReturnType<typeof getProjectBySlug
   )
 }
 
-// ── ProyectoRelacionado ───────────────────────────────────────────────────────
-function ProyectoRelacionado({ slug }: { slug: string }) {
-  const related = getProjectBySlug(slug)
-  if (!related) return null
-  return <SiguienteProyecto project={related} />
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default async function FichaProyectoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const project = getProjectBySlug(slug)
+  const project = await getProjectBySlug(slug)
 
   if (!project) notFound()
 
@@ -104,7 +101,7 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
       </div>
 
       {project.relatedProject && (
-        <ProyectoRelacionado slug={project.relatedProject} />
+        <SiguienteProyecto project={project.relatedProject} />
       )}
     </>
   )

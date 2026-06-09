@@ -1,10 +1,12 @@
 import Link from 'next/link'
-import { getFeaturedProjects } from '@/data/projects'
+import { getFeaturedProjects } from '@/sanity/queries'
 import SectionLabel from '@/components/shared/SectionLabel'
 import ProjectCard from '@/components/shared/ProjectCard'
 
-export default function ProyectosDestacados() {
-  const featured = getFeaturedProjects()
+export default async function ProyectosDestacados() {
+  const featured = await getFeaturedProjects()
+
+  if (featured.length === 0) return null
 
   return (
     <section style={{ padding: 'clamp(48px, 9vw, 120px) clamp(20px, 5vw, 56px)' }}>

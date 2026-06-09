@@ -19,14 +19,18 @@ export default function HeroSection({ project }: Props) {
 
   return (
     <section style={{ position: 'relative', height: '86vh', minHeight: 580, overflow: 'hidden' }}>
-      <Image
-        src={project.coverImage}
-        alt={project.title}
-        fill
-        className="object-cover"
-        sizes="100vw"
-        priority
-      />
+      {project.coverImage ? (
+        <Image
+          src={project.coverImage}
+          alt={project.title}
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
+        />
+      ) : (
+        <div style={{ position: 'absolute', inset: 0, background: '#2A2A2A' }} />
+      )}
       <div
         style={{
           position: 'absolute', inset: 0,

@@ -1,9 +1,9 @@
 'use client'
 
-import { useRef } from 'react'
 import { Project } from '@/types/project'
 import { useInView } from '@/hooks/useInView'
 import SectionLabel from '@/components/shared/SectionLabel'
+import PortableText from '@/components/shared/PortableText'
 
 const poiSvgs = {
   quality: '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
@@ -51,9 +51,7 @@ export default function DescriptionSection({ project }: Props) {
       >
         <div>
           <SectionLabel>Descripción</SectionLabel>
-          <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: 'rgba(30,30,30,0.65)', marginBottom: 20 }}>
-            {project.description}
-          </p>
+          <PortableText value={project.description} />
           {project.financing && (
             <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: 'rgba(30,30,30,0.65)' }}>
               {project.financing}
