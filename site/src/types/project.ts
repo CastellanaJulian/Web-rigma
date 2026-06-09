@@ -6,9 +6,26 @@ import type { PortableTextBlock } from '@portabletext/react'
  * a URL string (vía `urlFor`) y las referencias ya están expandidas.
  */
 
-export type Plan = {
+export type Plano = {
   src: string
-  description?: string
+  label?: string
+}
+
+export type PlanSection = {
+  titulo: string
+  planos: Plano[]
+}
+
+export type GalleryImage = {
+  src: string
+  caption?: string
+}
+
+export type Destacado = {
+  titulo: string
+  descripcion: string
+  /** value de la categoría — resuelve el ícono vía `destacadoIconByValue`. */
+  categoria: string
 }
 
 export type POI = {
@@ -34,11 +51,10 @@ export type Project = {
   title: string
   neighborhood?: string
   status: 'En Ejecución' | 'Terminado'
-  order?: number
   progress?: number
   coverImage: string
-  images: string[]
-  plans?: Plan[]
+  images: GalleryImage[]
+  plans?: PlanSection[]
   description?: PortableTextBlock[]
   highlights: {
     totalSurface?: string
@@ -47,7 +63,8 @@ export type Project = {
     delivery?: string
     startDate?: string
   }
-  typologies?: string[]
+  typologies?: string
+  destacados?: Destacado[]
   coordinates?: {
     lat: number
     lng: number

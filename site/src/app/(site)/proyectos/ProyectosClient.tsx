@@ -23,16 +23,11 @@ function filterProjects(list: Project[], filter: Filter): Project[] {
   return list
 }
 
-// Orden por campo `order` del CMS (ascendente, sin orden van al final).
-function byOrder(a: Project, b: Project): number {
-  return (a.order ?? Infinity) - (b.order ?? Infinity)
-}
-
+// La lista ya viene ordenada por la query (drag & drop / orderRank).
 function sortAndSplit(list: Project[]): { featured: Project[]; resto: Project[] } {
-  const sorted = [...list].sort(byOrder)
   return {
-    featured: sorted.slice(0, 2),
-    resto:    sorted.slice(2),
+    featured: list.slice(0, 2),
+    resto:    list.slice(2),
   }
 }
 
@@ -114,10 +109,9 @@ function ProyectosGrid({ list, filter }: { list: Project[]; filter: Filter }) {
       ...resto.map((p)    => ({ project: p, size: 'md' as const, span: mdSpan })),
     ]
   } else {
-    const sorted = [...list].sort(byOrder)
     const size: 'lg' | 'md' = filter === 'en-ejecucion' ? 'lg' : 'md'
-    const span = getResponsiveSpan(sorted.length)
-    cards = sorted.map((p) => ({ project: p, size, span }))
+    const span = getResponsiveSpan(list.length)
+    cards = list.map((p) => ({ project: p, size, span }))
   }
 
   return (

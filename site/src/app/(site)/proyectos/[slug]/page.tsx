@@ -84,7 +84,7 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
       )}
 
       {project.plans && project.plans.length > 0 && (
-        <PlanosSection plans={project.plans} typologies={project.typologies} />
+        <PlanosSection sections={project.plans} />
       )}
 
       {project.coordinates && (

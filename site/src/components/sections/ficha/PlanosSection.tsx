@@ -3,16 +3,15 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import SectionLabel from '@/components/shared/SectionLabel'
-import { Plan } from '@/types/project'
+import { PlanSection } from '@/types/project'
 
 type Props = {
-  plans: Plan[]
-  typologies?: string[]
+  sections: PlanSection[]
 }
 
 type ModalData = { src: string; label: string; description?: string } | null
 
-export default function PlanosSection({ plans, typologies }: Props) {
+export default function PlanosSection({ sections }: Props) {
   const [openGroup, setOpenGroup] = useState<string | null>('grupo-0')
   const [modal, setModal] = useState<ModalData>(null)
 
@@ -27,23 +26,13 @@ export default function PlanosSection({ plans, typologies }: Props) {
     }
   }, [modal])
 
-  // Group plans by typology header, or put all in one group
-  const grupos = typologies && typologies.length > 0
-    ? typologies.map((typ, i) => {
-        const plan = plans[i] ?? plans[0]
-        return {
-          id: `grupo-${i}`,
-          titulo: typ,
-          sublabel: '',
-          planos: [{ src: plan.src, label: `Plano ${i + 1}`, description: plan.description }],
-        }
-      })
-    : [{
-        id: 'grupo-0',
-        titulo: 'Planos del proyecto',
-        sublabel: `${plans.length} plano${plans.length !== 1 ? 's' : ''}`,
-        planos: plans.map((p, i) => ({ src: p.src, label: `Plano ${i + 1}`, description: p.description })),
-      }]
+  // Cada sección del CMS es un desplegable; sus planos van adentro.
+  const grupos = sections.map((sec, i) => ({
+    id: `grupo-${i}`,
+    titulo: sec.titulo,
+    sublabel: `${sec.planos.length} plano${sec.planos.length !== 1 ? 's' : ''}`,
+    planos: sec.planos.map((p, j) => ({ src: p.src, label: p.label || `Plano ${j + 1}`, description: sec.titulo })),
+  }))
 
   return (
     <section style={{ padding: 'clamp(48px, 8vw, 80px) clamp(20px, 5vw, 56px)', borderTop: '1px solid #E9E9E9', background: '#FBFBFB' }}>

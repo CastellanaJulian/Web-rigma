@@ -32,18 +32,32 @@ type RawListProject = {
   neighborhood?: string
   coverImage?: SanityImage
   coordinates?: Coordinates
-  order?: number
+}
+
+type RawGalleryImage = { imagen?: SanityImage; descripcion?: string } & SanityImage
+type RawPlanItem = {
+  // schema nuevo: sección con título + planos[]
+  titulo?: string
+  planos?: { titulo?: string; imagen?: SanityImage }[]
+  // schema viejo: plano suelto (imagen/descripcion) o image plano.
+  imagen?: SanityImage
+  descripcion?: string
+  asset?: { _ref?: string }
 }
 
 type RawProject = RawListProject & {
   progress?: number
-  images?: SanityImage[]
-  // `imagen`/`descripcion` = schema nuevo; `asset` = planos cargados con el schema viejo (image plano).
-  plans?: { imagen?: SanityImage; descripcion?: string; asset?: { _ref?: string } }[]
+  images?: RawGalleryImage[]
+  plans?: RawPlanItem[]
   description?: PortableTextBlock[]
   locationDescription?: string
-  highlights?: Project['highlights']
-  typologies?: string[]
+  delivery?: string
+  availableUnits?: number
+  startDate?: string
+  totalSurface?: string
+  totalUnits?: number
+  typologies?: string
+  destacados?: { titulo: string; descripcion: string; categoria: string }[]
   pointsOfInterest?: { name: string; category: string; detail?: string; coordinates?: Coordinates }[]
   relatedProject?: {
     slug: string
@@ -63,19 +77,23 @@ const listFields = `
   status,
   neighborhood,
   coverImage,
-  coordinates,
-  order
+  coordinates
 `
 
 const projectFields = `
   ${listFields},
   progress,
-  images,
-  plans[]{ imagen, descripcion, asset },
+  images[]{ imagen, descripcion, asset, _type },
+  plans[]{ titulo, planos[]{ titulo, imagen }, imagen, descripcion, asset },
   description,
   locationDescription,
-  highlights,
+  delivery,
+  availableUnits,
+  startDate,
+  totalSurface,
+  totalUnits,
   typologies,
+  destacados[]{ titulo, descripcion, categoria },
   pointsOfInterest[]{ name, category, detail, coordinates },
   relatedProject->{ "slug": slug.current, title, status, coverImage, neighborhood }
 `
@@ -94,7 +112,6 @@ function mapListProject(raw: RawListProject): Project {
       raw.coordinates?.lat != null && raw.coordinates?.lng != null
         ? { lat: raw.coordinates.lat, lng: raw.coordinates.lng }
         : undefined,
-    order: raw.order,
     images: [],
     highlights: {},
   }
@@ -111,19 +128,48 @@ function mapRelated(raw: RawProject['relatedProject']): RelatedProject | null {
   }
 }
 
+function mapPlans(raw: RawPlanItem[] | undefined): Project['plans'] {
+  const items = raw ?? []
+  // Schema nuevo: cada item es una sección con `planos[]`.
+  const sectioned = items.some((p) => Array.isArray(p.planos))
+  if (sectioned) {
+    return items
+      .filter((s) => Array.isArray(s.planos))
+      .map((s) => ({
+        titulo: s.titulo ?? 'Planos',
+        planos: (s.planos ?? [])
+          .map((p) => ({ src: img(p.imagen, 1400), label: p.titulo }))
+          .filter((p) => p.src),
+      }))
+      .filter((s) => s.planos.length > 0)
+  }
+  // Schema viejo: planos sueltos → una sola sección.
+  const planos = items
+    .map((p) => ({ src: img((p.imagen ?? p) as SanityImage, 1400), label: p.descripcion }))
+    .filter((p) => p.src)
+  return planos.length > 0 ? [{ titulo: 'Planos del proyecto', planos }] : []
+}
+
 function mapProject(raw: RawProject): Project {
   return {
     ...mapListProject(raw),
     progress: raw.progress,
-    images: (raw.images ?? []).map((i) => img(i, 1600)).filter(Boolean),
-    plans: (raw.plans ?? [])
-      // Soporta el schema nuevo ({ imagen, descripcion }) y planos viejos (image plano).
-      .map((p) => ({ src: img((p.imagen ?? p) as SanityImage, 1400), description: p.descripcion }))
-      .filter((p) => p.src),
+    images: (raw.images ?? [])
+      // Soporta el schema nuevo ({ imagen, descripcion }) y galerías viejas (image plano).
+      .map((i) => ({ src: img((i.imagen ?? i) as SanityImage, 1600), caption: i.descripcion }))
+      .filter((i) => i.src),
+    plans: mapPlans(raw.plans),
     description: raw.description,
     locationDescription: raw.locationDescription,
-    highlights: raw.highlights ?? {},
+    highlights: {
+      delivery: raw.delivery,
+      availableUnits: raw.availableUnits,
+      startDate: raw.startDate,
+      totalSurface: raw.totalSurface,
+      totalUnits: raw.totalUnits,
+    },
     typologies: raw.typologies,
+    destacados: raw.destacados,
     pointsOfInterest: (raw.pointsOfInterest ?? [])
       .filter((p) => p.coordinates?.lat != null && p.coordinates?.lng != null)
       .map((p) => ({
@@ -142,7 +188,7 @@ function mapProject(raw: RawProject): Project {
 
 export async function getAllProjects(): Promise<Project[]> {
   const raw = await client.fetch<RawListProject[]>(
-    `*[_type == "project"] | order(coalesce(order, 999) asc) { ${listFields} }`
+    `*[_type == "project"] | order(orderRank) { ${listFields} }`
   )
   return raw.map(mapListProject)
 }
@@ -156,17 +202,17 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 }
 
 export async function getHeroSlides(): Promise<{ src: string; alt: string }[]> {
-  // Carrusel del hero = portada de cada proyecto, máximo 4, en orden manual.
+  // Carrusel del hero = portada de los 4 primeros proyectos según el orden drag & drop.
   const raw = await client.fetch<{ title: string; coverImage?: SanityImage }[]>(
-    `*[_type == "project" && defined(coverImage)] | order(coalesce(order, 999) asc)[0...4]{ title, coverImage }`
+    `*[_type == "project" && defined(coverImage)] | order(orderRank)[0...4]{ title, coverImage }`
   )
   return (raw ?? []).map((p) => ({ src: img(p.coverImage, 2000), alt: p.title }))
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
-  // Proyectos destacados = los que tienen orden 1 y 2 en su ficha.
+  // Proyectos destacados = los 2 primeros según el orden drag & drop.
   const raw = await client.fetch<RawListProject[]>(
-    `*[_type == "project" && order in [1, 2]] | order(order asc) { ${listFields} }`
+    `*[_type == "project"] | order(orderRank)[0...2] { ${listFields} }`
   )
   return (raw ?? []).map(mapListProject)
 }

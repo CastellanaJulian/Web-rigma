@@ -5,11 +5,12 @@ import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
 import SectionLabel from '@/components/shared/SectionLabel'
 import { useCanHover } from '@/hooks/useCanHover'
+import type { GalleryImage } from '@/types/project'
 
-type Props = { images: string[] }
+type Props = { images: GalleryImage[] }
 
 // ── Lightbox ──────────────────────────────────────────────────────────────────
-function Lightbox({ images, startIndex, onClose }: { images: string[]; startIndex: number; onClose: () => void }) {
+function Lightbox({ images, startIndex, onClose }: { images: GalleryImage[]; startIndex: number; onClose: () => void }) {
   const [idx, setIdx] = useState(startIndex)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex })
 
@@ -77,11 +78,11 @@ function Lightbox({ images, startIndex, onClose }: { images: string[]; startInde
         style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}
       >
         <div style={{ display: 'flex', height: '100%' }}>
-          {images.map((src, i) => (
+          {images.map((im, i) => (
             <div key={i} style={{ position: 'relative', flex: '0 0 100%', height: '100%' }}>
               <Image
-                src={src}
-                alt={`imagen ${i + 1}`}
+                src={im.src}
+                alt={im.caption || `imagen ${i + 1}`}
                 fill
                 className="object-contain"
                 sizes="100vw"
@@ -91,6 +92,15 @@ function Lightbox({ images, startIndex, onClose }: { images: string[]; startInde
           ))}
         </div>
       </div>
+
+      {/* Caption */}
+      {images[idx]?.caption && (
+        <div style={{ textAlign: 'center', padding: '12px 20px 0', flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.75)' }}>
+            {images[idx].caption}
+          </span>
+        </div>
+      )}
 
       {/* Arrows — solo desktop (mobile/tablet usan swipe + dots) */}
       <button
@@ -165,7 +175,8 @@ export default function GaleriaSection({ images }: Props) {
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [active, setActive] = useState(0)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
-  const [img0, img1, img2, img3, img4] = images
+  const srcs = images.map((i) => i.src)
+  const [img0, img1, img2, img3, img4] = srcs
 
   useEffect(() => {
     if (!emblaApi) return
@@ -184,13 +195,13 @@ export default function GaleriaSection({ images }: Props) {
       <div className="block lg:hidden">
         <div ref={emblaRef} style={{ overflow: 'hidden' }}>
           <div style={{ display: 'flex' }}>
-            {images.map((src, i) => (
+            {images.map((im, i) => (
               <div
                 key={i}
                 onClick={() => openLightbox(i)}
                 style={{ position: 'relative', flex: '0 0 100%', aspectRatio: '4/3', cursor: 'zoom-in' }}
               >
-                <Image src={src} alt={`render ${i + 1}`} fill className="object-cover" sizes="100vw" />
+                <Image src={im.src} alt={im.caption || `render ${i + 1}`} fill className="object-cover" sizes="100vw" />
               </div>
             ))}
           </div>

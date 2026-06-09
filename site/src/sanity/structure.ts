@@ -1,15 +1,18 @@
 import type { StructureResolver } from 'sanity/structure'
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Contenido del sitio')
     .items([
-      S.listItem()
-        .title('🏗️  Proyectos')
-        .schemaType('project')
-        .child(
-          S.documentTypeList('project').title('Todos los proyectos')
-        ),
+      // Lista ordenable por drag & drop: el orden se guarda en `orderRank`
+      // y define /proyectos, los destacados del home (top 2) y el hero (top 4).
+      orderableDocumentListDeskItem({
+        type: 'project',
+        title: '🏗️  Proyectos',
+        S,
+        context,
+      }),
 
       S.divider(),
 
