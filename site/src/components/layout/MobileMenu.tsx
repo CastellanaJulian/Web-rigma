@@ -7,7 +7,8 @@ import { links } from './NavLinks'
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
+  // Ver NavLinks: en el prerender estático de la raíz usePathname() puede venir ''.
+  const pathname = usePathname() || '/'
 
   return (
     <>

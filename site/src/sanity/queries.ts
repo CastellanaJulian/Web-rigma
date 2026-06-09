@@ -45,8 +45,6 @@ type RawProject = RawListProject & {
   locationDescription?: string
   highlights?: Project['highlights']
   typologies?: string[]
-  amenities?: string[]
-  financing?: string
   pointsOfInterest?: { name: string; category: string; detail?: string; coordinates?: Coordinates }[]
   relatedProject?: {
     slug: string
@@ -81,8 +79,6 @@ const projectFields = `
   locationDescription,
   highlights,
   typologies,
-  amenities,
-  financing,
   pointsOfInterest[]{ name, category, detail, coordinates },
   relatedProject->{ "slug": slug.current, title, status, coverImage, neighborhood, location }
 `
@@ -133,8 +129,6 @@ function mapProject(raw: RawProject): Project {
     locationDescription: raw.locationDescription,
     highlights: raw.highlights ?? {},
     typologies: raw.typologies,
-    amenities: raw.amenities,
-    financing: raw.financing,
     pointsOfInterest: (raw.pointsOfInterest ?? [])
       .filter((p) => p.coordinates?.lat != null && p.coordinates?.lng != null)
       .map((p) => ({
@@ -166,9 +160,18 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return raw ? mapProject(raw) : null
 }
 
+export async function getHeroSlides(): Promise<{ src: string; alt: string }[]> {
+  // Carrusel del hero = portada de cada proyecto, máximo 4, en orden manual.
+  const raw = await client.fetch<{ title: string; coverImage?: SanityImage }[]>(
+    `*[_type == "project" && defined(coverImage)] | order(coalesce(order, 999) asc)[0...4]{ title, coverImage }`
+  )
+  return (raw ?? []).map((p) => ({ src: img(p.coverImage, 2000), alt: p.title }))
+}
+
 export async function getFeaturedProjects(): Promise<Project[]> {
+  // Proyectos destacados = los que tienen orden 1 y 2 en su ficha.
   const raw = await client.fetch<RawListProject[]>(
-    `*[_type == "homePage"][0].featuredProjects[].project->{ ${listFields} }`
+    `*[_type == "project" && order in [1, 2]] | order(order asc) { ${listFields} }`
   )
   return (raw ?? []).map(mapListProject)
 }
@@ -177,14 +180,6 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   return client.fetch<SiteSettings | null>(
     `*[_type == "siteSettings"][0]{ whatsapp, email, direccion }`
   )
-}
-
-export async function getHomePage(): Promise<{ imagenNosotros: string } | null> {
-  const raw = await client.fetch<{ imagenNosotros?: SanityImage } | null>(
-    `*[_type == "homePage"][0]{ imagenNosotros }`
-  )
-  if (!raw) return null
-  return { imagenNosotros: img(raw.imagenNosotros, 1200) }
 }
 
 export async function getNosotrosPage(): Promise<{ imagenHistoria: string; imagenFilosofia: string } | null> {

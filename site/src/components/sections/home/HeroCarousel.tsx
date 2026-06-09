@@ -6,12 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCanHover } from '@/hooks/useCanHover'
 
-const slides = [
-  { src: '/images/img-2.jpg', alt: 'Av. Larrazábal 1255' },
-  { src: '/images/img-1.jpg', alt: 'Cosquín 1534' },
-  { src: '/images/img-4.jpg', alt: 'Rigma — trayectoria' },
-  { src: '/images/img-3.jpg', alt: 'Zelada 6171' },
-]
+type Slide = { src: string; alt: string }
 
 function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
   const canHover = useCanHover()
@@ -60,7 +55,7 @@ function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void
   )
 }
 
-export default function HeroCarousel() {
+export default function HeroCarousel({ slides }: { slides: Slide[] }) {
   const canHover = useCanHover()
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
   const [active, setActive] = useState(0)
@@ -142,12 +137,14 @@ export default function HeroCarousel() {
       />
 
       {/* Navigation arrows — solo desktop ancho (xl); en mobile/tablet se pisan con el texto, usan swipe */}
-      <div className="hidden xl:block" style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'all' }}>
-          <ArrowBtn dir="left" onClick={prev} />
-          <ArrowBtn dir="right" onClick={next} />
+      {total > 1 && (
+        <div className="hidden xl:block" style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'all' }}>
+            <ArrowBtn dir="left" onClick={prev} />
+            <ArrowBtn dir="right" onClick={next} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <div
@@ -250,6 +247,7 @@ export default function HeroCarousel() {
           </div>
 
           {/* Slide indicators + counter */}
+          {total > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ display: 'flex', gap: 6 }}>
               {slides.map((_, i) => (
@@ -281,6 +279,7 @@ export default function HeroCarousel() {
               0{active + 1} / 0{total}
             </span>
           </div>
+          )}
         </div>
       </div>
     </section>

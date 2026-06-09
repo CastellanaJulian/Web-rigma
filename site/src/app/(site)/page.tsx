@@ -3,17 +3,17 @@ import ProyectosDestacados from '@/components/sections/home/ProyectosDestacados'
 import NosotrosSnippet from '@/components/sections/home/NosotrosSnippet'
 import PorQueSection from '@/components/sections/home/PorQueSection'
 import ContactSectionHome from '@/components/sections/home/ContactSectionHome'
-import { getHomePage } from '@/sanity/queries'
+import { getNosotrosPage, getHeroSlides } from '@/sanity/queries'
 
 export const revalidate = 60
 
 export default async function Home() {
-  const home = await getHomePage()
+  const [nosotros, heroSlides] = await Promise.all([getNosotrosPage(), getHeroSlides()])
   return (
     <>
-      <HeroCarousel />
+      <HeroCarousel slides={heroSlides} />
       <ProyectosDestacados />
-      <NosotrosSnippet imagen={home?.imagenNosotros} />
+      <NosotrosSnippet imagen={nosotros?.imagenHistoria} />
       <PorQueSection />
       <ContactSectionHome />
     </>

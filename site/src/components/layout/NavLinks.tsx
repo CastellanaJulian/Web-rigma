@@ -13,7 +13,9 @@ const links = [
 export { links }
 
 export default function NavLinks() {
-  const pathname = usePathname()
+  // En el prerender estático de la raíz, usePathname() puede devolver '' (no '/'),
+  // dejando INICIO sin subrayado hasta navegar. Normalizamos a '/' para evitarlo.
+  const pathname = usePathname() || '/'
 
   return (
     <nav className="hidden md:flex items-center gap-10">

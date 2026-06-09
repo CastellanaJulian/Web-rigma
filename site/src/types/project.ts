@@ -44,16 +44,12 @@ export type Project = {
   description?: PortableTextBlock[]
   highlights: {
     totalSurface?: string
-    unitSurface?: string
     totalUnits?: number
     availableUnits?: number
-    floors?: number
     delivery?: string
     startDate?: string
   }
   typologies?: string[]
-  amenities?: string[]
-  financing?: string
   coordinates?: {
     lat: number
     lng: number

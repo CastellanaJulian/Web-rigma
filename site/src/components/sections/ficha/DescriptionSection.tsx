@@ -52,11 +52,6 @@ export default function DescriptionSection({ project }: Props) {
         <div>
           <SectionLabel>Descripción</SectionLabel>
           <PortableText value={project.description} />
-          {project.financing && (
-            <p style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.8, color: 'rgba(30,30,30,0.65)' }}>
-              {project.financing}
-            </p>
-          )}
         </div>
 
         {datosCard.length > 0 && (
