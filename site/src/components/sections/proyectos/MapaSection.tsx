@@ -165,7 +165,7 @@ export default function MapaSection({ projects }: Props) {
                   ${pillLabel}
                 </div>
                 <div style="font-size:15px;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#1E1E1E;line-height:1.1;margin-bottom:5px;">${p.title}</div>
-                <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(30,30,30,0.55);margin-bottom:14px;">${p.neighborhood ?? p.location}</div>
+                <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(30,30,30,0.55);margin-bottom:14px;">${p.neighborhood ?? ''}</div>
                 <a href="/proyectos/${p.slug}" class="rigma-popup-link"
                   style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#1E1E1E;border-bottom:1px solid #1E1E1E;padding-bottom:2px;display:inline-block;cursor:pointer;text-decoration:none;transition:color 0.2s,border-color 0.2s;">
                   VER PROYECTO →

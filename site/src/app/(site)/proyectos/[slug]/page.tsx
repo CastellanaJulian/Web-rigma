@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 // ── KeyDataStrip ──────────────────────────────────────────────────────────────
 function KeyDataStrip({ project }: { project: Project }) {
   const items = [
-    project!.location && { label: 'Ubicación', value: project!.neighborhood ?? project!.location },
+    project!.neighborhood && { label: 'Ubicación', value: project!.neighborhood },
     project!.highlights.delivery && { label: 'Entrega', value: project!.highlights.delivery },
     project!.highlights.availableUnits != null && { label: 'Unidades disponibles', value: String(project!.highlights.availableUnits) },
     project!.progress != null && { label: 'Avance de obra', value: `${project!.progress}%`, progress: project!.progress },
@@ -28,10 +28,10 @@ function KeyDataStrip({ project }: { project: Project }) {
   if (items.length === 0) return null
 
   const n = items.length
-  // border classes per item — 2-col en mobile/tablet, 4-col en desktop (lg)
+  // border classes per item — 2-col en mobile/tablet, n-col en desktop (lg)
   const cellClass = (i: number) => {
     const classes: string[] = []
-    // right border: en 2-col para celdas pares; en 4-col (lg) para todas menos la última
+    // right border: en 2-col para celdas pares; en desktop para todas menos la última
     if (i % 2 === 0) classes.push('border-r', 'border-[#E9E9E9]')
     else if (i < n - 1) classes.push('lg:border-r', 'lg:border-[#E9E9E9]')
     // bottom border: solo en 2-col, primera fila cuando hay segunda fila
@@ -39,8 +39,10 @@ function KeyDataStrip({ project }: { project: Project }) {
     return classes.join(' ')
   }
 
+  const lgCols = n <= 2 ? 'lg:grid-cols-2' : n === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4" style={{ borderBottom: '1px solid #E9E9E9' }}>
+    <div className={`grid grid-cols-2 ${lgCols}`} style={{ borderBottom: '1px solid #E9E9E9' }}>
       {items.map((item, i) => (
         <div
           key={i}
@@ -90,7 +92,7 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
           coordinates={project.coordinates}
           projectName={project.title}
           projectStatus={project.status}
-          locationTitle={`${project.neighborhood ?? project.location}, CABA`}
+          locationTitle={`${project.neighborhood ?? ''}, CABA`}
           locationDescription={project.locationDescription}
           pois={project.pointsOfInterest ?? []}
         />

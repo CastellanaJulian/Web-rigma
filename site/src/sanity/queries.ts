@@ -30,7 +30,6 @@ type RawListProject = {
   title: string
   status: Project['status']
   neighborhood?: string
-  location?: string
   coverImage?: SanityImage
   coordinates?: Coordinates
   order?: number
@@ -52,7 +51,6 @@ type RawProject = RawListProject & {
     status: Project['status']
     coverImage?: SanityImage
     neighborhood?: string
-    location?: string
   } | null
 }
 
@@ -64,7 +62,6 @@ const listFields = `
   title,
   status,
   neighborhood,
-  location,
   coverImage,
   coordinates,
   order
@@ -80,7 +77,7 @@ const projectFields = `
   highlights,
   typologies,
   pointsOfInterest[]{ name, category, detail, coordinates },
-  relatedProject->{ "slug": slug.current, title, status, coverImage, neighborhood, location }
+  relatedProject->{ "slug": slug.current, title, status, coverImage, neighborhood }
 `
 
 // ── Mapeo crudo → view-model ─────────────────────────────────────────────────────
@@ -92,7 +89,6 @@ function mapListProject(raw: RawListProject): Project {
     title: raw.title,
     status: raw.status,
     neighborhood: raw.neighborhood,
-    location: raw.location,
     coverImage: img(raw.coverImage, 1600),
     coordinates:
       raw.coordinates?.lat != null && raw.coordinates?.lng != null
@@ -112,7 +108,6 @@ function mapRelated(raw: RawProject['relatedProject']): RelatedProject | null {
     status: raw.status,
     coverImage: img(raw.coverImage, 1600),
     neighborhood: raw.neighborhood,
-    location: raw.location,
   }
 }
 

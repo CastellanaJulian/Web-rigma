@@ -67,7 +67,7 @@ export default function ProjectCard({ project, size = 'lg', className = '' }: Pr
             marginBottom: isLg ? 22 : 18,
           }}
         >
-          {project.neighborhood ?? project.location}
+          {project.neighborhood}
         </p>
         <span
           className="project-card-cta"

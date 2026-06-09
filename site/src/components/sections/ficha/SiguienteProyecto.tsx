@@ -18,7 +18,7 @@ export default function SiguienteProyecto({ project }: Props) {
 
   const location = project.neighborhood
     ? `${project.neighborhood}, Buenos Aires`
-    : project.location
+    : ''
 
   return (
     <section

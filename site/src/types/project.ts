@@ -26,14 +26,12 @@ export type RelatedProject = {
   status: 'En Ejecución' | 'Terminado'
   coverImage: string
   neighborhood?: string
-  location?: string
 }
 
 export type Project = {
   id: string
   slug: string
   title: string
-  location?: string
   neighborhood?: string
   status: 'En Ejecución' | 'Terminado'
   order?: number

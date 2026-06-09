@@ -11,7 +11,7 @@ export const project = defineType({
     defineField({
       name: 'title',
       title: 'Nombre',
-      description: 'Se muestra como título grande en el hero de la ficha.',
+      description: 'Corresponde a la dirección del proyecto (ej: "Cosquín 1534"). Se muestra como título grande en el hero.',
       type: 'string',
       validation: (r) => r.required(),
     }),
@@ -47,15 +47,9 @@ export const project = defineType({
 
     // ── 2. Datos clave (tira debajo del hero) ─────────────────────────────────
     defineField({
-      name: 'location',
-      title: 'Dirección',
-      description: 'Dirección de la calle. Ej: "Cosquín 1534".',
-      type: 'string',
-    }),
-    defineField({
       name: 'neighborhood',
-      title: 'Barrio',
-      description: 'Se muestra como "Ubicación" en la tira de datos y en la sección de mapa. Ej: "Mataderos".',
+      title: 'Ubicación',
+      description: 'Barrio o zona. Se muestra en la tira de datos y como título de la sección del mapa. Ej: "Mataderos".',
       type: 'string',
     }),
     defineField({
