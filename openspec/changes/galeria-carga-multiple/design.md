@@ -37,6 +37,17 @@ Con la galería plana, `i` es directamente la imagen → `i.imagen ?? i` resuelv
 
 Migración de datos: **no aplica**. El dataset no es productivo y no hay galerías cargadas en formato `galleryImage`. Si en el futuro existieran, el Studio las marcaría como "unknown type" (aunque el frontend las seguiría leyendo), pero ese caso no se da hoy.
 
+## Corrección durante la implementación
+
+Aplanar a `array of image` **no** habilitó la selección múltiple desde el selector de archivos. Verificado en runtime de Sanity 5.30: el botón nativo "Añadir elemento" siempre crea un ítem por vez; la única carga masiva nativa es el drag & drop (que ya funcionaba). No hay opción de schema para cambiar ese botón.
+
+**Solución final:** un input custom (`components: { input: MultiImageUploadInput }`) en el campo `images` que:
+- conserva el input por defecto (`renderDefault`) → grilla, preview y reordenamiento por arrastre,
+- oculta por CSS el botón nativo "Añadir elemento" (`data-testid` `add-item` / `add-single-object-button`),
+- agrega un botón que dispara un `<input type="file" multiple>`, sube cada imagen con `client.assets.upload('image', file)` y las inserta todas en el array con un solo patch (`setIfMissing([]) + insert(items, 'after', [-1])`).
+
+El aplanado del schema sigue siendo necesario: el input custom inserta ítems `{ _type: 'image', asset }`, que es justamente la forma plana.
+
 ## Alternativas consideradas
 
 - **Conservar el objeto y educar a usar drag & drop:** rechazado, el usuario quiere el selector de archivos múltiple.

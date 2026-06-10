@@ -11,8 +11,14 @@
 - [x] 2.2 Simplificar el mapper de `images` (quitar `i.imagen ?? i` y `caption: i.descripcion`, dejar el item como imagen directa)
 - [x] 2.3 Limpiar el tipo `RawGalleryImage` (`caption` en `GalleryImage` queda como opcional sin uso de datos — lo conserva `GaleriaSection`, sin cambios)
 
-## 3. Verificación
+## 3. Input custom de carga múltiple (el aplanado solo no alcanzó)
 
-- [ ] 3.1 `cd site && npm run dev` y abrir el Studio: en la galería de un proyecto, confirmar que el selector de archivos permite elegir varias imágenes a la vez
-- [ ] 3.2 Confirmar que arrastrar varias imágenes sigue funcionando
-- [ ] 3.3 Cargar un proyecto con galería y verificar que la ficha (`/proyectos/[slug]`) renderiza las imágenes sin errores y sin caption
+- [x] 3.1 Crear `site/src/sanity/components/MultiImageUploadInput.tsx`: conserva `renderDefault`, oculta el botón nativo "Añadir elemento" y agrega un botón "Subir imágenes (varias a la vez)" cableado a `<input type="file" multiple>` que sube con `client.assets.upload` e inserta todo con un patch
+- [x] 3.2 Asignar `components: { input: MultiImageUploadInput }` al campo `images` en `project.ts`
+- [x] 3.3 Verificar tipos (`tsc --noEmit`) y lint OK
+
+## 4. Verificación
+
+- [ ] 4.1 `cd site && npm run dev` y abrir el Studio: en la galería, tocar "Subir imágenes (varias a la vez)" y confirmar que el selector deja elegir varias y se suben todas
+- [ ] 4.2 Confirmar que "Añadir elemento" ya no aparece y que arrastrar varias sigue funcionando
+- [ ] 4.3 Cargar un proyecto con galería y verificar que la ficha (`/proyectos/[slug]`) renderiza las imágenes sin errores y sin caption

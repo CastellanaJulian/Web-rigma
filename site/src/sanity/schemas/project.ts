@@ -1,6 +1,7 @@
 import { defineField, defineType } from 'sanity'
 import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list'
 import { destacadoCategoriaOptions } from '../destacadoCategorias'
+import { MultiImageUploadInput } from '../components/MultiImageUploadInput'
 
 // El orden de los campos sigue el flujo de la ficha pública (/proyectos/[slug]):
 // Hero → Info horizontal → Descripción → Datos (card) → Destacados → Galería →
@@ -179,6 +180,7 @@ export const project = defineType({
       options: { layout: 'grid' },
       validation: (r) => r.min(5).warning('Se recomiendan al menos 5 imágenes en la galería.'),
       of: [{ type: 'image', options: { hotspot: true } }],
+      components: { input: MultiImageUploadInput },
     }),
 
     // ── 7. Planos (organizados en secciones desplegables) ──────────────────────

@@ -10,6 +10,7 @@ type FormData = {
   email: string
   proyecto: string
   mensaje: string
+  website?: string // honeypot anti-spam — los humanos lo dejan vacío
 }
 
 interface ContactFormProps {
@@ -27,12 +28,16 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ mode: 'onBlur' })
 
-  const onSubmit = async (_data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true)
     setSubmitError(false)
     try {
-      // Simula envío — reemplazar con llamada real a API en Etapa 3
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error('request failed')
 
       // Capturamos el contenedor de scroll ANTES de que el form se desmonte.
       // Es un ancestro estable (no se reemplaza al pasar a estado de éxito),
@@ -118,6 +123,17 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
       noValidate
       style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
     >
+      {/* Honeypot anti-spam: invisible para humanos, los bots lo completan.
+          Si llega con contenido, /api/contact descarta el envío. */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+        {...register('website')}
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Nombre */}
         <div>
