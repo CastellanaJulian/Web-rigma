@@ -34,7 +34,6 @@ type RawListProject = {
   coordinates?: Coordinates
 }
 
-type RawGalleryImage = { imagen?: SanityImage; descripcion?: string } & SanityImage
 type RawPlanItem = {
   // schema nuevo: sección con título + planos[]
   titulo?: string
@@ -47,7 +46,7 @@ type RawPlanItem = {
 
 type RawProject = RawListProject & {
   progress?: number
-  images?: RawGalleryImage[]
+  images?: SanityImage[]
   plans?: RawPlanItem[]
   description?: PortableTextBlock[]
   locationDescription?: string
@@ -83,7 +82,7 @@ const listFields = `
 const projectFields = `
   ${listFields},
   progress,
-  images[]{ imagen, descripcion, asset, _type },
+  images[]{ asset, _type },
   plans[]{ titulo, planos[]{ titulo, imagen }, imagen, descripcion, asset },
   description,
   locationDescription,
@@ -155,8 +154,7 @@ function mapProject(raw: RawProject): Project {
     ...mapListProject(raw),
     progress: raw.progress,
     images: (raw.images ?? [])
-      // Soporta el schema nuevo ({ imagen, descripcion }) y galerías viejas (image plano).
-      .map((i) => ({ src: img((i.imagen ?? i) as SanityImage, 1600), caption: i.descripcion }))
+      .map((i) => ({ src: img(i, 1600) }))
       .filter((i) => i.src),
     plans: mapPlans(raw.plans),
     description: raw.description,

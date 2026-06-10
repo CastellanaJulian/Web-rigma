@@ -174,38 +174,11 @@ export const project = defineType({
     defineField({
       name: 'images',
       title: 'Galería (renders y obra)',
-      description: 'Mínimo 5 imágenes. Arrastrá varias a la vez para subirlas juntas; arrastrá para reordenar. Agregá una descripción a cada una.',
+      description: 'Mínimo 5 imágenes. Seleccioná varias a la vez desde el selector de archivos, o arrastralas juntas. Arrastrá para reordenar.',
       type: 'array',
       options: { layout: 'grid' },
       validation: (r) => r.min(5).warning('Se recomiendan al menos 5 imágenes en la galería.'),
-      of: [
-        {
-          type: 'object',
-          name: 'galleryImage',
-          title: 'Imagen',
-          fields: [
-            defineField({
-              name: 'imagen',
-              title: 'Imagen',
-              type: 'image',
-              options: { hotspot: true },
-              validation: (r) => r.required(),
-            }),
-            defineField({
-              name: 'descripcion',
-              title: 'Descripción',
-              description: 'Ej: "Living comedor", "Vista a la terraza".',
-              type: 'string',
-            }),
-          ],
-          preview: {
-            select: { title: 'descripcion', media: 'imagen' },
-            prepare({ title, media }) {
-              return { title: title ?? 'Imagen sin descripción', media }
-            },
-          },
-        },
-      ],
+      of: [{ type: 'image', options: { hotspot: true } }],
     }),
 
     // ── 7. Planos (organizados en secciones desplegables) ──────────────────────
