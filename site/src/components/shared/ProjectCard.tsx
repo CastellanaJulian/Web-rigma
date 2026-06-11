@@ -79,7 +79,6 @@ export default function ProjectCard({ project, size = 'lg', className = '' }: Pr
             fontWeight: 700,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: '#FFFFFF',
             borderBottom: '1px solid rgba(255,255,255,0.35)',
             paddingBottom: 2,
             transition: 'color 0.3s ease, border-color 0.3s ease',

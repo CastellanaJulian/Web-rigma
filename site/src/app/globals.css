@@ -144,6 +144,10 @@ video {
 }
 
 /* ProjectCard hover: solo en dispositivos con hover real (no touch) */
+.project-card-cta {
+  color: #FFFFFF;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
     transform: scale(1.015);
@@ -158,7 +162,7 @@ video {
 /* Hover link on dark bg */
 .hover-accent-link-dark {
   color: rgba(255, 255, 255, 0.65);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid transparent;
   padding-bottom: 2px;
   text-decoration: none;
   transition: color 0.2s ease, border-color 0.2s ease;

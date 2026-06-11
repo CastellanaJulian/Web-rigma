@@ -39,7 +39,7 @@ export default async function ProyectosDestacados() {
           className="hover-accent-link hidden md:block"
           style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em' }}
         >
-          Ver todos los proyectos
+          Ver todos los proyectos →
         </Link>
       </div>
 
@@ -68,7 +68,7 @@ export default async function ProyectosDestacados() {
             textDecoration: 'none',
           }}
         >
-          Ver todos los proyectos
+          Ver todos los proyectos →
         </Link>
       </div>
     </section>
