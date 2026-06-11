@@ -7,9 +7,7 @@ export const metadata: Metadata = {
     'Cómo Rigma recopila, utiliza y protege los datos personales que los usuarios proporcionan a través del sitio.',
 }
 
-// ⚠️ Placeholders a completar con el cliente antes del cutover a producción:
-//   [RAZÓN SOCIAL] — nombre jurídico real (ej. "Rigma S.R.L.")
-//   [CUIT]         — CUIT de la empresa
+// Razón social y CUIT confirmados por el cliente (10/06/2026).
 // Revisar el texto con un profesional. La inscripción de la base de datos
 // ante la AAIP (Registro Nacional de Bases de Datos) la gestiona el cliente.
 
@@ -17,7 +15,7 @@ const sections: LegalSection[] = [
   {
     heading: 'Responsable de la base de datos',
     paragraphs: [
-      'El responsable del tratamiento de los datos personales recopilados a través de este sitio es [RAZÓN SOCIAL] (en adelante, «Rigma»), CUIT [CUIT], con domicilio en Guardia Nacional 739, Planta Baja, Ciudad Autónoma de Buenos Aires, Argentina. Para cualquier consulta vinculada a sus datos personales puede escribir a Rigmagrupo@gmail.com.',
+      'El responsable del tratamiento de los datos personales recopilados a través de este sitio es RIGMA GROUP S.R.L. (en adelante, «Rigma»), CUIT 30-71893343-5, con domicilio en Guardia Nacional 739, Planta Baja, Ciudad Autónoma de Buenos Aires, Argentina. Para cualquier consulta vinculada a sus datos personales puede escribir a Rigmagrupo@gmail.com.',
     ],
   },
   {

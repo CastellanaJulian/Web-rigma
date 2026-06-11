@@ -7,12 +7,11 @@ export const metadata: Metadata = {
     'Términos y condiciones de uso del sitio web institucional de Rigma.',
 }
 
-// ⚠️ Placeholders a completar con el cliente antes del cutover a producción:
-//   [RAZÓN SOCIAL] — nombre jurídico real (ej. "Rigma S.R.L.")
-//   [CUIT]         — CUIT de la empresa
-//   [MATRÍCULA]    — matrícula de corredor inmobiliario (CUCICBA en CABA),
-//                    SI corresponde. Si Rigma no comercializa directamente,
-//                    eliminar la sección "Corretaje inmobiliario".
+// Razón social y CUIT confirmados por el cliente (10/06/2026).
+// ⚠️ Placeholder pendiente:
+//   [MATRÍCULA] — matrícula de corredor inmobiliario (CUCICBA en CABA),
+//                 SI corresponde. Si Rigma no comercializa directamente,
+//                 eliminar la sección "Corretaje inmobiliario".
 // Revisar el texto con un profesional antes de publicar.
 
 const sections: LegalSection[] = [
@@ -25,7 +24,7 @@ const sections: LegalSection[] = [
   {
     heading: 'Titularidad',
     paragraphs: [
-      'El Sitio es operado por [RAZÓN SOCIAL] (en adelante, «Rigma»), CUIT [CUIT], con domicilio en Guardia Nacional 739, Planta Baja, Ciudad Autónoma de Buenos Aires, Argentina.',
+      'El Sitio es operado por RIGMA GROUP S.R.L. (en adelante, «Rigma»), CUIT 30-71893343-5, con domicilio en Guardia Nacional 739, Planta Baja, Ciudad Autónoma de Buenos Aires, Argentina.',
     ],
   },
   {

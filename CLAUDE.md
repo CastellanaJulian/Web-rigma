@@ -348,7 +348,7 @@ type Project = {
 - [ ] Confirmar barrio de Zelada 6171
 - [ ] Hacer el cutover en Vercel: apuntar `rigma.com.ar` a `site/` (hoy sirve la landing)
 - [ ] Confirmar si la sección Equipo lleva fotos y quiénes aparecen
-- [ ] **Textos legales** (`/terminos`, `/privacidad`): completar placeholders `[RAZÓN SOCIAL]`, `[CUIT]` y `[MATRÍCULA]` (corredor inmobiliario CUCICBA, si corresponde). Revisar con profesional. El cliente debe definir si inscribe la base de leads ante la AAIP (Ley 25.326).
+- [ ] **Textos legales** (`/terminos`, `/privacidad`): razón social (RIGMA GROUP S.R.L.) y CUIT (30-71893343-5) ya cargados. Falta el placeholder `[MATRÍCULA]` (corredor inmobiliario CUCICBA, si corresponde). Revisar con profesional. El cliente debe definir si inscribe la base de leads ante la AAIP (Ley 25.326).
 
 ## Pendientes no críticos
 

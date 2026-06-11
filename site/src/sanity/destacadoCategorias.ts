@@ -28,7 +28,7 @@ export const destacadoCategorias: DestacadoCategoria[] = [
   {
     value: 'terrace',
     title: 'Espacios verdes',
-    icon: '<path d="M12 22V12"/><path d="M20.3 8.7c1.6 2 2.1 4.4 1.4 6.7-.7 2.3-2.6 4.1-4.9 4.8-2.3.7-4.7.2-6.7-1.4L20.3 8.7z"/><path d="M2 22l9-9"/>',
+    icon: '<path d="M12 2 Q8 5 8 10 Q8 16 12 20 Q16 16 16 10 Q16 5 12 2"/><line x1="11" y1="20" x2="13" y2="20"/><line x1="11" y1="20" x2="11" y2="22"/><line x1="13" y1="20" x2="13" y2="22"/>',
   },
   {
     value: 'parking',
