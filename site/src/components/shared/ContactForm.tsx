@@ -16,9 +16,10 @@ type FormData = {
 interface ContactFormProps {
   theme?: 'light' | 'dark'
   onSuccess?: () => void
+  projects?: { slug: string; title: string }[]
 }
 
-export default function ContactForm({ theme = 'light', onSuccess }: ContactFormProps) {
+export default function ContactForm({ theme = 'light', onSuccess, projects = [] }: ContactFormProps) {
   const dark = theme === 'dark'
   const canHover = useCanHover()
   const [hovSubmit, setHovSubmit] = useState(false)
@@ -206,10 +207,10 @@ export default function ContactForm({ theme = 'light', onSuccess }: ContactFormP
           {...register('proyecto', { required: 'Seleccioná un proyecto' })}
         >
           <option value="" disabled style={{ background: optBg }}>Seleccioná un proyecto</option>
-          <option value="cosquin" style={{ background: optBg }}>Cosquín 1534</option>
-          <option value="larrazabal" style={{ background: optBg }}>Av. Larrazábal 1255</option>
-          <option value="zelada" style={{ background: optBg }}>Zelada 6171</option>
-          <option value="otro" style={{ background: optBg }}>Otro / No sé aún</option>
+          {projects.map((p) => (
+            <option key={p.slug} value={p.title} style={{ background: optBg }}>{p.title}</option>
+          ))}
+          <option value="Otro / No sé aún" style={{ background: optBg }}>Otro / No sé aún</option>
         </select>
         <span style={errMsg(errors.proyecto?.message, !!errors.proyecto)}>
           {errors.proyecto?.message ?? ' '}

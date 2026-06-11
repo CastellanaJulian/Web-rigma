@@ -69,9 +69,11 @@ function KeyDataStrip({ project }: { project: Project }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default async function FichaProyectoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const project = await getProjectBySlug(slug)
+  const [project, allProjects] = await Promise.all([getProjectBySlug(slug), getAllProjects()])
 
   if (!project) notFound()
+
+  const formProjects = allProjects.map((p) => ({ slug: p.slug, title: p.title }))
 
   return (
     <>
@@ -99,7 +101,7 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
       )}
 
       <div id="contacto">
-        <ContactSectionHome />
+        <ContactSectionHome projects={formProjects} />
       </div>
 
       {project.relatedProject && (

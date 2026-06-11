@@ -143,6 +143,7 @@ function ProyectosGrid({ list, filter }: { list: Project[]; filter: Filter }) {
 
 // ── ProyectosClient ───────────────────────────────────────────────────────────
 export default function ProyectosClient({ projects }: { projects: Project[] }) {
+  const formProjects = projects.map((p) => ({ slug: p.slug, title: p.title }))
   const [filter, setFilter] = useState<Filter>('todos')
   const filtered = filterProjects(projects, filter)
   const [headerRef, headerVisible] = useInView(0.05)
@@ -236,7 +237,7 @@ export default function ProyectosClient({ projects }: { projects: Project[] }) {
       <MapaSection projects={projects} />
 
       {/* 05 · CONTACTO */}
-      <ContactSectionHome />
+      <ContactSectionHome projects={formProjects} />
     </>
   )
 }

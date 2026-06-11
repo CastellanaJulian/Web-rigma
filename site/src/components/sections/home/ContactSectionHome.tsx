@@ -4,7 +4,7 @@ import { useState } from 'react'
 import SectionLabel from '@/components/shared/SectionLabel'
 import ContactForm from '@/components/shared/ContactForm'
 
-export default function ContactSectionHome() {
+export default function ContactSectionHome({ projects = [] }: { projects?: { slug: string; title: string }[] }) {
   const [success, setSuccess] = useState(false)
 
   return (
@@ -69,7 +69,7 @@ export default function ContactSectionHome() {
               <em style={{ fontStyle: 'italic', fontWeight: 400, color: '#B59969' }}>inversión</em>
             </h2>
 
-            <ContactForm theme="dark" onSuccess={() => setSuccess(true)} />
+            <ContactForm theme="dark" onSuccess={() => setSuccess(true)} projects={projects} />
           </>
         )}
       </div>

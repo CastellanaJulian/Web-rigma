@@ -52,9 +52,10 @@ const columnPadding = 'clamp(32px, 5vw, 48px) clamp(20px, 5vw, 64px) clamp(32px,
 type Props = {
   settings: SiteSettings | null
   imagen?: string
+  projects?: { slug: string; title: string }[]
 }
 
-export default function ContactoClient({ settings, imagen }: Props) {
+export default function ContactoClient({ settings, imagen, projects = [] }: Props) {
   const channels = buildChannels(settings ?? DEFAULTS)
   const [success, setSuccess] = useState(false)
   const [leftRef, leftVisible]   = useInView(0.05)
@@ -159,7 +160,7 @@ export default function ContactoClient({ settings, imagen }: Props) {
               </p>
 
               <div style={fadeUp(leftVisible, 180)}>
-                <ContactForm theme="light" onSuccess={() => setSuccess(true)} />
+                <ContactForm theme="light" onSuccess={() => setSuccess(true)} projects={projects} />
               </div>
             </>
           )}
