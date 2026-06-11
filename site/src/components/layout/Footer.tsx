@@ -120,9 +120,19 @@ export default async function Footer() {
           gap: 12,
         }}
       >
-        <span style={{ fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em' }}>
-          © {year} Rigma Group · Todos los derechos reservados
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px 14px' }}>
+          <span style={{ fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em' }}>
+            © {year} Rigma Group · Todos los derechos reservados
+          </span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }} aria-hidden>·</span>
+          <Link href="/terminos" style={{ fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', textDecoration: 'none' }} className="hover:text-white transition-colors duration-200">
+            Términos y Condiciones
+          </Link>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }} aria-hidden>·</span>
+          <Link href="/privacidad" style={{ fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', textDecoration: 'none' }} className="hover:text-white transition-colors duration-200">
+            Política de Privacidad
+          </Link>
+        </div>
         <span
           style={{
             fontSize: 10,

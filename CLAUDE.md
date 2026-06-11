@@ -1,7 +1,7 @@
 # CLAUDE.md — Rigma Web
 
 > Archivo de contexto para colaboración con IA. Toda decisión tomada en el proyecto debe reflejarse acá para mantener coherencia entre sesiones y entre colaboradores.
-> Última actualización: 12 de mayo 2026
+> Última actualización: 10 de junio 2026
 
 ---
 
@@ -28,14 +28,18 @@
 | # | Etapa                  | Estado       | Descripción |
 |---|------------------------|-------------|-------------|
 | 1 | Descubrimiento         | ✅ Completo  | Relevamiento con el cliente |
-| 2 | Diseño visual          | 🔄 En curso  | Wireframes → Alta fidelidad → Prototipo estático |
-| 3 | Desarrollo y testeo    | ⏳ Pendiente | Integración Sanity, iteración sobre diseño |
-| 4 | Salida a producción    | ⏳ Pendiente | Deploy Vercel, entrega al cliente |
+| 2 | Diseño visual          | ✅ Completo  | Wireframes → Alta fidelidad → sitio implementado |
+| 3 | Desarrollo y testeo    | ✅ Completo  | Sanity integrado a las 5 páginas, formulario conectado a Google Sheets, responsive |
+| 4 | Salida a producción    | 🔄 En curso  | Sitio deployado en Vercel (URL aparte); falta cutover del dominio rigma.com.ar y entrega al cliente |
 
-**Sub-etapas actuales (Etapa 2):**
-- [x] Wireframes — 5/5 pantallas completadas (`ficha-proyecto`, `proyectos`, `inicio`, `contacto`, `nosotros`). Pendiente validación con cliente.
-- [ ] Diseño en alta fidelidad
-- [ ] Prototipo estático con placeholders
+**Estado actual (Etapa 4 — cutover pendiente):**
+- [x] Sitio nuevo (`site/`) implementado y deployado en Vercel en una URL propia (preview/staging) — todavía no sirve `rigma.com.ar`
+- [x] Sanity Studio embebido en `/studio` (las 5 páginas leen contenido del CMS)
+- [x] Formulario de contacto conectado → Google Apps Script → Google Sheet "Leads"
+- [x] Responsive mobile/tablet en todo el sitio
+- [ ] Cutover de `rigma.com.ar`: cambiar Root Directory de Vercel a `site/` (hoy apunta a la landing)
+- [ ] Integrar Vercel Analytics en `site/`
+- [ ] Carga de contenido real por el cliente en el Studio + completar datos faltantes de proyectos
 
 ---
 
@@ -47,17 +51,18 @@
 | TypeScript   | Tipado estático           | |
 | Tailwind CSS v4 | Estilos               | Tokens en `@theme` dentro de `globals.css` |
 | ESLint       | Linting                   | |
-| Sanity       | CMS headless              | Plan gratuito — schemas migrados a `site/src/sanity/` |
-| Vercel       | Hosting                   | Plan gratuito — Root Directory: `site/` (antes `landing-en-construccion/v0`) |
+| Sanity       | CMS headless              | Plan gratuito — Studio embebido en `/studio`, schemas en `site/src/sanity/` |
+| Vercel       | Hosting                   | Plan gratuito — `site/` deployado en URL propia; Root Directory de `rigma.com.ar` aún apunta a la landing (cutover pendiente) |
 | Vercel Analytics | Analytics de tráfico  | Integrar en `site/` al momento del cutover |
+| Google Apps Script + Google Sheets | Captura de leads | Web App `doPost()` que escribe cada consulta del formulario como fila en la hoja "Leads" |
 | react-leaflet + leaflet | Mapas          | OpenStreetMap — usado en `/proyectos` y ficha de proyecto |
 | embla-carousel-react | Carrusel      | Hero carousel y galería de imágenes |
-| react-hook-form + zod | Formularios  | Validación del formulario de contacto |
+| react-hook-form | Formularios            | Validación del formulario de contacto (la app usa también `zod`) |
 | sharp        | Optimización de imágenes  | Requerido por `next/image` |
 
 **Import alias:** `@/*` → `src/*`
 
-> Etapa 2: el sitio público sigue con datos mock estáticos. Sanity Studio + schemas ya están inicializados en `dev/` para que el cliente pueda cargar contenido en paralelo al diseño. Las queries del frontend al CMS se conectan en Etapa 3.
+> Etapa 3 completada: las 5 páginas del sitio ya leen contenido desde Sanity (`site/src/sanity/queries.ts` + `client.ts`) y el formulario de contacto persiste leads en Google Sheets. Resta el cutover del dominio y la carga de contenido real por el cliente.
 
 ---
 
@@ -79,22 +84,26 @@
 - **Analytics:** Vercel Analytics — `<Analytics />` sin condición de NODE_ENV
 - **QR generado:** apunta a `https://www.rigma.com.ar` — archivo local en `/Users/julian/web-rigma/rigma-qr.png` (no subido al repo)
 
-### Sitio nuevo en desarrollo (`site/`)
+### Sitio nuevo (`site/`) — el sitio definitivo
 - **Ruta en repo:** `site/`
 - **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + ESLint, App Router, `src/`, alias `@/*`
-- **Sanity Studio embebido:** schemas en `src/sanity/schemas/` — Studio a integrar en Etapa 3
-- **Schemas Sanity:** `src/sanity/schemas/{project,homePage,team,siteSettings,testimonial}.ts`
+- **Páginas:** las 5 (`/`, `/proyectos`, `/proyectos/[slug]`, `/nosotros`, `/contacto`) bajo el route group `(site)`, todas leyendo contenido desde Sanity
+- **Sanity Studio embebido:** ruta `/studio` (aislado del layout del sitio con route group)
+- **Schemas Sanity:** `src/sanity/schemas/{project,nosotrosPage,contactoPage,siteSettings}.ts` (index en `schemas/index.ts`)
+- **Capa de datos Sanity:** `src/sanity/{client.ts,queries.ts,image.ts,env.ts,structure.ts}`
+- **API route del formulario:** `src/app/api/contact/route.ts` (reenvía a Apps Script — ver sección Formulario de contacto)
 - **Config Sanity:** `sanity.config.ts` + `sanity.cli.ts` en la raíz de `site/`
-- **Correr en local:** `cd site && npm run dev` → `localhost:3000`
-- **Estado:** en desarrollo activo — reemplazará a `landing-en-construccion/` en producción al finalizar Etapa 2
+- **Correr en local:** `cd site && npm run dev` → `localhost:3000` (Studio en `localhost:3000/studio`)
+- **Deploy:** Vercel, en URL propia (preview/staging). Reemplazará a `landing-en-construccion/` en `rigma.com.ar` al hacer el cutover (Etapa 4).
 
 ### Sanity
 - **Project ID:** `0q5stz3o`
 - **Organization ID:** `oirIJubQi`
-- **Dataset único:** `production` (public)
+- **Dataset único:** `production` (public — lectura sin token, `useCdn: true`)
+- **API version:** `2026-05-23`
 - **Plan:** Free
-- **URL del Studio standalone:** pendiente (correr `cd dev && npx sanity deploy` con login interactivo)
-- **Variables de entorno** (`dev/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`. Ejemplo en `dev/.env.local.example`.
+- **Studio:** embebido en `/studio` del sitio (no se usa Studio standalone `*.sanity.studio`). En español (`@sanity/locale-es-es`), tema claro, sin Vision ni Releases.
+- **Variables de entorno** (`site/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`. Tienen fallback hardcodeado en `src/sanity/env.ts` (son valores públicos), así que el build no depende de ellas.
 
 ---
 
@@ -166,12 +175,16 @@
 | Facebook    | No                           | |
 | LinkedIn    | No                           | |
 
-### Formulario de contacto
-- Destino: **Email** (Rigmagrupo@gmail.com) vía **Resend** (Etapa 3)
-- FROM: `noreply@rigma.com.ar` → TO: `Rigmagrupo@gmail.com`
-- Requiere: cuenta Resend (free tier), registros DNS en `rigma.com.ar` (TXT + CNAME de Resend), API key en Vercel env vars
-- Debe incluir selector de proyecto de interés para calificar el lead
-- Campos mínimos: nombre, teléfono, email, proyecto de interés, mensaje
+### Formulario de contacto — ✅ conectado
+- **Destino:** una **Google Sheet** (pestaña "Leads"), vía **Google Apps Script** (Web App `doPost()`). Se descartó Resend/email por ser más simple de transferir al cliente y no requerir DNS.
+- **Flujo:** `ContactForm.tsx` → `POST /api/contact` (server, en Vercel) → `fetch(APPS_SCRIPT_URL)` → Apps Script `appendRow()`. El browser **nunca** le pega a Google directo (CORS + oculta la URL).
+- **Columnas de la hoja (6, en orden):** Fecha/Hora (generada en el server), Nombre, Celular, Email, Proyecto, Mensaje.
+- **Variable de entorno:** `APPS_SCRIPT_URL` (sin `NEXT_PUBLIC_`, solo server-side, en Vercel env vars). Si falta → la route responde 502.
+- **Mapeo de proyecto:** el `<select>` manda un código (`cosquin`, `larrazabal`, `zelada`, `otro`) que la API route convierte a etiqueta legible (`Cosquín 1534`, etc.) antes de escribir.
+- **Anti-spam:** campo honeypot oculto `website`; si llega completo, la route responde `ok:true` pero no escribe la fila.
+- **Resiliencia:** validación server-side espejo de la del form; reintento único (400ms) ante 500 transitorio de Apps Script.
+- **Setup del script:** el código `doPost()` para pegar en la hoja (Extensiones → Apps Script → Implementar como Web App, "Ejecutar como: yo", "Quién accede: Cualquiera") está documentado en `openspec/changes/archive/2026-06-10-captura-leads-google-sheets/design.md`.
+- Campos del form: nombre, celular, email, proyecto de interés, mensaje.
 
 ---
 
@@ -333,8 +346,9 @@ type Project = {
 - [ ] Confirmar estado y datos faltantes de Proyecto 3 (Av. Larrazábal 1255)
 - [ ] Cargar información de Proyecto 4 (y proyectos 5 y 6 si existen)
 - [ ] Confirmar barrio de Zelada 6171
-- [ ] Definir tipografía en etapa de alta fidelidad
+- [ ] Hacer el cutover en Vercel: apuntar `rigma.com.ar` a `site/` (hoy sirve la landing)
 - [ ] Confirmar si la sección Equipo lleva fotos y quiénes aparecen
+- [ ] **Textos legales** (`/terminos`, `/privacidad`): completar placeholders `[RAZÓN SOCIAL]`, `[CUIT]` y `[MATRÍCULA]` (corredor inmobiliario CUCICBA, si corresponde). Revisar con profesional. El cliente debe definir si inscribe la base de leads ante la AAIP (Ley 25.326).
 
 ## Pendientes no críticos
 
