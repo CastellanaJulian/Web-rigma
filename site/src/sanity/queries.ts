@@ -20,6 +20,7 @@ const iconTypeByCategory: Record<string, POI['iconType']> = {
   Salud: 'health',
   Educación: 'education',
   Comercio: 'commerce',
+  'Espacios verdes': 'greenspaces',
 }
 
 // ── Shapes crudos devueltos por GROQ ─────────────────────────────────────────────

@@ -301,6 +301,7 @@ export const project = defineType({
                   { title: 'Salud', value: 'Salud' },
                   { title: 'Educación', value: 'Educación' },
                   { title: 'Comercio', value: 'Comercio' },
+                  { title: 'Espacios verdes', value: 'Espacios verdes' },
                 ],
                 layout: 'radio',
               },

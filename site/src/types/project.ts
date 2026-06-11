@@ -35,7 +35,7 @@ export type POI = {
   category: string
   name: string
   detail?: string
-  iconType: 'transport' | 'health' | 'education' | 'commerce'
+  iconType: 'transport' | 'health' | 'education' | 'commerce' | 'greenspaces'
 }
 
 export type RelatedProject = {
