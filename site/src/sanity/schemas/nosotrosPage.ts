@@ -19,6 +19,13 @@ export const nosotrosPage = defineType({
       type: 'image',
       options: { hotspot: true },
     }),
+    defineField({
+      name: 'imagenMasSobreNosotros',
+      title: 'Imagen — Más sobre nosotros',
+      description: 'Recomendado: 16:9 o más ancho, mínimo 1400px. Usá el punto focal para ajustar el recorte.',
+      type: 'image',
+      options: { hotspot: true },
+    }),
   ],
   preview: {
     prepare() {

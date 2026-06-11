@@ -9,6 +9,7 @@ export default async function NosotrosPage() {
     <NosotrosClient
       imagenHistoria={nosotros?.imagenHistoria}
       imagenFilosofia={nosotros?.imagenFilosofia}
+      imagenMasSobreNosotros={nosotros?.imagenMasSobreNosotros}
     />
   )
 }

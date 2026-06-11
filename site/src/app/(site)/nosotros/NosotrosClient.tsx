@@ -77,9 +77,10 @@ const pilares = [
 type Props = {
   imagenHistoria?: string
   imagenFilosofia?: string
+  imagenMasSobreNosotros?: string
 }
 
-export default function NosotrosClient({ imagenHistoria, imagenFilosofia }: Props) {
+export default function NosotrosClient({ imagenHistoria, imagenFilosofia, imagenMasSobreNosotros }: Props) {
   const [pilaresRef, pilaresVisible]         = useInView(0.3)
   const [headerRef, headerVisible]           = useInView(0.05)
   const [historiaRef, historiaVisible]       = useInView(0.15)
@@ -349,13 +350,17 @@ export default function NosotrosClient({ imagenHistoria, imagenFilosofia }: Prop
             transition: 'transform 0.8s ease',
           }}
         >
-          <Image
-            src="/images/img-4.jpg"
-            alt="Rigma — obra"
-            fill
-            className="object-cover"
-            sizes="100vw"
-          />
+          {imagenMasSobreNosotros ? (
+            <Image
+              src={imagenMasSobreNosotros}
+              alt="Rigma — más sobre nosotros"
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+          ) : (
+            <div style={{ background: '#D6D6D6' }} />
+          )}
         </div>
         <div
           className="absolute inset-0"

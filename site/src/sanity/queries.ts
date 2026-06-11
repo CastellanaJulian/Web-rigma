@@ -221,14 +221,15 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   )
 }
 
-export async function getNosotrosPage(): Promise<{ imagenHistoria: string; imagenFilosofia: string } | null> {
-  const raw = await client.fetch<{ imagenHistoria?: SanityImage; imagenFilosofia?: SanityImage } | null>(
-    `*[_type == "nosotrosPage"][0]{ imagenHistoria, imagenFilosofia }`
+export async function getNosotrosPage(): Promise<{ imagenHistoria: string; imagenFilosofia: string; imagenMasSobreNosotros: string } | null> {
+  const raw = await client.fetch<{ imagenHistoria?: SanityImage; imagenFilosofia?: SanityImage; imagenMasSobreNosotros?: SanityImage } | null>(
+    `*[_type == "nosotrosPage"][0]{ imagenHistoria, imagenFilosofia, imagenMasSobreNosotros }`
   )
   if (!raw) return null
   return {
     imagenHistoria: img(raw.imagenHistoria, 1600),
     imagenFilosofia: img(raw.imagenFilosofia, 1000),
+    imagenMasSobreNosotros: img(raw.imagenMasSobreNosotros, 1600),
   }
 }
 
