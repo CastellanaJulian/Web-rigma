@@ -31,7 +31,7 @@ export default function PlanosSection({ sections }: Props) {
     id: `grupo-${i}`,
     titulo: sec.titulo,
     sublabel: `${sec.planos.length} plano${sec.planos.length !== 1 ? 's' : ''}`,
-    planos: sec.planos.map((p, j) => ({ src: p.src, label: p.label || `Plano ${j + 1}`, description: sec.titulo })),
+    planos: sec.planos.map((p, j) => ({ src: p.src, label: p.label || `Plano ${j + 1}`, description: p.descripcion })),
   }))
 
   return (
@@ -72,7 +72,7 @@ export default function PlanosSection({ sections }: Props) {
                         <Image src={p.src} alt={`plano · ${p.label}`} fill className="object-contain" sizes="200px" />
                       </div>
                       <div style={{ fontSize: 12, fontWeight: 600, color: '#1E1E1E', marginBottom: 2 }}>{p.label}</div>
-                      <div style={{ fontSize: 11, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{p.description}</div>
+                      {p.description && <div style={{ fontSize: 11, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{p.description}</div>}
                     </div>
                   ))}
                 </div>
@@ -123,7 +123,7 @@ export default function PlanosSection({ sections }: Props) {
               <Image src={modal.src} alt={modal.label} fill className="object-contain" sizes="(max-width: 768px) 95vw, 680px" />
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1E1E1E', marginBottom: 4 }}>{modal.label}</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{modal.description}</div>
+            {modal.description && <div style={{ fontSize: 12, fontWeight: 400, color: 'rgba(30,30,30,0.45)' }}>{modal.description}</div>}
           </div>
         </div>
       )}

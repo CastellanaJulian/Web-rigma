@@ -37,7 +37,7 @@ type RawListProject = {
 type RawPlanItem = {
   // schema nuevo: sección con título + planos[]
   titulo?: string
-  planos?: { titulo?: string; imagen?: SanityImage }[]
+  planos?: { titulo?: string; descripcion?: string; imagen?: SanityImage }[]
   // schema viejo: plano suelto (imagen/descripcion) o image plano.
   imagen?: SanityImage
   descripcion?: string
@@ -83,7 +83,7 @@ const projectFields = `
   ${listFields},
   progress,
   images[]{ asset, _type },
-  plans[]{ titulo, planos[]{ titulo, imagen }, imagen, descripcion, asset },
+  plans[]{ titulo, planos[]{ titulo, descripcion, imagen }, imagen, descripcion, asset },
   description,
   locationDescription,
   delivery,
@@ -137,7 +137,7 @@ function mapPlans(raw: RawPlanItem[] | undefined): Project['plans'] {
       .map((s) => ({
         titulo: s.titulo ?? 'Planos',
         planos: (s.planos ?? [])
-          .map((p) => ({ src: img(p.imagen, 1400), label: p.titulo }))
+          .map((p) => ({ src: img(p.imagen, 1400), label: p.titulo, descripcion: p.descripcion }))
           .filter((p) => p.src),
       }))
       .filter((s) => s.planos.length > 0)

@@ -9,6 +9,7 @@ import type { PortableTextBlock } from '@portabletext/react'
 export type Plano = {
   src: string
   label?: string
+  descripcion?: string
 }
 
 export type PlanSection = {

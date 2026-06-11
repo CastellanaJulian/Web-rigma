@@ -219,6 +219,12 @@ export const project = defineType({
                       type: 'string',
                     }),
                     defineField({
+                      name: 'descripcion',
+                      title: 'Descripción',
+                      description: 'Ej: 45m² totales.',
+                      type: 'string',
+                    }),
+                    defineField({
                       name: 'imagen',
                       title: 'Imagen del plano',
                       type: 'image',
