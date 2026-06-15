@@ -38,7 +38,8 @@ export default function WhatsAppButton({ whatsapp = FALLBACK_WA }: { whatsapp?: 
   if (pathname === '/contacto') return null
 
   const digits = whatsapp.replace(/[^\d]/g, '')
-  const href = `https://wa.me/${digits}`
+  const normalized = digits.startsWith('54') ? digits : `54${digits}`
+  const href = `https://wa.me/${normalized}`
   const expanded = canHover && hovered
 
   return (
