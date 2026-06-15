@@ -22,7 +22,7 @@ export const structure: StructureResolver = (S, context) =>
         .child(
           S.document()
             .schemaType('homePage')
-            .documentId('homePage')
+            .documentId('homePageContent')
             .title('Inicio')
         ),
 
