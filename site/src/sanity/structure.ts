@@ -17,6 +17,16 @@ export const structure: StructureResolver = (S, context) =>
       S.divider(),
 
       S.listItem()
+        .title('🏠 Inicio')
+        .id('homePage')
+        .child(
+          S.document()
+            .schemaType('homePage')
+            .documentId('homePage')
+            .title('Inicio')
+        ),
+
+      S.listItem()
         .title('👥 Nosotros')
         .id('nosotrosPage')
         .child(

@@ -71,8 +71,16 @@ export type Project = {
     lng: number
   }
   locationDescription?: string
+  locationTitle?: string
+  barrio?: string
   relatedProject?: RelatedProject | null
   pointsOfInterest?: POI[]
+}
+
+export type HomePageData = {
+  heroTitulo?: string
+  heroSubtitulo?: string
+  pilares?: { titulo: string; descripcion: string }[]
 }
 
 export type SiteSettings = {

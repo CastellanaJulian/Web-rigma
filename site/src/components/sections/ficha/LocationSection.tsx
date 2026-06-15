@@ -19,9 +19,10 @@ type Props = {
   locationTitle: string
   locationDescription?: string
   pois: POI[]
+  barrio?: string
 }
 
-export default function LocationSection({ coordinates, projectName, projectStatus, locationTitle, locationDescription, pois }: Props) {
+export default function LocationSection({ coordinates, projectName, projectStatus, locationTitle, locationDescription, pois, barrio }: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
   const markersRef = useRef<unknown[]>([])
@@ -118,15 +119,17 @@ export default function LocationSection({ coordinates, projectName, projectStatu
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map)
 
-      // Barrio boundary
-      fetch('https://nominatim.openstreetmap.org/search?q=Mataderos,Buenos+Aires,Argentina&format=geojson&polygon_geojson=1&limit=1')
-        .then(r => r.json())
-        .then(data => {
-          const feature = data.features?.[0]
-          if (!feature || feature.geometry.type === 'Point') return
-          L.geoJSON(feature, { style: { color: '#B59969', weight: 1.5, fillColor: '#B59969', fillOpacity: 0.08, dashArray: '5 5' } }).addTo(map)
-        })
-        .catch(() => {})
+      // Barrio boundary — solo si se provee el nombre del barrio
+      if (barrio) {
+        fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(barrio)},Buenos+Aires,Argentina&format=geojson&polygon_geojson=1&limit=1`)
+          .then(r => r.json())
+          .then(data => {
+            const feature = data.features?.[0]
+            if (!feature || feature.geometry.type === 'Point') return
+            L.geoJSON(feature, { style: { color: '#B59969', weight: 1.5, fillColor: '#B59969', fillOpacity: 0.08, dashArray: '5 5' } }).addTo(map)
+          })
+          .catch(() => {})
+      }
 
       // Project marker
       const projectIcon = L.divIcon({

@@ -2,7 +2,7 @@ import type { PortableTextBlock } from '@portabletext/react'
 import type { SanityImageSource } from '@sanity/image-url'
 import { client } from './client'
 import { urlFor } from './image'
-import type { Project, POI, RelatedProject, SiteSettings } from '@/types/project'
+import type { Project, POI, RelatedProject, SiteSettings, HomePageData } from '@/types/project'
 
 // ── Helpers de mapeo ────────────────────────────────────────────────────────────
 
@@ -51,6 +51,8 @@ type RawProject = RawListProject & {
   plans?: RawPlanItem[]
   description?: PortableTextBlock[]
   locationDescription?: string
+  locationTitle?: string
+  barrio?: string
   delivery?: string
   availableUnits?: number
   startDate?: string
@@ -87,6 +89,8 @@ const projectFields = `
   plans[]{ titulo, planos[]{ titulo, descripcion, imagen }, imagen, descripcion, asset },
   description,
   locationDescription,
+  locationTitle,
+  barrio,
   delivery,
   availableUnits,
   startDate,
@@ -160,6 +164,8 @@ function mapProject(raw: RawProject): Project {
     plans: mapPlans(raw.plans),
     description: raw.description,
     locationDescription: raw.locationDescription,
+    locationTitle: raw.locationTitle,
+    barrio: raw.barrio,
     highlights: {
       delivery: raw.delivery,
       availableUnits: raw.availableUnits,
@@ -222,16 +228,42 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   )
 }
 
-export async function getNosotrosPage(): Promise<{ imagenHistoria: string; imagenFilosofia: string; imagenMasSobreNosotros: string } | null> {
-  const raw = await client.fetch<{ imagenHistoria?: SanityImage; imagenFilosofia?: SanityImage; imagenMasSobreNosotros?: SanityImage } | null>(
-    `*[_type == "nosotrosPage"][0]{ imagenHistoria, imagenFilosofia, imagenMasSobreNosotros }`
+export async function getNosotrosPage(): Promise<{
+  imagenHistoria: string
+  imagenFilosofia: string
+  imagenMasSobreNosotros: string
+  snippetTitulo?: string
+  snippetTexto?: string
+  metricaM2?: number
+  metricaUnidades?: number
+} | null> {
+  const raw = await client.fetch<{
+    imagenHistoria?: SanityImage
+    imagenFilosofia?: SanityImage
+    imagenMasSobreNosotros?: SanityImage
+    snippetTitulo?: string
+    snippetTexto?: string
+    metricaM2?: number
+    metricaUnidades?: number
+  } | null>(
+    `*[_type == "nosotrosPage"][0]{ imagenHistoria, imagenFilosofia, imagenMasSobreNosotros, snippetTitulo, snippetTexto, metricaM2, metricaUnidades }`
   )
   if (!raw) return null
   return {
     imagenHistoria: img(raw.imagenHistoria, 1600),
     imagenFilosofia: img(raw.imagenFilosofia, 1000),
     imagenMasSobreNosotros: img(raw.imagenMasSobreNosotros, 1600),
+    snippetTitulo: raw.snippetTitulo,
+    snippetTexto: raw.snippetTexto,
+    metricaM2: raw.metricaM2,
+    metricaUnidades: raw.metricaUnidades,
   }
+}
+
+export async function getHomePage(): Promise<HomePageData | null> {
+  return client.fetch<HomePageData | null>(
+    `*[_type == "homePage"][0]{ heroTitulo, heroSubtitulo, pilares[]{ titulo, descripcion } }`
+  )
 }
 
 export async function getContactoPage(): Promise<{ imagen: string } | null> {

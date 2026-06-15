@@ -8,6 +8,12 @@ import { useCanHover } from '@/hooks/useCanHover'
 
 type Slide = { src: string; alt: string }
 
+type Props = {
+  slides: Slide[]
+  heroTitulo?: string
+  heroSubtitulo?: string
+}
+
 function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
   const canHover = useCanHover()
   const [hov, setHov] = useState(false)
@@ -55,7 +61,7 @@ function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void
   )
 }
 
-export default function HeroCarousel({ slides }: { slides: Slide[] }) {
+export default function HeroCarousel({ slides, heroTitulo, heroSubtitulo }: Props) {
   const canHover = useCanHover()
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
   const [active, setActive] = useState(0)
@@ -171,9 +177,13 @@ export default function HeroCarousel({ slides }: { slides: Slide[] }) {
             ...fadeUp(0),
           }}
         >
-          Construimos{' '}
-          <em style={{ fontStyle: 'italic', fontWeight: 400, color: '#B59969' }}>espacios</em>
-          {' '}que perduran
+          {heroTitulo ?? (
+            <>
+              Construimos{' '}
+              <em style={{ fontStyle: 'italic', fontWeight: 400, color: '#B59969' }}>espacios</em>
+              {' '}que perduran
+            </>
+          )}
         </h1>
 
         <p
@@ -187,8 +197,7 @@ export default function HeroCarousel({ slides }: { slides: Slide[] }) {
             ...fadeUp(160),
           }}
         >
-          Proyectos terminados y en ejecución en Buenos Aires con diseño funcional,
-          materiales premium y tres generaciones de trayectoria que respaldan cada obra.
+          {heroSubtitulo ?? 'Proyectos terminados y en ejecución en Buenos Aires con diseño funcional, materiales premium y tres generaciones de trayectoria que respaldan cada obra.'}
         </p>
 
         <div

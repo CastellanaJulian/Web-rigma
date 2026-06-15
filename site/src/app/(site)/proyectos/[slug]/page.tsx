@@ -94,9 +94,10 @@ export default async function FichaProyectoPage({ params }: { params: Promise<{ 
           coordinates={project.coordinates}
           projectName={project.title}
           projectStatus={project.status}
-          locationTitle={`${project.neighborhood ?? ''}, CABA`}
+          locationTitle={project.locationTitle ?? `${project.neighborhood ?? ''}, CABA`}
           locationDescription={project.locationDescription}
           pois={project.pointsOfInterest ?? []}
+          barrio={project.barrio}
         />
       )}
 

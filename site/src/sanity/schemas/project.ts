@@ -254,6 +254,20 @@ export const project = defineType({
 
     // ── 8. Ubicación y zona ───────────────────────────────────────────────────
     defineField({
+      name: 'locationTitle',
+      title: 'Título de ubicación',
+      description: 'Encabezado que se muestra en la sección del mapa. Ej: Mataderos, CABA',
+      type: 'string',
+      fieldset: 'ubicacion',
+    }),
+    defineField({
+      name: 'barrio',
+      title: 'Barrio (polígono del mapa)',
+      description: 'Nombre del barrio que delimita el área resaltada en el mapa. Debe coincidir con un barrio reconocido por OpenStreetMap. Ej: Mataderos. Si se deja vacío, no se dibuja el área.',
+      type: 'string',
+      fieldset: 'ubicacion',
+    }),
+    defineField({
       name: 'coordinates',
       title: 'Ubicación del proyecto',
       description: 'Alimenta el mapa de la ficha y también el mapa de la página /proyectos. Abrí Google Maps, click derecho sobre el edificio → copiá los dos números (ej: -34.6540, -58.5015).',

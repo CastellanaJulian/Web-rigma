@@ -78,22 +78,29 @@ function CountUp({
   )
 }
 
-const stats = [
-  {
-    target: 32000,
-    prefix: '+',
-    label: 'M² Construidos',
-    format: formatNumber,
-  },
-  {
-    target: 220,
-    prefix: '+',
-    label: 'Unidades Funcionales',
-    format: undefined,
-  },
-]
+type Props = {
+  imagen?: string
+  snippetTitulo?: string
+  snippetTexto?: string
+  metricaM2?: number
+  metricaUnidades?: number
+}
 
-export default function NosotrosSnippet({ imagen }: { imagen?: string }) {
+export default function NosotrosSnippet({ imagen, snippetTitulo, snippetTexto, metricaM2, metricaUnidades }: Props) {
+  const stats = [
+    {
+      target: metricaM2 ?? 32000,
+      prefix: '+',
+      label: 'M² Construidos',
+      format: formatNumber,
+    },
+    {
+      target: metricaUnidades ?? 220,
+      prefix: '+',
+      label: 'Unidades Funcionales',
+      format: undefined,
+    },
+  ]
   const canHover = useCanHover()
   const imgSrc = imagen || '/images/img-4.jpg'
   const [sectionRef, inView] = useInView(0.3)
@@ -118,7 +125,7 @@ export default function NosotrosSnippet({ imagen }: { imagen?: string }) {
               marginBottom: 24,
             }}
           >
-            Tres generaciones construyendo en Buenos Aires
+            {snippetTitulo ?? 'Tres generaciones construyendo en Buenos Aires'}
           </h2>
 
           {/* Imagen mobile/tablet: aparece entre título y texto, oculta en desktop */}
@@ -138,25 +145,10 @@ export default function NosotrosSnippet({ imagen }: { imagen?: string }) {
               fontWeight: 400,
               lineHeight: 1.8,
               color: 'rgba(30,30,30,0.65)',
-              marginBottom: 20,
-            }}
-          >
-            Somos una empresa constructora familiar con una sólida trayectoria que se remonta a
-            tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma
-            de trabajo basada en la responsabilidad, el compromiso y la mejora continua.
-          </p>
-          <p
-            style={{
-              fontSize: 15,
-              fontWeight: 400,
-              lineHeight: 1.8,
-              color: 'rgba(30,30,30,0.65)',
               marginBottom: 56,
             }}
           >
-            Nos especializamos en el desarrollo de espacios multifuncionales pensados para
-            optimizar el uso, la flexibilidad y el confort. Cada proyecto es una oportunidad de
-            inversión respaldada por décadas de experiencia constructiva.
+            {snippetTexto ?? 'Somos una empresa constructora familiar con una sólida trayectoria que se remonta a tres generaciones dentro del rubro. A lo largo del tiempo, hemos consolidado una forma de trabajo basada en la responsabilidad, el compromiso y la mejora continua.'}
           </p>
 
           {/* Stats */}

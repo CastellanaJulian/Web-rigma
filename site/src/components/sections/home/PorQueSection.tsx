@@ -3,7 +3,7 @@
 import { useInView } from '@/hooks/useInView'
 import SectionLabel from '@/components/shared/SectionLabel'
 
-const pilares = [
+const PILARES_FALLBACK = [
   {
     icon: (
       <svg
@@ -86,8 +86,15 @@ const pilares = [
   },
 ]
 
-export default function PorQueSection() {
+type PilarData = { titulo: string; descripcion: string }
+
+export default function PorQueSection({ pilares: pilaresProp }: { pilares?: PilarData[] }) {
   const [sectionRef, visible] = useInView(0.4)
+
+  const pilares = (pilaresProp && pilaresProp.length === 4
+    ? pilaresProp.map((p, i) => ({ ...PILARES_FALLBACK[i], titulo: p.titulo, desc: p.descripcion }))
+    : PILARES_FALLBACK
+  )
 
   return (
     <section
