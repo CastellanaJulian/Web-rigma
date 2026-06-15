@@ -18,7 +18,7 @@ export const structure: StructureResolver = (S, context) =>
 
       S.listItem()
         .title('🏠 Inicio')
-        .id('homePage')
+        .id('inicio')
         .child(
           S.document()
             .schemaType('homePage')
