@@ -37,9 +37,16 @@
 - [x] Sanity Studio embebido en `/studio` (las 5 páginas leen contenido del CMS)
 - [x] Formulario de contacto conectado → Google Apps Script → Google Sheet "Leads"
 - [x] Responsive mobile/tablet en todo el sitio
+- [x] SEO técnico base en `site/`: `metadataBase`, title template, metadata única por página, `generateMetadata` en fichas, `sitemap.ts` y `robots.ts` (dominio canónico `www.rigma.com.ar`)
 - [ ] Cutover de `rigma.com.ar`: cambiar Root Directory de Vercel a `site/` (hoy apunta a la landing)
 - [ ] Integrar Vercel Analytics en `site/`
 - [ ] Carga de contenido real por el cliente en el Studio + completar datos faltantes de proyectos
+
+**Checklist del cutover (todo en el dashboard de Vercel — sin tocar código):**
+1. [ ] Cambiar Root Directory del proyecto de Vercel: `landing-en-construccion/v0` → `site/`
+2. [ ] Configurar dominio canónico **con www**: marcar `www.rigma.com.ar` como primary y que `rigma.com.ar` (apex) redirija a `www` (308). El código ya usa `www` como canónico (`layout.tsx`, `sitemap.ts`, `robots.ts`) y el QR impreso apunta a `www`.
+3. [ ] Integrar Vercel Analytics en `site/`.
+4. [ ] **Post-cutover (lo hace el cliente):** dar de alta el dominio en Google Search Console + enviar `https://www.rigma.com.ar/sitemap.xml`. (Recomendado: crear el Google Business Profile de la oficina.)
 
 ---
 
