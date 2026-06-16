@@ -3,9 +3,15 @@ import ProyectosDestacados from '@/components/sections/home/ProyectosDestacados'
 import NosotrosSnippet from '@/components/sections/home/NosotrosSnippet'
 import PorQueSection from '@/components/sections/home/PorQueSection'
 import ContactSectionHome from '@/components/sections/home/ContactSectionHome'
+import type { Metadata } from 'next'
 import { getNosotrosPage, getHeroSlides, getAllProjects, getHomePage } from '@/sanity/queries'
 
 export const revalidate = 60
+
+export const metadata: Metadata = {
+  description:
+    'Rigma es una desarrolladora inmobiliaria familiar con tres generaciones de trayectoria. Construimos espacios multifuncionales en CABA. Viví diferente, viví RIGMA.',
+}
 
 export default async function Home() {
   const [nosotros, heroSlides, projects, homePage] = await Promise.all([

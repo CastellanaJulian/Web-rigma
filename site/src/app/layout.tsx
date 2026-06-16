@@ -9,7 +9,11 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Rigma Group',
+  metadataBase: new URL('https://www.rigma.com.ar'),
+  title: {
+    default: 'Rigma Group',
+    template: '%s | Rigma Group',
+  },
   description: 'Desarrolladora inmobiliaria familiar. Viví diferente, viví RIGMA.',
 }
 

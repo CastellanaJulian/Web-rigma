@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getAllProjects, getProjectBySlug } from '@/sanity/queries'
 import { notFound } from 'next/navigation'
 import type { Project } from '@/types/project'
@@ -14,6 +15,26 @@ export const revalidate = 60
 export async function generateStaticParams() {
   const projects = await getAllProjects()
   return projects.map((p) => ({ slug: p.slug }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const project = await getProjectBySlug(slug)
+  if (!project) return {}
+
+  const partes = [
+    project.neighborhood && `Ubicado en ${project.neighborhood}`,
+    project.status,
+    project.highlights.delivery && `Entrega ${project.highlights.delivery}`,
+  ].filter(Boolean)
+  const description = partes.length
+    ? `${project.title}. ${partes.join('. ')}. Consultá disponibilidad y unidades con Rigma.`
+    : `Conocé ${project.title}, un proyecto de Rigma. Consultá disponibilidad y unidades.`
+
+  return {
+    title: project.title,
+    description,
+  }
 }
 
 // ── KeyDataStrip ──────────────────────────────────────────────────────────────
