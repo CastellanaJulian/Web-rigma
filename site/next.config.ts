@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Config de producción — cutover a rigma.com.ar
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['192.168.6.232'],
   images: {
