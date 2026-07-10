@@ -6,16 +6,6 @@ import SectionLabel from '@/components/shared/SectionLabel'
 import PortableText from '@/components/shared/PortableText'
 import { destacadoIconByValue } from '@/sanity/destacadoCategorias'
 
-// Fallback cuando el proyecto todavía no tiene destacados cargados en el CMS.
-const DESTACADOS_FALLBACK = [
-  { categoria: 'quality',   titulo: 'Terminaciones premium', descripcion: 'Porcelanato importado, mesadas de mármol y grifería de primer nivel en cada unidad.' },
-  { categoria: 'comfort',   titulo: 'Confort integral',       descripcion: 'Piso radiante, caldera dual individual, cocina integrada y lavadero propio.' },
-  { categoria: 'security',  titulo: 'Seguridad total',        descripcion: 'Cámaras, cerco eléctrico y portero eléctrico con acceso controlado.' },
-  { categoria: 'terrace',   titulo: 'Terrazas verdes',        descripcion: 'Espacios al aire libre disponibles como complemento de algunas unidades.' },
-  { categoria: 'parking',   titulo: 'Cocheras',               descripcion: 'Cocheras cubiertas disponibles por separado para cada unidad.' },
-  { categoria: 'equipment', titulo: 'Equipamiento completo',  descripcion: 'Anafe y horno a gas, lavadero propio y placares embutidos en dormitorios.' },
-]
-
 const datosCardSvgs = {
   inicio:     'M3 4h18v2H3zM3 10h18v2H3zM3 16h10v2H3z',
   superficie: 'M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3',
@@ -35,9 +25,7 @@ export default function DescriptionSection({ project }: Props) {
     project.typologies && { svg: datosCardSvgs.tipologias, label: 'Tipologías', value: project.typologies },
   ].filter(Boolean) as { svg: string; label: string; value: string }[]
 
-  const destacados = project.destacados && project.destacados.length > 0
-    ? project.destacados
-    : DESTACADOS_FALLBACK
+  const destacados = project.destacados ?? []
 
   return (
     <section style={{ padding: 'clamp(48px, 8vw, 80px) clamp(20px, 5vw, 56px)', background: '#FBFBFB' }}>
@@ -80,7 +68,8 @@ export default function DescriptionSection({ project }: Props) {
         )}
       </div>
 
-      {/* Highlights grid */}
+      {/* Highlights grid — solo si hay destacados cargados en el CMS */}
+      {destacados.length > 0 && (
       <div
         ref={highlightsRef as React.RefObject<HTMLDivElement>}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
@@ -106,6 +95,7 @@ export default function DescriptionSection({ project }: Props) {
           </div>
         ))}
       </div>
+      )}
     </section>
   )
 }
