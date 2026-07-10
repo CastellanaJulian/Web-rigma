@@ -78,9 +78,17 @@ type Props = {
   imagenHistoria?: string
   imagenFilosofia?: string
   imagenMasSobreNosotros?: string
+  metricaM2?: number
+  metricaUnidades?: number
 }
 
-export default function NosotrosClient({ imagenHistoria, imagenFilosofia, imagenMasSobreNosotros }: Props) {
+export default function NosotrosClient({
+  imagenHistoria,
+  imagenFilosofia,
+  imagenMasSobreNosotros,
+  metricaM2,
+  metricaUnidades,
+}: Props) {
   const [pilaresRef, pilaresVisible]         = useInView(0.3)
   const [headerRef, headerVisible]           = useInView(0.05)
   const [historiaRef, historiaVisible]       = useInView(0.15)
@@ -214,7 +222,7 @@ export default function NosotrosClient({ imagenHistoria, imagenFilosofia, imagen
                   marginBottom: 12,
                 }}
               >
-                <CountUp target={32000} prefix="+" format={formatMiles} />
+                <CountUp target={metricaM2 ?? 32000} prefix="+" format={formatMiles} />
               </div>
               <div
                 style={{
@@ -239,7 +247,7 @@ export default function NosotrosClient({ imagenHistoria, imagenFilosofia, imagen
                   marginBottom: 12,
                 }}
               >
-                <CountUp target={220} prefix="+" />
+                <CountUp target={metricaUnidades ?? 220} prefix="+" />
               </div>
               <div
                 style={{

@@ -17,6 +17,8 @@ export default async function NosotrosPage() {
       imagenHistoria={nosotros?.imagenHistoria}
       imagenFilosofia={nosotros?.imagenFilosofia}
       imagenMasSobreNosotros={nosotros?.imagenMasSobreNosotros}
+      metricaM2={nosotros?.metricaM2}
+      metricaUnidades={nosotros?.metricaUnidades}
     />
   )
 }
