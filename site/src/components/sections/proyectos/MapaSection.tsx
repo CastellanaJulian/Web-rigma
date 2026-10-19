@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { Project } from '@/types/project'
 import SectionLabel from '@/components/shared/SectionLabel'
+import { cartoAttribution, cartoTileUrl } from '@/components/shared/cartoTiles'
 
 type Props = {
   projects: Project[]
@@ -101,9 +102,11 @@ export default function MapaSection({ projects }: Props) {
 
         mapInstanceRef.current = localMap
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        L.tileLayer(cartoTileUrl, {
           maxZoom: 19,
+          attribution: cartoAttribution,
         }).addTo(localMap)
+        L.control.attribution({ prefix: false }).addTo(localMap)
 
         // Fuerza recalculo de tiles en varios momentos para cubrir distintos escenarios de timing
         ;[100, 400, 900].forEach((delay) =>

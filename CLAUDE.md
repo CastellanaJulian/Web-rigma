@@ -62,7 +62,7 @@
 | Vercel       | Hosting                   | Plan gratuito — `site/` deployado en URL propia; Root Directory de `rigma.com.ar` aún apunta a la landing (cutover pendiente) |
 | Vercel Analytics | Analytics de tráfico  | Integrar en `site/` al momento del cutover |
 | Google Apps Script + Google Sheets | Captura de leads | Web App `doPost()` que escribe cada consulta del formulario como fila en la hoja "Leads" |
-| react-leaflet + leaflet | Mapas          | OpenStreetMap — usado en `/proyectos` y ficha de proyecto |
+| react-leaflet + leaflet | Mapas          | Tiles CARTO Light (requieren `NEXT_PUBLIC_CARTO_API_KEY`) — usado en `/proyectos` y ficha de proyecto |
 | embla-carousel-react | Carrusel      | Hero carousel y galería de imágenes |
 | react-hook-form | Formularios            | Validación del formulario de contacto (la app usa también `zod`) |
 | sharp        | Optimización de imágenes  | Requerido por `next/image` |
@@ -111,6 +111,7 @@
 - **Plan:** Free
 - **Studio:** embebido en `/studio` del sitio (no se usa Studio standalone `*.sanity.studio`). En español (`@sanity/locale-es-es`), tema claro, sin Vision ni Releases.
 - **Variables de entorno** (`site/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`. Tienen fallback hardcodeado en `src/sanity/env.ts` (son valores públicos), así que el build no depende de ellas.
+- **`NEXT_PUBLIC_CARTO_API_KEY`** (`.env.local` + Vercel env vars): key de CARTO Basemaps para los tiles de los mapas (`src/components/shared/cartoTiles.ts`). Sin ella CARTO sirve tiles con marca de agua "API KEY REQUIRED". Es pública (va en la URL de cada tile): restringirla por dominio en dashboard.basemaps.carto.com. Free tier comercial: 1M requests/mes. La atribución "© OpenStreetMap contributors, © CARTO" debe quedar visible.
 
 ---
 

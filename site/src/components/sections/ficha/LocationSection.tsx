@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { POI } from '@/types/project'
 import SectionLabel from '@/components/shared/SectionLabel'
+import { cartoAttribution, cartoTileUrl } from '@/components/shared/cartoTiles'
 
 const POI_SVGS: Record<string, string> = {
   transport: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/><line x1="2" y1="12" x2="22" y2="12"/>',
@@ -117,7 +118,8 @@ export default function LocationSection({ coordinates, projectName, projectStatu
       } as any).setView([coordinates.lat, coordinates.lng], 15)
       mapInstanceRef.current = map
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map)
+      L.tileLayer(cartoTileUrl, { maxZoom: 19, attribution: cartoAttribution }).addTo(map)
+      L.control.attribution({ prefix: false }).addTo(map)
 
       // Barrio boundary — solo si se provee el nombre del barrio
       if (barrio) {
